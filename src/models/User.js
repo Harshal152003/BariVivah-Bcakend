@@ -100,6 +100,10 @@ const UserSchema = new mongoose.Schema({
       message: props => `${props.value} is not a valid email address!`
     }
   },
+  password: {
+    type: String,
+    default: null
+  },
   bloodGroup: {
     type: String,
     // enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', null],
@@ -108,6 +112,18 @@ const UserSchema = new mongoose.Schema({
   wearsLens: {
     type: String,
   },
+  bio: String,
+  familyType: String,
+  fatherOccupation: String,
+  motherOccupation: String,
+  siblings: String,
+  nativePlace: String,
+  diet: String,
+  smokingDrinking: String,
+  hobbies: String,
+  expectedProfession: String,
+  expectedLocation: String,
+  expectedCommunity: String,
   // Relative Info
   fatherName: String,
   parentResidenceCity: String,

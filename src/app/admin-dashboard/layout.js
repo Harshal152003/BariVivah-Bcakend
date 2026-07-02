@@ -20,7 +20,7 @@ export default function AdminLayout({ children }) {
   const [activeTab, setActiveTab] = useState('');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const Router = useRouter();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [filteredSections, setFilteredSections] = useState([]);
 
   const allAdminSections = [
@@ -34,7 +34,12 @@ export default function AdminLayout({ children }) {
     { id: 'setting', label: 'System Settings', icon: Settings, route: "/admin-dashboard/setting", permissionKey: "setting" },
   ];
 
- useEffect(() => {
+  useEffect(() => {
+    if (!loading && !user) {
+      Router.push('/admin-login');
+      return;
+    }
+
     if (user) {
       if (user.role === 'admin') {
         setFilteredSections(allAdminSections);
@@ -66,9 +71,9 @@ export default function AdminLayout({ children }) {
         Router.push('/');
       }
     }
-  }, [user]);
+  }, [user, loading]);
 
-  if (!user) {
+  if (loading || !user) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
 

@@ -117,7 +117,7 @@ export default function DynamicSubscriptionPlans() {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: order.amount,
         currency: order.currency,
-        name: "MaliBandhan Subscription",
+        name: "BariVivah Subscription",
         description: plan.name,
         order_id: order.id,
         handler: async function (response) {

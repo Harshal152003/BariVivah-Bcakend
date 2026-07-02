@@ -1,8 +1,10 @@
 "use client"
 import { useState, useEffect } from 'react';
 import { Search, MapPin, Calendar, Users, Heart } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
-export default function SearchMatchesWidget() {
+export default function SearchMatchesWidget({ onAction }) {
+  const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
   const [filters, setFilters] = useState({
     ageMin: 25,
@@ -23,8 +25,13 @@ export default function SearchMatchesWidget() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Search filters:', filters);
-    // Handle search submission
+    if (onAction) {
+      onAction(() => {
+        router.push(`/dashboard/search?gender=${filters.gender}&location=${filters.location}&religion=${filters.religion}&ageMin=${filters.ageMin}&ageMax=${filters.ageMax}`);
+      });
+    } else {
+      router.push('/dashboard');
+    }
   };
 
   return (

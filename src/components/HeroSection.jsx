@@ -2,8 +2,10 @@
 import { useState, useEffect } from 'react';
 import { ArrowRight, Heart } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
-export default function MatrimonialHero() {
+export default function MatrimonialHero({ onAction }) {
+  const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -42,12 +44,21 @@ export default function MatrimonialHero() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-              <button className="px-8 py-4 bg-secondary text-white rounded-full hover:bg-secondary/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center gap-3 group min-w-[180px] justify-center">
+              <button 
+                onClick={() => onAction ? onAction(() => router.push('/dashboard')) : router.push('/dashboard')}
+                className="px-8 py-4 bg-secondary text-white rounded-full hover:bg-secondary/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center gap-3 group min-w-[180px] justify-center"
+              >
                 <span className="font-medium text-lg">Find a Match</span>
                 <ArrowRight size={20} className="transform group-hover:translate-x-1 transition-transform" />
               </button>
 
-              <button className="px-8 py-4 bg-white text-secondary border border-secondary/20 rounded-full hover:bg-primary/5 transition-all duration-300 shadow-md hover:shadow-lg min-w-[180px]">
+              <button 
+                onClick={() => onAction ? onAction(() => {
+                  const section = document.getElementById('how-it-works');
+                  if (section) section.scrollIntoView({ behavior: 'smooth' });
+                }) : null}
+                className="px-8 py-4 bg-white text-secondary border border-secondary/20 rounded-full hover:bg-primary/5 transition-all duration-300 shadow-md hover:shadow-lg min-w-[180px]"
+              >
                 <span className="font-medium text-lg">How It Works</span>
               </button>
             </div>

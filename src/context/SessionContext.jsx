@@ -115,9 +115,12 @@ export function SessionProvider({ children }) {
         const result = await response.json();
         console.log("✅ SessionContext: /api/session result:", result);
 
-        if (result.user) {
+        if (result && result.user) {
           setUser(result.user);
           localStorage.setItem('user', JSON.stringify(result.user));
+        } else {
+          setUser(null);
+          localStorage.removeItem('user');
         }
       } catch (error) {
         console.error("❌ Failed to load session:", error);
@@ -153,6 +156,25 @@ export function SessionProvider({ children }) {
     }
   };
 
+  // Refresh user data
+  const refreshUser = async () => {
+    try {
+      const response = await fetch('/api/session', {
+        credentials: 'include'
+      });
+      const result = await response.json();
+      if (result && result.user) {
+        setUser(result.user);
+        localStorage.setItem('user', JSON.stringify(result.user));
+      } else {
+        setUser(null);
+        localStorage.removeItem('user');
+      }
+    } catch (error) {
+      console.error('❌ Failed to refresh session:', error);
+    }
+  };
+
   // Logout function
   const logout = async () => {
     try {
@@ -170,6 +192,7 @@ export function SessionProvider({ children }) {
     loading,
     login,
     logout,
+    refreshUser,
     isAuthenticated: !!user,
     isPhoneVerified: user?.phoneIsVerified || false,
   };

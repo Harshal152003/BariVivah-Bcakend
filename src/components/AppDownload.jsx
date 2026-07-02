@@ -41,7 +41,7 @@ export default function AppDownloadSection() {
             </h2>
 
             <p className="text-white/80 text-lg mb-8">
-              Experience seamless matchmaking with the MaliBandhan app. Stay connected with prospective families, manage your profile, and find your soulmate with our secure and intuitive mobile experience.
+              Experience seamless matchmaking with the BariVivah app. Stay connected with prospective families, manage your profile, and find your soulmate with our secure and intuitive mobile experience.
             </p>
 
             {/* App features list */}

@@ -12,7 +12,8 @@ export async function GET(req) {
   try {
     await connectDB();
 
-    const userId = req.nextUrl.searchParams.get("userId");
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get("userId");
     
     // Validate input
     if (!userId) {

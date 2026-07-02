@@ -796,7 +796,7 @@ export default function MatchesPage() {
                   </div>
                 )}
                 <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 bg-rose-600 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg">
-                  MaliBandhan Matrimony
+                  BariVivah Matrimony
                 </div>
                 <button
                   onClick={() => setIsImagePopupOpen(false)}

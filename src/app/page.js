@@ -1,3 +1,7 @@
+"use client"
+import React, { useState } from 'react';
+import { useSession } from "@/context/SessionContext";
+import AuthModal from "@/components/AuthModal";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import QuickRegistrationForm from "@/components/QuickRegistrationForm";
@@ -13,15 +17,26 @@ import BlogPreview from "@/components/BlogPreview";
 import Footer from "@/components/Footer";
 
 export default function HomePage() {
+  const { isAuthenticated } = useSession();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const handleAction = (callback) => {
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+    } else {
+      if (callback) callback();
+    }
+  };
+
   return (
     <>
       <Navbar />
-      <HeroSection />
+      <HeroSection onAction={handleAction} />
       {/* <QuickRegistrationForm /> */}
-      <SearchMatchesWidget />
+      <SearchMatchesWidget onAction={handleAction} />
       <WhyChooseUs />
-      <HowItWorks />
-      <FeaturedProfiles />
+      <HowItWorks onAction={handleAction} />
+      <FeaturedProfiles onAction={handleAction} />
       {/* <SuccessStories /> */}
 
       <AppDownload />
@@ -30,6 +45,11 @@ export default function HomePage() {
       <BlogPreview />
       <MembershipPlans />
       <Footer />
+
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+      />
     </>
   );
 }

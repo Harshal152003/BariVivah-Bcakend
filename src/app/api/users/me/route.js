@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import User from '@/models/User';
 import dbConnect from '@/lib/dbConnect';
 import { Weight } from 'lucide-react';
+import { verifyToken } from '@/lib/auth';
 // export const dynamic = 'force-dynamic';2
 const corsHeaders = {
   'Access-Control-Allow-Origin': 'http://localhost:8081', // Must be explicit, not *
@@ -14,8 +15,15 @@ export async function GET(request) {
   try {
     await dbConnect();
 
-    // Get token from cookies
-    const token = request.cookies.get('authToken')?.value;
+    // Get token from cookie or Authorization header
+    let token = request.cookies.get('authToken')?.value;
+    if (!token) {
+      const authHeader = request.headers.get('authorization');
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7);
+      }
+    }
+
     if (!token) {
       return NextResponse.json(
         { message: 'Unauthorized' },
@@ -24,7 +32,7 @@ export async function GET(request) {
     }
     console.log('Token :', token);
     // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = verifyToken(token);
     console.log('Decoded Token', decoded);
     if (!decoded) {
       return NextResponse.json(
@@ -123,6 +131,7 @@ export async function GET(request) {
       preferences: user.preferences,
       subscription: user.subscription,
       createdAt: user.createdAt,
+      profileCompletion: user.profileCompletion,
 
       // profile setup
       profileSetup: {

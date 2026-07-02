@@ -27,13 +27,8 @@ export default function MatrimonialNavbar() {
     <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-bg-light/95 shadow-md py-2' : 'bg-transparent py-4'
       }`}>
       <div className="container mx-auto px-4 flex items-center justify-between">
-        {/* Logo */}
-        <div className="flex items-center space-x-2">
-          {/* <Heart className="text-primary" size={24} /> */}
-          <Image src={"/logo.png"} width={1920} height={1080} className='w-12 h-12 rounded-full' alt='logo' />
-          <span className="font-serif text-2xl font-bold text-secondary">
-            Mali<span className="text-primary">Bandhan</span>
-          </span>
+        <div className="flex items-center">
+          <Image src={"/logo.png"} width={300} height={100} className='h-10 w-auto object-contain' alt='BariVivah Logo' />
         </div>
 
         {/* Desktop Menu */}

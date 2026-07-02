@@ -2,8 +2,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, MapPin, Briefcase, Heart } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
-export default function FeaturedProfiles() {
+export default function FeaturedProfiles({ onAction }) {
+  const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [initialRender, setInitialRender] = useState(false);
@@ -177,7 +179,10 @@ export default function FeaturedProfiles() {
                       </div>
                     </div>
 
-                    <button className="w-full py-3 px-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-medium hover:from-secondary hover:to-primary transition-all duration-300 shadow-md hover:shadow-lg">
+                    <button 
+                      onClick={() => onAction ? onAction(() => router.push('/dashboard')) : router.push('/dashboard')}
+                      className="w-full py-3 px-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-medium hover:from-secondary hover:to-primary transition-all duration-300 shadow-md hover:shadow-lg"
+                    >
                       View Profile
                     </button>
                   </div>

@@ -88,7 +88,7 @@ export default function AuthBanner() {
               <div className="relative overflow-hidden rounded-3xl bg-white/10 backdrop-blur-sm border border-white/20 p-4 group-hover:bg-white/15 transition-all duration-700">
                 <Image
                   src="/assest/loginpng.png"
-                  alt="MaliBandhan Logo"
+                  alt="BariVivah Logo"
                   width={255}
                   height={100}
                   className={`w-auto h-auto max-w-full transition-all duration-700 ${
@@ -128,7 +128,7 @@ export default function AuthBanner() {
               }`}
             >
               <span className="bg-gradient-to-r from-white via-pink-100 to-orange-100 bg-clip-text text-transparent">
-                MaliBandhan
+                BariVivah
               </span>
             </h1>
 

@@ -74,7 +74,7 @@ export default function ContextualSubscriptionModal({ isOpen, onClose, interestD
                         </button>
 
                         <p className="text-center text-xs text-gray-400 mt-4">
-                            Join 10,000+ happy couples on MaliBandhan
+                            Join 10,000+ happy couples on BariVivah
                         </p>
                     </div>
                 </motion.div>

@@ -41,7 +41,7 @@ export default function HowItWorks() {
     }, []);
 
     return (
-        <section className="py-20 bg-white relative overflow-hidden">
+        <section id="how-it-works" className="py-20 bg-white relative overflow-hidden">
             {/* Background Florals */}
             <div className="absolute top-0 left-0 w-64 h-64 bg-secondary/5 rounded-full blur-[80px] -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
             <div className="absolute bottom-0 right-0 w-80 h-80 bg-primary/5 rounded-full blur-[80px] translate-x-1/2 translate-y-1/2 pointer-events-none"></div>

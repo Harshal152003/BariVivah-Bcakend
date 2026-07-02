@@ -16,7 +16,7 @@ export default function PaymentSuccess({
 
   const successMessages = [
     "Payment Successful! 🎉",
-    "Welcome to MaliBandhan! 💎",
+    "Welcome to BariVivah! 💎",
     "Your Journey Begins! ✨"
   ];
 
@@ -235,7 +235,7 @@ export default function PaymentSuccess({
         <div className="text-center mt-8">
           <h2 className="text-2xl font-bold mb-2">
             <span className="bg-gradient-to-r from-red-600 via-red-500 to-red-700 bg-clip-text text-transparent drop-shadow-lg">
-              MaliBandhan
+              BariVivah
             </span>
           </h2>
           <p className="text-red-600 text-sm font-medium">

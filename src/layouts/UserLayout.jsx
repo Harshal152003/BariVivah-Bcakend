@@ -68,8 +68,9 @@ export default function UserLayout({ children }) {
     );
   }
 
-  // Special case: allow access to profile page even if not verified
-  if (!user?.isVerified && !isProfilePage) {
+  // Special case: allow access to profile page even if not verified and not 50% complete
+  const isProfileCompletedEnough = (user?.profileCompletion || 0) >= 50;
+  if (!user?.isVerified && !isProfileCompletedEnough && !isProfilePage) {
     return (
       <div className="flex min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50">
         <Sidebar mobileOpen={sidebarOpen} setMobileOpen={setSidebarOpen} />
@@ -84,9 +85,9 @@ export default function UserLayout({ children }) {
               <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-primary/10 mb-6">
                 <ShieldAlert className="h-10 w-10 text-primary" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">Account Verification Required</h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">Profile Completion Required</h2>
               <p className="text-gray-600 mb-6">
-                Your account is not yet verified. Please complete your profile to access all features.
+                Please complete at least 50% of your profile to access all features. Current completion: {user?.profileCompletion || 0}%
               </p>
 
               <div className="space-y-4 mb-8 text-left">
@@ -94,14 +95,14 @@ export default function UserLayout({ children }) {
                   <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
                   <div>
                     <h4 className="font-medium text-gray-800">Complete Your Profile</h4>
-                    <p className="text-sm text-gray-500">Fill in all required details in your profile section</p>
+                    <p className="text-sm text-gray-500">Fill in details in your profile section to reach at least 50%</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <XCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                   <div>
                     <h4 className="font-medium text-gray-800">Current Restrictions</h4>
-                    <p className="text-sm text-gray-500">You cannot access other pages until verified</p>
+                    <p className="text-sm text-gray-500">You cannot access other pages until your profile is 50% complete or verified</p>
                   </div>
                 </div>
               </div>

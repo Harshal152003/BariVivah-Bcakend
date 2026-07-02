@@ -1,15 +1,21 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { useAuth } from '@/context/AuthContext'
 
 export default function AdminLayout({ children }) {
   const router = useRouter()
+  const { user, loading } = useAuth()
 
   useEffect(() => {
-    // Check if admin is authenticated
-    const isAdmin = localStorage.getItem('admin-auth') === 'admin'
-    if (!isAdmin) router.push('/admin-login')
-  }, [])
+    if (!loading && !user) {
+      router.push('/admin-login')
+    }
+  }, [user, loading])
+
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>
+  }
 
   return <>{children}</>
 }

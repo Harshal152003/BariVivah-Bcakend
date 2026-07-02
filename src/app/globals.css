@@ -1,16 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #D982B2;
-  --color-primary-light: #D9BACB;
-  --color-secondary: #7E5D8C;
-  --color-accent: #A69D9C;
-  --color-bg-light: #F2E4E4;
+  --color-primary: #FDB1C7;         /* Figma Accent Pink */
+  --color-primary-light: #FFEBEF;   /* Light Pink */
+  --color-secondary: #7E5D8C;       /* Brand Purple */
+  --color-accent: #E29BB2;          /* Muted Pink */
+  --color-bg-light: #FFFDFB;        /* Figma Background Cream/Pink */
 }
 
 @layer base {
   body {
     background-color: var(--color-bg-light);
     color: var(--color-secondary);
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
 }

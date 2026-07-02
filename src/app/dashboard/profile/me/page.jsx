@@ -7,7 +7,7 @@ import DynamicProfileForm from '@/components/DynamicProfileForm';
 import Link from 'next/link';
 //sample
 export default function MyProfilePage() {
-  const { user } = useSession();
+  const { user, refreshUser } = useSession();
   const [profileCompletion, setProfileCompletion] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -318,6 +318,11 @@ export default function MyProfilePage() {
       });
       if (!response.ok) throw new Error('Failed to update profile');
       const result = await response.json();
+
+      // Refresh the session context so that dashboard access checks are updated
+      if (refreshUser) {
+        await refreshUser();
+      }
 
       // Calculate new completion percentages
       const updatedSections = getProfileSections();

@@ -1,8 +1,17 @@
-export default function AdminDashboard() {
+'use client'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+
+export default function AdminPage() {
+  const router = useRouter()
+
+  useEffect(() => {
+    router.push('/admin-dashboard')
+  }, [])
+
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-      <p>Welcome, Admin!</p>
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-rose-500"></div>
     </div>
   )
 }

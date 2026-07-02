@@ -23,7 +23,7 @@ const Footer = () => {
               <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
                 <Heart className="text-primary-light fill-primary-light" size={20} />
               </div>
-              <span className="text-3xl font-serif font-bold tracking-wide">MaliBandhan</span>
+              <span className="text-3xl font-serif font-bold tracking-wide">BariVivah</span>
             </div>
 
             <p className="text-white/70 leading-relaxed font-light text-lg">
@@ -100,8 +100,8 @@ const Footer = () => {
               </li>
               <li className="flex items-center space-x-3 group">
                 <Mail className="text-primary group-hover:text-primary-light transition-colors" size={20} />
-                <a href="mailto:support@malibandhan.com" className="text-white/70 hover:text-white transition-colors text-sm">
-                  support@malibandhan.com
+                <a href="mailto:support@barivivah.com" className="text-white/70 hover:text-white transition-colors text-sm">
+                  support@barivivah.com
                 </a>
               </li>
               <li className="flex items-center space-x-3 group">
@@ -141,9 +141,14 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-white/50">
-          <p>© {new Date().getFullYear()} MaliBandhan. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} BariVivah. All rights reserved.</p>
           <div className="flex items-center space-x-2 mt-4 md:mt-0">
-
+            <a 
+              href="/admin-login" 
+              className="text-white/40 hover:text-white transition-colors duration-200 text-xs font-medium"
+            >
+              Admin Login
+            </a>
           </div>
         </div>
       </div>

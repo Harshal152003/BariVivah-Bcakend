@@ -439,7 +439,8 @@ export const GET = async (request) => {
           subscription: user.subscription,
           profilePhoto: user.profilePhoto,
           gender: user?.gender,
-          currentCity: user.currentCity // Added currentCity for nearby filter
+          currentCity: user.currentCity, // Added currentCity for nearby filter
+          profileCompletion: user.profileCompletion
         }
       }),
       { headers }
@@ -548,7 +549,8 @@ export const POST = async (request) => {
       subscription: user.subscription || null,
       profilePhoto: user.profilePhoto,
       gender: user?.gender,
-      currentCity: user.currentCity // Added currentCity for nearby filter
+      currentCity: user.currentCity, // Added currentCity for nearby filter
+      profileCompletion: user.profileCompletion
     };
 
     const response = new NextResponse(

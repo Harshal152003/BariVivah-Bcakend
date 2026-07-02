@@ -195,7 +195,7 @@ export default function PaymentFailure({
         <div className="text-center mt-5">
           <h2 className="text-xl font-bold mb-1">
             <span className="bg-gradient-to-r from-red-600 via-red-500 to-red-700 bg-clip-text text-transparent">
-              MaliBandhan
+              BariVivah
             </span>
           </h2>
           <p className="text-red-600 text-xs font-medium">

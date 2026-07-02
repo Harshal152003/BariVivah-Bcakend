@@ -497,7 +497,7 @@ export default function InterestsPage() {
               {/* Footer */}
               <div className="bg-rose-50 p-3 border-t border-rose-200 flex justify-center">
                 <span className="text-rose-800 text-sm font-medium">
-                  MaliBandhan Matrimony
+                  BariVivah Matrimony
                 </span>
               </div>
             </motion.div>

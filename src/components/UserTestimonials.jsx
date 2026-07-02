@@ -70,7 +70,7 @@ export default function UserTestimonials() {
             Matches Made in <span className="text-primary italic">Heaven</span>
           </h2>
           <p className="text-lg text-secondary/70 max-w-2xl mx-auto font-light">
-            Read heartwarming stories from couples who found their forever through MaliBandhan.
+            Read heartwarming stories from couples who found their forever through BariVivah.
           </p>
         </div>
 

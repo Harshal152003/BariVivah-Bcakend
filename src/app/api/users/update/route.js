@@ -208,6 +208,7 @@ import jwt from 'jsonwebtoken';
 import User from '@/models/User';
 import FormSection from '@/models/FormSection';
 import dbConnect from '@/lib/dbConnect';
+import { calculateProfileCompletion } from '@/lib/profileCompletion';
 
 export const dynamic = 'force-dynamic';
 const corsHeaders = {
@@ -231,6 +232,31 @@ export async function PUT(request) {
         { status: 400, headers: corsHeaders }
       );
     }
+
+    // Fetch existing user to calculate completion
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
+      return NextResponse.json(
+        { message: 'User not found' },
+        { status: 404, headers: corsHeaders }
+      );
+    }
+
+    // Merge existing user fields with updated fields to calculate completion
+    const mergedUser = {
+      ...existingUser.toObject(),
+      ...updateData
+    };
+
+    if (updateData.profileSetup) {
+      mergedUser.profileSetup = {
+        ...existingUser.profileSetup,
+        ...updateData.profileSetup
+      };
+    }
+
+    // Calculate profile completion dynamically
+    updateData.profileCompletion = calculateProfileCompletion(mergedUser);
 
     // Add updatedAt timestamp
     updateData.updatedAt = new Date();

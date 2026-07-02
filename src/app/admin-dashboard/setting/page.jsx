@@ -63,7 +63,7 @@ export default function AdminSettings() {
       });
 
       if (response.ok) {
-        router.push('/auth/login');
+        router.push('/admin-login');
       } else {
         throw new Error('Admin logout failed');
       }

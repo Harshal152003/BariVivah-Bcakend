@@ -353,21 +353,31 @@
 // }
 "use client"
 import { useState, useEffect } from 'react';
-import { ArrowRight, Phone, Shield, RotateCcw, Edit } from 'lucide-react';
+import { ArrowRight, Phone, Shield, RotateCcw, Edit, User, Mail, Lock, UserCheck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useSession } from '@/context/SessionContext'
+import Image from 'next/image';
 
 export default function MatrimonialLogin() {
   const router = useRouter()
+  const [activeTab, setActiveTab] = useState('login'); // 'login' or 'signup'
   const [step, setStep] = useState(1); // 1: Phone Number, 2: OTP
   const [phoneNumber, setPhoneNumber] = useState('');
   const [countryCode, setCountryCode] = useState('+91');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  
+  // Signup fields state
+  const [signupName, setSignupName] = useState('');
+  const [signupPhone, setSignupPhone] = useState('');
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
+  const [signupGender, setSignupGender] = useState('Male');
+  
   const [isLoading, setIsLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
   const [error, setError] = useState('');
   const [isLoaded, setIsLoaded] = useState(false);
-  const { login, user } = useSession()
+  const { login, user, refreshUser } = useSession()
 
   useEffect(() => {
     setIsLoaded(true);
@@ -458,6 +468,61 @@ export default function MatrimonialLogin() {
     setResendTimer(30);
   };
 
+  const handleSignUp = async (e) => {
+    if (e) e.preventDefault();
+    setError('');
+
+    // Validation
+    if (!signupName.trim()) {
+      setError('Please enter your full name');
+      return;
+    }
+    const cleanPhone = signupPhone.replace(/\s/g, '');
+    if (!/^\d{10}$/.test(cleanPhone)) {
+      setError('Please enter a valid 10-digit mobile number');
+      return;
+    }
+    if (!signupPassword || signupPassword.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+    if (!signupGender) {
+      setError('Please select your gender');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/users/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: signupName.trim(),
+          phone: cleanPhone,
+          email: signupEmail.trim() || null,
+          password: signupPassword,
+          gender: signupGender,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // Refresh context to load the new user session
+        await refreshUser();
+        router.push('/dashboard');
+      } else {
+        setError(data.message || 'Registration failed');
+      }
+    } catch (err) {
+      console.error('Registration failed:', err);
+      setError('Network error. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const formatPhoneDisplay = (phone) => {
     return phone.replace(/(\d{5})(\d{5})/, '$1 $2');
   };
@@ -480,112 +545,281 @@ export default function MatrimonialLogin() {
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-lg sm:shadow-2xl border border-white/50 overflow-hidden">
           {/* Header */}
           <div className="text-center px-6 sm:px-8 pt-8 sm:pt-12 pb-6 sm:pb-8">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-secondary to-primary rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-2 sm:mb-4 transform rotate-3 hover:rotate-0 transition-all duration-300">
-              <span className="text-white text-xl sm:text-2xl font-bold">💕</span>
+            <div className="flex justify-center mb-4 sm:mb-6">
+              <Image 
+                src="/logo.png" 
+                width={200} 
+                height={60} 
+                className="h-14 sm:h-16 w-auto object-contain" 
+                alt="BariVivah Logo" 
+              />
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary mb-1 drop-shadow-sm">
-              MaliBandhan
-            </h2>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1 sm:mb-2">Welcome Back</h1>
-            <p className="text-sm sm:text-base text-gray-600">Find your perfect match</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1 sm:mb-2">
+              {activeTab === 'login' ? 'Welcome Back' : 'Create Account'}
+            </h1>
+            <p className="text-sm sm:text-base text-gray-600">
+              {activeTab === 'login' ? 'Find your perfect match' : 'Register to find your perfect match'}
+            </p>
+          </div>
+
+          {/* Tab Switcher */}
+          <div className="flex border-b border-gray-100 px-6 sm:px-8">
+            <button
+              onClick={() => { setActiveTab('login'); setError(''); }}
+              className={`flex-1 pb-4 text-sm font-semibold transition-all border-b-2 ${
+                activeTab === 'login'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Login
+            </button>
+            <button
+              onClick={() => { setActiveTab('signup'); setError(''); }}
+              className={`flex-1 pb-4 text-sm font-semibold transition-all border-b-2 ${
+                activeTab === 'signup'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Register
+            </button>
           </div>
 
           {/* Content */}
-          <div className="px-6 sm:px-8 pb-8 sm:pb-12">
-            {step === 1 ? (
-              // Phone Number Step
-              <div className="space-y-4 sm:space-y-6">
-                <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 sm:mb-3 flex items-center">
-                    <Phone size={14} className="mr-2 text-primary" />
-                    Enter Mobile Number
-                  </label>
+          <div className="px-6 sm:px-8 pb-8 sm:pb-12 pt-6">
+            {activeTab === 'login' ? (
+              step === 1 ? (
+                // Phone Number Step
+                <div className="space-y-4 sm:space-y-6">
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 sm:mb-3 flex items-center">
+                      <Phone size={14} className="mr-2 text-primary" />
+                      Enter Mobile Number
+                    </label>
 
-                  <div className="flex space-x-2 sm:space-x-3">
-                    <select
-                      value={countryCode}
-                      onChange={(e) => setCountryCode(e.target.value)}
-                      className="w-20 sm:w-24 px-2 sm:px-3 py-3 sm:py-4 border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 text-sm sm:text-base"
+                    <div className="flex space-x-2 sm:space-x-3">
+                      <select
+                        value={countryCode}
+                        onChange={(e) => setCountryCode(e.target.value)}
+                        className="w-20 sm:w-24 px-2 sm:px-3 py-3 sm:py-4 border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 text-sm sm:text-base"
+                      >
+                        <option value="+91">🇮🇳 +91</option>
+                        <option value="+1">🇺🇸 +1</option>
+                        <option value="+44">🇬🇧 +44</option>
+                      </select>
+
+                      <input
+                        type="tel"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        placeholder="98765 43210"
+                        className="flex-1 px-3 sm:px-4 py-3 sm:py-4 border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 text-base sm:text-lg"
+                        maxLength={10}
+                      />
+                    </div>
+                  </div>
+
+                  {error && (
+                    <div className="text-red-500 text-xs sm:text-sm bg-red-50 p-2 sm:p-3 rounded-md sm:rounded-lg border border-red-100">
+                      {error}
+                    </div>
+                  )}
+
+                  <button
+                    onClick={handleSendOTP}
+                    disabled={isLoading}
+                    className="w-full py-3 sm:py-4 bg-gradient-to-r from-secondary to-primary text-white rounded-lg sm:rounded-xl hover:shadow-lg transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group"
+                  >
+                    {isLoading ? (
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    ) : (
+                      <>
+                        <span className="text-sm sm:text-base font-medium">Send OTP</span>
+                        <ArrowRight size={16} className="ml-2 transform group-hover:translate-x-1 transition-transform duration-200" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              ) : (
+                // OTP Step
+                <div className="space-y-4 sm:space-y-6">
+                  <div className="text-center">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                      <Shield size={18} className="text-green-600 sm:text-xl" />
+                    </div>
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-1 sm:mb-2">Verify OTP</h3>
+                    <p className="text-xs sm:text-sm text-gray-600">
+                      OTP sent to {countryCode} {formatPhoneDisplay(phoneNumber)}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 sm:mb-3 text-center">
+                      Enter 6-digit OTP
+                    </label>
+
+                    <div className="flex justify-center space-x-2 sm:space-x-3">
+                      {otp.map((digit, index) => (
+                        <input
+                          key={index}
+                          id={`otp-${index}`}
+                          type="text"
+                          value={digit}
+                          onChange={(e) => handleOTPChange(index, e.target.value)}
+                          onKeyDown={(e) => handleKeyDown(index, e)}
+                          className="w-10 h-10 sm:w-12 sm:h-12 text-center text-base sm:text-lg font-bold border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                          maxLength={1}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {error && (
+                    <div className="text-red-500 text-xs sm:text-sm bg-red-50 p-2 sm:p-3 rounded-md sm:rounded-lg border border-red-100 text-center">
+                      {error}
+                    </div>
+                  )}
+
+                  <button
+                    onClick={handleVerifyOTP}
+                    disabled={isLoading}
+                    className="w-full py-3 sm:py-4 bg-gradient-to-r from-secondary to-primary text-white rounded-lg sm:rounded-xl hover:shadow-lg transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group"
+                  >
+                    {isLoading ? (
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    ) : (
+                      <>
+                        <span className="text-sm sm:text-base font-medium">Verify OTP</span>
+                        <ArrowRight size={16} className="ml-2 transform group-hover:translate-x-1 transition-transform duration-200" />
+                      </>
+                    )}
+                  </button>
+
+                  <div className="flex flex-col space-y-2 sm:space-y-3 pt-2 sm:pt-4">
+                    <button
+                      onClick={handleResendOTP}
+                      disabled={resendTimer > 0}
+                      className="text-primary hover:text-primary/80 text-xs sm:text-sm font-medium disabled:text-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
                     >
-                      <option value="+91">🇮🇳 +91</option>
-                      <option value="+1">🇺🇸 +1</option>
-                      <option value="+44">🇬🇧 +44</option>
-                    </select>
+                      <RotateCcw size={14} className="mr-1 sm:mr-2" />
+                      {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'}
+                    </button>
 
+                    <button
+                      onClick={() => {
+                        setStep(1);
+                        setOtp(['', '', '', '', '', '']);
+                        setError('');
+                      }}
+                      className="text-gray-600 hover:text-gray-700 text-xs sm:text-sm font-medium flex items-center justify-center"
+                    >
+                      <Edit size={14} className="mr-1 sm:mr-2" />
+                      Change Number
+                    </button>
+                  </div>
+                </div>
+              )
+            ) : (
+              // Sign Up Step
+              <form onSubmit={handleSignUp} className="space-y-4 sm:space-y-5">
+                {/* Full Name */}
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <User size={14} className="mr-2 text-primary" />
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    value={signupName}
+                    onChange={(e) => setSignupName(e.target.value)}
+                    placeholder="Enter your full name"
+                    className="w-full px-3 sm:px-4 py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 text-sm sm:text-base"
+                    required
+                  />
+                </div>
+
+                {/* Mobile Number */}
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <Phone size={14} className="mr-2 text-primary" />
+                    Mobile Number
+                  </label>
+                  <div className="flex space-x-2">
+                    <span className="px-3 py-3 border border-gray-200 bg-gray-50 rounded-lg sm:rounded-xl text-sm sm:text-base flex items-center justify-center font-medium text-gray-500">
+                      +91
+                    </span>
                     <input
                       type="tel"
-                      value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      value={signupPhone}
+                      onChange={(e) => setSignupPhone(e.target.value)}
                       placeholder="98765 43210"
-                      className="flex-1 px-3 sm:px-4 py-3 sm:py-4 border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 text-base sm:text-lg"
+                      className="flex-1 px-3 sm:px-4 py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 text-sm sm:text-base"
                       maxLength={10}
+                      required
                     />
                   </div>
                 </div>
 
-                {error && (
-                  <div className="text-red-500 text-xs sm:text-sm bg-red-50 p-2 sm:p-3 rounded-md sm:rounded-lg border border-red-100">
-                    {error}
-                  </div>
-                )}
-
-                <button
-                  onClick={handleSendOTP}
-                  disabled={isLoading}
-                  className="w-full py-3 sm:py-4 bg-gradient-to-r from-secondary to-primary text-white rounded-lg sm:rounded-xl hover:shadow-lg transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group"
-                >
-                  {isLoading ? (
-                    <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  ) : (
-                    <>
-                      <span className="text-sm sm:text-base font-medium">Send OTP</span>
-                      <ArrowRight size={16} className="ml-2 transform group-hover:translate-x-1 transition-transform duration-200" />
-                    </>
-                  )}
-                </button>
-              </div>
-            ) : (
-              // OTP Step
-              <div className="space-y-4 sm:space-y-6">
-                <div className="text-center">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                    <Shield size={18} className="text-green-600 sm:text-xl" />
-                  </div>
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-1 sm:mb-2">Verify OTP</h3>
-                  <p className="text-xs sm:text-sm text-gray-600">
-                    OTP sent to {countryCode} {formatPhoneDisplay(phoneNumber)}
-                  </p>
-                </div>
-
+                {/* Email (Optional) */}
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 sm:mb-3 text-center">
-                    Enter 6-digit OTP
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <Mail size={14} className="mr-2 text-primary" />
+                    Email Address (Optional)
                   </label>
-
-                  <div className="flex justify-center space-x-2 sm:space-x-3">
-                    {otp.map((digit, index) => (
-                      <input
-                        key={index}
-                        id={`otp-${index}`}
-                        type="text"
-                        value={digit}
-                        onChange={(e) => handleOTPChange(index, e.target.value)}
-                        onKeyDown={(e) => handleKeyDown(index, e)}
-                        className="w-10 h-10 sm:w-12 sm:h-12 text-center text-base sm:text-lg font-bold border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
-                        maxLength={1}
-                      />
-                    ))}
-                  </div>
+                  <input
+                    type="email"
+                    value={signupEmail}
+                    onChange={(e) => setSignupEmail(e.target.value)}
+                    placeholder="name@example.com"
+                    className="w-full px-3 sm:px-4 py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 text-sm sm:text-base"
+                  />
                 </div>
 
+                {/* Password */}
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <Lock size={14} className="mr-2 text-primary" />
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    value={signupPassword}
+                    onChange={(e) => setSignupPassword(e.target.value)}
+                    placeholder="At least 6 characters"
+                    className="w-full px-3 sm:px-4 py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 text-sm sm:text-base"
+                    required
+                  />
+                </div>
+
+                {/* Gender Dropdown */}
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <UserCheck size={14} className="mr-2 text-primary" />
+                    Gender
+                  </label>
+                  <select
+                    value={signupGender}
+                    onChange={(e) => setSignupGender(e.target.value)}
+                    className="w-full px-3 sm:px-4 py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 text-sm sm:text-base bg-white"
+                    required
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                {/* Error Banner */}
                 {error && (
-                  <div className="text-red-500 text-xs sm:text-sm bg-red-50 p-2 sm:p-3 rounded-md sm:rounded-lg border border-red-100 text-center">
+                  <div className="text-red-500 text-xs sm:text-sm bg-red-50 p-3 rounded-lg border border-red-100 text-center">
                     {error}
                   </div>
                 )}
 
+                {/* Submit Button */}
                 <button
-                  onClick={handleVerifyOTP}
+                  type="submit"
                   disabled={isLoading}
                   className="w-full py-3 sm:py-4 bg-gradient-to-r from-secondary to-primary text-white rounded-lg sm:rounded-xl hover:shadow-lg transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group"
                 >
@@ -593,41 +827,18 @@ export default function MatrimonialLogin() {
                     <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                   ) : (
                     <>
-                      <span className="text-sm sm:text-base font-medium">Verify OTP</span>
+                      <span className="text-sm sm:text-base font-medium">Create Account</span>
                       <ArrowRight size={16} className="ml-2 transform group-hover:translate-x-1 transition-transform duration-200" />
                     </>
                   )}
                 </button>
-
-                <div className="flex flex-col space-y-2 sm:space-y-3 pt-2 sm:pt-4">
-                  <button
-                    onClick={handleResendOTP}
-                    disabled={resendTimer > 0}
-                    className="text-primary hover:text-primary/80 text-xs sm:text-sm font-medium disabled:text-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
-                  >
-                    <RotateCcw size={14} className="mr-1 sm:mr-2" />
-                    {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'}
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setStep(1);
-                      setOtp(['', '', '', '', '', '']);
-                      setError('');
-                    }}
-                    className="text-gray-600 hover:text-gray-700 text-xs sm:text-sm font-medium flex items-center justify-center"
-                  >
-                    <Edit size={14} className="mr-1 sm:mr-2" />
-                    Change Number
-                  </button>
-                </div>
-              </div>
+              </form>
             )}
           </div>
         </div>
 
         {/* Trust Indicators */}
-        <div className="mt-6 sm:mt-8 text-center">
+        <div className="mt-6 sm:mt-8 text-center space-y-4">
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 text-xs sm:text-sm text-gray-600">
             <div className="flex items-center">
               <div className="w-2 h-2 bg-green-500 rounded-full mr-1 sm:mr-2"></div>
@@ -637,6 +848,14 @@ export default function MatrimonialLogin() {
               <div className="w-2 h-2 bg-green-500 rounded-full mr-1 sm:mr-2"></div>
               Trusted by 10,000+
             </div>
+          </div>
+          <div className="pt-2 border-t border-gray-200/50">
+            <a 
+              href="/admin-login" 
+              className="text-xs text-primary hover:text-primary-light font-semibold transition-colors"
+            >
+              Are you an Admin or Employee? Access Portal
+            </a>
           </div>
         </div>
       </div>

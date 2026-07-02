@@ -127,7 +127,7 @@ export default function WhyChooseUs() {
             Trusted by Thousands of Families
           </h2>
           <p className="text-lg text-secondary/70 max-w-2xl mx-auto font-light leading-relaxed">
-            We bring together tradition and technology to help you write your beautiful love story. Here is why MaliBandhan is the right choice for you.
+            We bring together tradition and technology to help you write your beautiful love story. Here is why BariVivah is the right choice for you.
           </p>
         </div>
 

@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import {
   LayoutDashboard,
   User,
@@ -45,15 +46,16 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen }) {
         </button>
 
         {/* Header Section */}
-        <div className="p-6 border-b border-rose-100/50 bg-gradient-to-r from-rose-50 to-amber-50/50 flex-shrink-0">
-          <div className="flex items-center space-x-3">
-            <div>
-              <h1 className="font-serif text-2xl font-bold text-secondary">
-                Mali<span className="text-primary">Bandhan</span>
-              </h1>
-              <p className="text-xs text-gray-500 font-medium">Find Your Perfect Match</p>
-            </div>
-          </div>
+        <div className="p-6 border-b border-rose-100/50 bg-gradient-to-r from-rose-50 to-amber-50/50 flex-shrink-0 flex justify-center">
+          <Link href="/dashboard" className="flex items-center">
+            <Image
+              src="/logo.png"
+              width={900}
+              height={300}
+              className="h-16 w-auto object-contain"
+              alt="BariVivah Logo"
+            />
+          </Link>
         </div>
 
         {/* Navigation Section */}

@@ -12,7 +12,13 @@ export async function GET(request) {
 
         // 1. Authentication & Identification
         // Get token to identify current user and exclude them from results
-        const token = request.cookies.get('authToken')?.value;
+        let token = request.cookies.get('authToken')?.value;
+        if (!token) {
+            const authHeader = request.headers.get('authorization');
+            if (authHeader && authHeader.startsWith('Bearer ')) {
+                token = authHeader.substring(7);
+            }
+        }
         let currentUserId = null;
 
         if (token) {
