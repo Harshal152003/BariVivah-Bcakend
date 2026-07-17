@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Subscription from "@/models/Subscription";
+
 import User from "@/models/User";
 
 // POST /api/subscription - Create new subscription
