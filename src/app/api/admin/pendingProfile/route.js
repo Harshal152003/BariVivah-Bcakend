@@ -2,6 +2,8 @@ import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import { calculateProfileCompletion } from "@/lib/profileCompletion";
 
+export const dynamic = 'force-dynamic';
+
 export const GET = async (request) => {
   try {
     await dbConnect();

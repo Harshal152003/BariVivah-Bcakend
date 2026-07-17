@@ -1,6 +1,8 @@
 // src/app/api/cron/start/route.js
 import checkExpiredSubscriptions from "@/lib/cron";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     // Start the cron job (runs on server startup)

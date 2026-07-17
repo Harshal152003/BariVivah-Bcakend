@@ -4,6 +4,8 @@ import connectDB from "@/lib/db";
 import Subscription from "@/models/Subscription";
 import User from "@/models/User";
 
+export const dynamic = 'force-dynamic';
+
 // POST /api/subscription - Handles both User subscribing and Admin creating plan template
 export async function POST(req) {
   try {

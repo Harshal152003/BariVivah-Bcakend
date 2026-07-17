@@ -3,6 +3,8 @@ import { getSession } from '@/lib/auth';
 import FormSection from '@/models/FormSection';
 import dbConnect from '@/lib/dbConnect';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
 
