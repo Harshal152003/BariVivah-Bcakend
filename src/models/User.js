@@ -56,7 +56,7 @@ const UserSchema = new mongoose.Schema({
   },
   dob: Date, // Date of Birth
   height: String,
-  religion: String,
+  religion: { type: String, default: "Hindu" },
   currentCity: String,
   state: String,
   education: String,
@@ -73,7 +73,7 @@ const UserSchema = new mongoose.Schema({
     // enum:['Hindi', 'English', 'Marathi', null],
     default: null
   },
-  caste: String,
+  caste: { type: String, default: "Bari" },
   subCaste: String,
   gothra: String,
   fieldOfStudy: String,
@@ -119,6 +119,10 @@ const UserSchema = new mongoose.Schema({
   siblings: String,
   nativePlace: String,
   diet: String,
+  createdFor: { type: String, enum: ['Self', 'Brother', 'Sister', 'Son', 'Daughter', 'Relative'], default: 'Self' },
+  workSector: { type: String, enum: ['Private Company', 'Government', 'Defence / Civil Services', 'Business', 'Not Working'], default: 'Private Company' },
+  livesWithFamily: { type: String, enum: ['Yes', 'No'], default: 'Yes' },
+  familyFinancialStatus: { type: String, enum: ['Upper Class', 'Upper Middle Class', 'Middle Class', 'Lower Middle Class'], default: 'Middle Class' },
   smokingDrinking: String,
   hobbies: String,
   expectedProfession: String,
@@ -153,7 +157,7 @@ const UserSchema = new mongoose.Schema({
   gotraDevak: String,
   //sample
   // Expectations
-  expectedCaste: { type: String, default: null },
+  expectedCaste: { type: String, default: "Bari" },
   expectedSubCaste: { type: String, default: null },
   preferredCity: { type: String, default: null },
   expectedAgeDifference: { type: String, default: null },
@@ -192,11 +196,19 @@ const UserSchema = new mongoose.Schema({
       default: false, // Indicates if the user has an active subscription
     },
     expiresAt: Date,
+    startDate: Date,
     transactionId: String, // ID from payment gateway
     subscriptionId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Subscription",
     },
+    // Entitlement snapshots
+    contactUnlockLimit: { type: Number, default: 0 },
+    contactsUsed: { type: Number, default: 0 },
+    chatEnabled: { type: Boolean, default: false },
+    visitorHistory: { type: Boolean, default: false },
+    profileBoosts: { type: Number, default: 0 },
+    advancedFilters: { type: Boolean, default: false }
   },
 
   // Timestamps

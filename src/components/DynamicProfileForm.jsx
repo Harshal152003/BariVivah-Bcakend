@@ -661,15 +661,17 @@ const DynamicProfileForm = () => {
     return (
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {currentSection.fields.map((field) => (
-            <div key={field._id} className="space-y-1">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {field.label}
-                {field.required && <span className="text-primary ml-1">*</span>}
-              </label>
-              {renderFieldInput(field)}
-            </div>
-          ))}
+          {currentSection.fields
+            .filter(f => f.name !== 'religion' && f.name !== 'caste' && f.name !== 'expectedCaste')
+            .map((field) => (
+              <div key={field._id} className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {field.label}
+                  {field.required && <span className="text-primary ml-1">*</span>}
+                </label>
+                {renderFieldInput(field)}
+              </div>
+            ))}
         </div>
       </div>
     );

@@ -269,6 +269,13 @@ export async function PUT(request) {
       };
     }
 
+    if (typeof updateData.relativeSurname === 'string') {
+      updateData.relativeSurname = updateData.relativeSurname
+        .split(',')
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+    }
+
     if (updateData.photos && Array.isArray(updateData.photos)) {
       updateData.photos = updateData.photos.map(photo => ({
         url: photo.url,
@@ -290,9 +297,12 @@ export async function PUT(request) {
       );
     }
 
+    const userObj = updatedUser.toObject();
+    userObj.id = userObj._id;
+
     return NextResponse.json({
       success: true,
-      data: updatedUser,
+      data: userObj,
       message: 'Profile updated successfully'
     }, { headers: corsHeaders });
 

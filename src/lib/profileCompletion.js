@@ -8,7 +8,6 @@ export const calculateProfileCompletion = (user) => {
     'maritalStatus',
     'religion',
     'caste',
-    'subCaste',
     'motherTongue',
     'education',
     'occupation',
@@ -61,6 +60,10 @@ export const calculateProfileCompletion = (user) => {
 
   // Check required fields (1 point each)
   requiredFields.forEach(field => {
+    if (field === 'religion' || field === 'caste') {
+      completedCount += 1;
+      return;
+    }
     if (user[field] !== null && user[field] !== undefined && user[field] !== '') {
       completedCount += 1;
     }
@@ -68,6 +71,10 @@ export const calculateProfileCompletion = (user) => {
 
   // Check important fields (0.5 point each)
   importantFields.forEach(field => {
+    if (field === 'expectedCaste') {
+      completedCount += 0.5;
+      return;
+    }
     if (user[field] !== null && user[field] !== undefined && user[field] !== '') {
       completedCount += 0.5;
     }

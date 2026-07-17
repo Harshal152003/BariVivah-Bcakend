@@ -43,9 +43,65 @@ export async function POST(request) {
 
     const fullPhone = `+91${cleanPhone}`;
 
+    // Hash Password
+    const hashedPassword = hashPassword(password);
+
     // Check duplicate phone
     const existingPhoneUser = await User.findOne({ phone: fullPhone });
     if (existingPhoneUser) {
+      // If user exists but is a blank template created by verify-otp (no name & password), we populate it
+      if (!existingPhoneUser.name && !existingPhoneUser.password) {
+        existingPhoneUser.name = name;
+        existingPhoneUser.email = email ? email.toLowerCase().trim() : null;
+        existingPhoneUser.password = hashedPassword;
+        existingPhoneUser.gender = gender;
+        existingPhoneUser.createdFor = body.createdFor || 'Self';
+        existingPhoneUser.state = body.state || null;
+        existingPhoneUser.currentCity = body.currentCity || null;
+        existingPhoneUser.caste = body.caste || 'Bari';
+        existingPhoneUser.religion = 'Hindu';
+        existingPhoneUser.expectedCaste = 'Bari';
+        existingPhoneUser.maritalStatus = body.maritalStatus || null;
+        existingPhoneUser.height = body.height || null;
+        existingPhoneUser.diet = body.diet || null;
+        existingPhoneUser.education = body.education || null;
+        existingPhoneUser.income = body.income || null;
+        existingPhoneUser.workSector = body.workSector || null;
+        existingPhoneUser.occupation = body.occupation || null;
+        existingPhoneUser.profilePhoto = body.profilePhoto || null;
+        existingPhoneUser.lastLoginAt = new Date();
+
+        await existingPhoneUser.save();
+
+        const token = createToken(existingPhoneUser._id);
+        const userData = {
+          id: existingPhoneUser._id,
+          phone: existingPhoneUser.phone,
+          name: existingPhoneUser.name,
+          email: existingPhoneUser.email,
+          isVerified: existingPhoneUser.isVerified,
+          phoneIsVerified: existingPhoneUser.phoneIsVerified,
+          subscription: existingPhoneUser.subscription || null,
+          profilePhoto: existingPhoneUser.profilePhoto,
+          gender: existingPhoneUser.gender,
+          currentCity: existingPhoneUser.currentCity,
+          profileCompletion: existingPhoneUser.profileCompletion,
+        };
+
+        const response = new NextResponse(
+          JSON.stringify({
+            success: true,
+            message: "Registration successful",
+            user: userData,
+            token,
+          }),
+          { headers }
+        );
+
+        setTokenCookie(response, token);
+        return response;
+      }
+
       return new NextResponse(
         JSON.stringify({ success: false, message: "Mobile number already registered" }),
         { status: 400, headers }
@@ -63,9 +119,6 @@ export async function POST(request) {
       }
     }
 
-    // Hash Password
-    const hashedPassword = hashPassword(password);
-
     // Create User
     const user = new User({
       name,
@@ -76,6 +129,20 @@ export async function POST(request) {
       isVerified: false,
       phoneIsVerified: true,
       lastLoginAt: new Date(),
+      createdFor: body.createdFor || 'Self',
+      state: body.state || null,
+      currentCity: body.currentCity || null,
+      caste: body.caste || 'Bari',
+      religion: 'Hindu',
+      expectedCaste: 'Bari',
+      maritalStatus: body.maritalStatus || null,
+      height: body.height || null,
+      diet: body.diet || null,
+      education: body.education || null,
+      income: body.income || null,
+      workSector: body.workSector || null,
+      occupation: body.occupation || null,
+      profilePhoto: body.profilePhoto || null
     });
 
     await user.save();

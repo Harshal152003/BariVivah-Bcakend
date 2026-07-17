@@ -19,31 +19,39 @@ export async function PATCH(req) {
       return NextResponse.json({ error: "Plan not found" }, { status: 404 });
     }
 
-    // Calculate expiry date based on plan duration
-    const expiresAt = new Date(Date.now() + plan.durationInDays * 24 * 60 * 60 * 1000);
-
-    // Update user's subscription
     // Verify user exists first
     const user = await User.findById(userId);
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Update user's subscription
+    // Option A upgrade flow: preserve usage if current subscription is active
+    let contactsUsed = 0;
+    const isCurrentlySubscribed = user.subscription && user.subscription.isSubscribed && new Date() < new Date(user.subscription.expiresAt);
+    if (isCurrentlySubscribed) {
+      contactsUsed = user.subscription.contactsUsed || 0;
+    }
+
+    // Calculate expiry date based on plan duration
+    const expiresAt = new Date(Date.now() + plan.durationInDays * 24 * 60 * 60 * 1000);
+
+    // Update user's subscription with snapshots
     user.subscription = {
       plan: plan.name.trim(),
+      isSubscribed: true,
+      startDate: new Date(),
       expiresAt: expiresAt,
       transactionId: razorpay_payment_id,
       subscriptionId: planId,
-      isSubscribed: true,
+      contactUnlockLimit: plan.features?.contactUnlockLimit || 0,
+      contactsUsed: contactsUsed,
+      chatEnabled: plan.features?.chatEnabled || false,
+      visitorHistory: plan.features?.visitorHistory || false,
+      profileBoosts: plan.features?.profileBoosts || 0,
+      advancedFilters: plan.features?.advancedFilters || false
     };
 
     const updatedUser = await user.save();
-
-
-
-
-
     return NextResponse.json({ message: "Subscription updated", user: updatedUser }, { status: 200 });
   } catch (err) {
     console.error("Subscription update error:", err);

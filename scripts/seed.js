@@ -69,7 +69,15 @@ const subscriptionSchema = new Schema(
         name: { type: String, required: true },
         price: { type: Number, required: true },
         durationInDays: { type: Number, required: true },
-        features: [String],
+        features: {
+            contactUnlockLimit: { type: Number, default: 0 },
+            chatEnabled: { type: Boolean, default: false },
+            visitorHistory: { type: Boolean, default: false },
+            profileBoosts: { type: Number, default: 0 },
+            advancedFilters: { type: Boolean, default: false }
+        },
+        displayFeatures: [String],
+        isActive: { type: Boolean, default: true },
         userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     },
     { timestamps: true }
@@ -157,19 +165,40 @@ const subscriptionPlans = [
         name: "Silver Plan",
         price: 499,
         durationInDays: 30,
-        features: ["View up to 10 contacts", "Send up to 20 messages", "Profile highlighting"]
+        features: {
+            contactUnlockLimit: 10,
+            chatEnabled: true,
+            visitorHistory: false,
+            profileBoosts: 0,
+            advancedFilters: false
+        },
+        displayFeatures: ["View up to 10 contacts", "Send up to 20 messages", "Profile highlighting"]
     },
     {
         name: "Gold Plan",
         price: 999,
         durationInDays: 90,
-        features: ["View up to 50 contacts", "Unlimited messages", "Priority support", "Profile highlighting"]
+        features: {
+            contactUnlockLimit: 50,
+            chatEnabled: true,
+            visitorHistory: true,
+            profileBoosts: 5,
+            advancedFilters: true
+        },
+        displayFeatures: ["View up to 50 contacts", "Unlimited messages", "Priority support", "Profile highlighting"]
     },
     {
         name: "Platinum Plan",
         price: 2499,
         durationInDays: 365,
-        features: ["Unlimited contacts", "Unlimited messages", "Relationship manager", "Top of search results"]
+        features: {
+            contactUnlockLimit: 9999,
+            chatEnabled: true,
+            visitorHistory: true,
+            profileBoosts: 20,
+            advancedFilters: true
+        },
+        displayFeatures: ["Unlimited contacts", "Unlimited messages", "Relationship manager", "Top of search results"]
     }
 ];
 
@@ -271,10 +300,8 @@ const formSections = [
         icon: "User",
         order: 3,
         fields: [
-            { name: "religion", label: "Religion", type: "select", options: ["Hindu", "Muslim", "Sikh", "Christian", "Jain", "Buddhist"], required: true, order: 1 },
-            { name: "caste", label: "Caste", type: "text", required: true, order: 2 },
-            { name: "subCaste", label: "Sub Caste", type: "text", required: false, order: 3 },
-            { name: "gothra", label: "Gothra", type: "text", required: false, order: 4 }
+            { name: "subCaste", label: "Sub Caste", type: "text", required: false, order: 1 },
+            { name: "gothra", label: "Gothra", type: "text", required: false, order: 2 }
         ]
     },
     {
@@ -321,8 +348,7 @@ const formSections = [
         icon: "User",
         order: 6,
         fields: [
-            { name: "expectedCaste", label: "Expected Caste", type: "text", placeholder: "Enter Expected Caste", required: false, order: 1 },
-            { name: "expectedHeight", label: "Expected Height", type: "select", options: ["4'5\" - 5'0\"", "5'0\" - 5'5\"", "5'5\" - 6'0\"", "6'0\"+"], required: false, order: 2 },
+            { name: "expectedHeight", label: "Expected Height", type: "select", options: ["4'5\" - 5'0\"", "5'0\" - 5'5\"", "5'5\" - 6'0\"", "6'0\"+"], required: false, order: 1 },
             { name: "expectedEducation", label: "Expected Education", type: "select", options: ["High School", "Bachelor's", "Master's", "Doctorate", "Diploma", "Other"], required: false, order: 3 },
             { name: "preferredCity", label: "Preferred City", type: "text", placeholder: "Enter Preferred City", required: false, order: 4 },
             { name: "expectedAgeDifference", label: "Expected Age Difference", type: "select", options: ["1-3 Years", "3-5 Years", "5-7 Years", "7+ Years"], required: false, order: 5 },
@@ -340,7 +366,7 @@ const sampleUsers = [
         gender: "Male",
         dob: new Date("1995-08-15"),
         religion: "Hindu",
-        caste: "Brahmin",
+        caste: "Bari",
         subCaste: "Kanyakubja",
         currentCity: "Mumbai",
         education: "Bachelor's",
@@ -361,7 +387,7 @@ const sampleUsers = [
         gender: "Female",
         dob: new Date("1997-05-20"),
         religion: "Hindu",
-        caste: "Patel",
+        caste: "Bari",
         subCaste: "Leuva",
         currentCity: "Ahmedabad",
         education: "Master's",
@@ -382,7 +408,7 @@ const sampleUsers = [
         gender: "Male",
         dob: new Date("1992-11-10"),
         religion: "Hindu",
-        caste: "Maratha",
+        caste: "Bari",
         subCaste: "96 Kuli",
         currentCity: "Pune",
         education: "Master's",
@@ -403,7 +429,7 @@ const sampleUsers = [
         gender: "Female",
         dob: new Date("1996-03-25"),
         religion: "Hindu",
-        caste: "Reddy",
+        caste: "Bari",
         subCaste: null,
         currentCity: "Hyderabad",
         education: "Doctorate",
@@ -423,8 +449,8 @@ const sampleUsers = [
         email: "vikram.singh@example.com",
         gender: "Male",
         dob: new Date("1994-01-30"),
-        religion: "Sikh",
-        caste: "Jat",
+        religion: "Hindu",
+        caste: "Bari",
         subCaste: null,
         currentCity: "Chandigarh",
         education: "Master's",
@@ -445,7 +471,7 @@ const sampleUsers = [
         gender: "Female",
         dob: new Date("1998-07-12"),
         religion: "Hindu",
-        caste: "Brahmin",
+        caste: "Bari",
         subCaste: "Iyer",
         currentCity: "Chennai",
         education: "Master's",
@@ -466,7 +492,7 @@ const sampleUsers = [
         gender: "Male",
         dob: new Date("1993-09-05"),
         religion: "Hindu",
-        caste: "Nair",
+        caste: "Bari",
         subCaste: null,
         currentCity: "Kochi",
         education: "Bachelor's",
@@ -487,7 +513,7 @@ const sampleUsers = [
         gender: "Female",
         dob: new Date("1996-12-01"),
         religion: "Hindu",
-        caste: "Baniya",
+        caste: "Bari",
         subCaste: "Gupta",
         currentCity: "Delhi",
         education: "Master's",
@@ -507,8 +533,8 @@ const sampleUsers = [
         email: "mohammed.khan@example.com",
         gender: "Male",
         dob: new Date("1991-04-18"),
-        religion: "Muslim",
-        caste: "Pathan",
+        religion: "Hindu",
+        caste: "Bari",
         subCaste: null,
         currentCity: "Lucknow",
         education: "Master's",
@@ -529,7 +555,7 @@ const sampleUsers = [
         gender: "Female",
         dob: new Date("1995-10-22"),
         religion: "Hindu",
-        caste: "Brahmin",
+        caste: "Bari",
         subCaste: "Deshastha",
         currentCity: "Pune",
         education: "Master's",

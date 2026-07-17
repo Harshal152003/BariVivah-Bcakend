@@ -40,7 +40,14 @@ export default function SubscriptionPlans() {
     name: "",
     price: "",
     durationInDays: 30,
-    features: [],
+    features: {
+      contactUnlockLimit: 0,
+      chatEnabled: false,
+      visitorHistory: false,
+      profileBoosts: 0,
+      advancedFilters: false
+    },
+    displayFeatures: [],
     isActive: true,
     isFree: false,
   });
@@ -146,7 +153,7 @@ export default function SubscriptionPlans() {
     if (newFeature.trim()) {
       setFormData((prev) => ({
         ...prev,
-        features: [...prev.features, newFeature.trim()],
+        displayFeatures: [...(prev.displayFeatures || []), newFeature.trim()],
       }));
       setNewFeature("");
     }
@@ -155,7 +162,7 @@ export default function SubscriptionPlans() {
   const removeFeature = (index) => {
     setFormData((prev) => ({
       ...prev,
-      features: prev.features.filter((_, i) => i !== index),
+      displayFeatures: (prev.displayFeatures || []).filter((_, i) => i !== index),
     }));
   };
 
@@ -171,7 +178,14 @@ export default function SubscriptionPlans() {
         name: "",
         price: "",
         durationInDays: 30,
-        features: [],
+        features: {
+          contactUnlockLimit: 0,
+          chatEnabled: false,
+          visitorHistory: false,
+          profileBoosts: 0,
+          advancedFilters: false
+        },
+        displayFeatures: [],
         isActive: true,
         isFree: false,
       });
@@ -310,7 +324,14 @@ export default function SubscriptionPlans() {
                 name: "",
                 price: "",
                 durationInDays: 30,
-                features: [],
+                features: {
+                  contactUnlockLimit: 0,
+                  chatEnabled: false,
+                  visitorHistory: false,
+                  profileBoosts: 0,
+                  advancedFilters: false
+                },
+                displayFeatures: [],
                 isActive: true,
                 isFree: false,
               });
@@ -367,20 +388,19 @@ export default function SubscriptionPlans() {
 
                 {/* Features */}
                 <div className="my-6 space-y-3">
-                  {plan.features.slice(0, 5).map((feature, index) => (
-                    <div key={index} className="flex items-start">
-                      <div
-                        className={`flex-shrink-0 w-5 h-5 mt-0.5 rounded-full flex items-center justify-center ${config.bgColor}`}
-                      >
-                        <Check className={`w-3 h-3 ${config.textColor}`} />
-                      </div>
-                      <span className="ml-2 text-gray-700">{feature}</span>
+                  {(plan.displayFeatures || plan.features || []).slice(0, 5).map((feature, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center space-x-2 text-sm text-gray-600"
+                    >
+                      <Check className="w-4 h-4 text-emerald-500 shrink-0" />
+                      <span>{feature}</span>
                     </div>
                   ))}
-                  {plan.features.length > 5 && (
-                    <div className="text-sm text-gray-500">
-                      +{plan.features.length - 5} more features
-                    </div>
+                  {(plan.displayFeatures || plan.features || []).length > 5 && (
+                    <span className="text-xs text-rose-500 font-semibold block pt-1">
+                      +{(plan.displayFeatures || plan.features || []).length - 5} more features
+                    </span>
                   )}
                 </div>
 
@@ -410,7 +430,14 @@ export default function SubscriptionPlans() {
                           name: plan.name,
                           price: plan.price,
                           durationInDays: plan.durationInDays,
-                          features: plan.features,
+                          features: plan.features || {
+                            contactUnlockLimit: 0,
+                            chatEnabled: false,
+                            visitorHistory: false,
+                            profileBoosts: 0,
+                            advancedFilters: false
+                          },
+                          displayFeatures: plan.displayFeatures || plan.features || [],
                           isActive: plan.isActive,
                           isFree: plan.price === 0,
                         });
@@ -626,10 +653,104 @@ export default function SubscriptionPlans() {
                   </div>
                 </div>
 
+                {/* Structured Entitlements */}
+                <div className="space-y-4 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                  <h4 className="font-bold text-gray-800 text-sm border-b pb-2">Plan Entitlements</h4>
+                  
+                  {/* Contact Unlock Limit */}
+                  <div className="space-y-1">
+                    <label className="block text-xs font-semibold text-gray-600">Contact Unlock Limit</label>
+                    <input
+                      type="number"
+                      value={formData.features?.contactUnlockLimit || 0}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        features: {
+                          ...prev.features,
+                          contactUnlockLimit: parseInt(e.target.value) || 0
+                        }
+                      }))}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
+                      placeholder="e.g. 50"
+                      min="0"
+                    />
+                  </div>
+
+                  {/* Profile Boosts */}
+                  <div className="space-y-1">
+                    <label className="block text-xs font-semibold text-gray-600">Profile Boosts</label>
+                    <input
+                      type="number"
+                      value={formData.features?.profileBoosts || 0}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        features: {
+                          ...prev.features,
+                          profileBoosts: parseInt(e.target.value) || 0
+                        }
+                      }))}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
+                      placeholder="e.g. 5"
+                      min="0"
+                    />
+                  </div>
+
+                  {/* Toggle items */}
+                  <div className="flex flex-col gap-2 pt-2">
+                    <label className="flex items-center space-x-2 text-xs font-semibold text-gray-600 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={!!formData.features?.chatEnabled}
+                        onChange={(e) => setFormData(prev => ({
+                          ...prev,
+                          features: {
+                            ...prev.features,
+                            chatEnabled: e.target.checked
+                          }
+                        }))}
+                        className="rounded border-gray-300 text-rose-500 focus:ring-rose-500"
+                      />
+                      <span>Enable Direct Chat</span>
+                    </label>
+
+                    <label className="flex items-center space-x-2 text-xs font-semibold text-gray-600 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={!!formData.features?.visitorHistory}
+                        onChange={(e) => setFormData(prev => ({
+                          ...prev,
+                          features: {
+                            ...prev.features,
+                            visitorHistory: e.target.checked
+                          }
+                        }))}
+                        className="rounded border-gray-300 text-rose-500 focus:ring-rose-500"
+                      />
+                      <span>View Visitor History</span>
+                    </label>
+
+                    <label className="flex items-center space-x-2 text-xs font-semibold text-gray-600 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={!!formData.features?.advancedFilters}
+                        onChange={(e) => setFormData(prev => ({
+                          ...prev,
+                          features: {
+                            ...prev.features,
+                            advancedFilters: e.target.checked
+                          }
+                        }))}
+                        className="rounded border-gray-300 text-rose-500 focus:ring-rose-500"
+                      />
+                      <span>Access Advanced Filters</span>
+                    </label>
+                  </div>
+                </div>
+
                 {/* Features */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Features
+                    Display Features (UI Bullet Points)
                   </label>
                   <div className="flex gap-2">
                     <input
@@ -658,7 +779,7 @@ export default function SubscriptionPlans() {
 
                   {/* Features List */}
                   <div className="space-y-2 max-h-40 overflow-y-auto mt-2">
-                    {formData.features.map((feature, index) => (
+                    {(formData.displayFeatures || []).map((feature, index) => (
                       <div
                         key={index}
                         className="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-100 hover:bg-gray-100 transition-colors"

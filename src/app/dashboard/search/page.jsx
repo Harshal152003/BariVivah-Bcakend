@@ -84,7 +84,7 @@ export default function SearchProfilesPage() {
       name: "A***a S***a",
       age: 25,
       height: "5'4\"",
-      caste: "Brahmin",
+      caste: "Bari",
       city: "Mumbai",
       education: "MBA",
       profession: "Marketing Manager",
@@ -101,7 +101,7 @@ export default function SearchProfilesPage() {
       name: "P***i G***a",
       age: 27,
       height: "5'3\"",
-      caste: "Kshatriya",
+      caste: "Bari",
       city: "Delhi",
       education: "B.Tech",
       profession: "Software Engineer",
@@ -118,7 +118,7 @@ export default function SearchProfilesPage() {
       name: "S***a P***l",
       age: 24,
       height: "5'2\"",
-      caste: "Vaishya",
+      caste: "Bari",
       city: "Bangalore",
       education: "M.Com",
       profession: "Chartered Accountant",
@@ -135,7 +135,7 @@ export default function SearchProfilesPage() {
       name: "R***i K***r",
       age: 26,
       height: "5'5\"",
-      caste: "Brahmin",
+      caste: "Bari",
       city: "Pune",
       education: "MBBS",
       profession: "Doctor",
@@ -395,32 +395,7 @@ export default function SearchProfilesPage() {
                     </div>
                   </FilterSection>
 
-                  {/* Community Filters */}
-                  <FilterSection title="Community" section="community">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Religion</label>
-                      <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent text-sm">
-                        <option value="">Any Religion</option>
-                        <option>Hindu</option>
-                        <option>Muslim</option>
-                        <option>Christian</option>
-                        <option>Sikh</option>
-                        <option>Buddhist</option>
-                        <option>Jain</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Caste</label>
-                      <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent text-sm">
-                        <option value="">Any Caste</option>
-                        <option>Brahmin</option>
-                        <option>Kshatriya</option>
-                        <option>Vaishya</option>
-                        <option>Shudra</option>
-                      </select>
-                    </div>
-                  </FilterSection>
+                  {/* Community Filter Removed (Dedicated to Bari Hindu community) */}
 
                   {/* Location Filters */}
                   <FilterSection title="Location" section="location">

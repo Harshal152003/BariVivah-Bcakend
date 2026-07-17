@@ -69,25 +69,33 @@ export async function POST(req) {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     // Send OTP via Fast2SMS (DLT template)
-    const fast2smsResponse = await fetch("https://www.fast2sms.com/dev/bulkV2", {
-      method: "POST",
-      headers: {
-        Authorization: process.env.FAST2SMS_API_KEY, // ✅ keep in .env
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        route: "dlt",
-        sender_id: "SHVBDN", // Your approved sender id
-        message: "197321",   // 👈 Your template_id (replace with yours)
-        variables_values: otp, // OTP fills {#var#}
-        numbers: phoneNumber,  // Send without +91
-      }),
-    });
+    if (process.env.FAST2SMS_API_KEY && process.env.FAST2SMS_API_KEY !== 'undefined') {
+      console.log(`[OTP] Attempting to send actual SMS to +91${phoneNumber} via Fast2SMS`);
+      const fast2smsResponse = await fetch("https://www.fast2sms.com/dev/bulkV2", {
+        method: "POST",
+        headers: {
+          Authorization: process.env.FAST2SMS_API_KEY,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          route: "dlt",
+          sender_id: "SHVBDN", // Your approved sender id
+          message: "197321",   // Your template_id
+          variables_values: otp, // OTP fills {#var#}
+          numbers: phoneNumber,  // Send without +91
+        }),
+      });
 
-    const responseData = await fast2smsResponse.json();
+      const responseData = await fast2smsResponse.json();
 
-    if (!responseData.return) {
-      throw new Error(responseData.message || "Failed to send OTP via Fast2SMS");
+      if (!responseData.return) {
+        throw new Error(responseData.message || "Failed to send OTP via Fast2SMS");
+      }
+    } else {
+      console.log("\n==================================================");
+      console.log(`[LOCAL DEV OTP] Mobile: +91${phoneNumber}`);
+      console.log(`[LOCAL DEV OTP] Code:   ${otp}`);
+      console.log("==================================================\n");
     }
 
     // Store OTP in memory

@@ -66,7 +66,8 @@ export async function GET(request) {
       complexion: user.complexion,
       wearsLens: user.wearsLens,
       permanentAddress: user.permanentAddress,
-
+      diet: user.diet,
+      hobbies: user.hobbies,
 
       // Religious & Community
       religion: user.religion,

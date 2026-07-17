@@ -42,6 +42,13 @@ export async function GET(request) {
         const religion = searchParams.get('religion');
         const minAge = searchParams.get('minAge');
         const maxAge = searchParams.get('maxAge');
+        const caste = searchParams.get('caste');
+        const location = searchParams.get('location');
+        const education = searchParams.get('education');
+        const occupation = searchParams.get('occupation');
+        const income = searchParams.get('income');
+        const diet = searchParams.get('diet');
+        const manglik = searchParams.get('manglik');
         const page = parseInt(searchParams.get('page')) || 1;
         const limit = parseInt(searchParams.get('limit')) || 20;
 
@@ -67,14 +74,6 @@ export async function GET(request) {
             const ageQuery = parseInt(q);
             if (!isNaN(ageQuery)) {
                 const today = new Date();
-                // Youngest possible for this age: Born exactly (Age) years ago today
-                // Oldest possible for this age: Born exactly (Age + 1) years ago today (exclusive)
-                // Actually, if I am 25, I was born between Today-26years and Today-25years.
-                // Example: Today is 2024. Age 0. Born 2023-2024. 
-                // Logic: 
-                // Max DOB (youngest): Today - Age years.
-                // Min DOB (oldest): Today - (Age + 1) years.
-
                 const maxDob = new Date(today.getFullYear() - ageQuery, today.getMonth(), today.getDate());
                 const minDob = new Date(today.getFullYear() - ageQuery - 1, today.getMonth(), today.getDate());
 
@@ -88,13 +87,40 @@ export async function GET(request) {
 
         // Exact Filters
         if (gender) {
-            // Assuming 'Male'/'Female' or standard case. 
-            // If DB has mixed case, consider regex or standarization.
             query.gender = gender;
         }
 
-        if (religion) {
+        if (religion && religion !== 'Any') {
             query.religion = religion;
+        }
+
+        if (caste && caste !== 'Any') {
+            query.caste = caste;
+        }
+
+        if (location && location !== 'Any') {
+            const city = location.split(',')[0].trim();
+            query.currentCity = new RegExp(city, 'i');
+        }
+
+        if (education && education !== 'Any') {
+            query.education = education;
+        }
+
+        if (occupation && occupation !== 'Any') {
+            query.occupation = occupation;
+        }
+
+        if (income && income !== 'Any') {
+            query.income = income;
+        }
+
+        if (diet && diet !== 'Any') {
+            query.diet = diet;
+        }
+
+        if (manglik && manglik !== 'Any') {
+            query.mangal = manglik;
         }
 
         // Age Filter (Derived from DOB)
