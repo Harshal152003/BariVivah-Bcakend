@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from '@/context/SessionContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Heart, User, MapPin, GraduationCap, Briefcase, Calendar, Star, CheckCircle, Lock, Camera, Clock, Crown, Sparkles, Filter, ArrowUpDown, Bookmark, Eye, MessageCircle, TrendingUp, Users, Navigation, Zap, ChevronDown, SlidersHorizontal, X, Loader2, Search
+  Heart, User, MapPin, GraduationCap, Briefcase, Calendar, Star, CheckCircle, Lock, Camera, Clock, Crown, Sparkles, Filter, ArrowUpDown, Bookmark, Eye, TrendingUp, Users, Navigation, Zap, ChevronDown, SlidersHorizontal, X, Loader2, Search
 } from 'lucide-react';
 import { Toaster, toast } from 'react-hot-toast';
 
@@ -561,7 +561,7 @@ export default function MatchesPage() {
               </motion.div>
 
               {/* Quick Stats */}
-              <div className="w-full grid grid-cols-2 gap-2 mt-2">
+              <div className="w-full grid grid-cols-3 gap-2 mt-2">
                 <div className="bg-rose-50 p-2 rounded-lg text-center">
                   <p className="text-xs text-rose-600">Age</p>
                   <p className="font-semibold text-rose-800">{profile.age}</p>
@@ -573,10 +573,6 @@ export default function MatchesPage() {
                 <div className="bg-emerald-50 p-2 rounded-lg text-center">
                   <p className="text-xs text-emerald-600">City</p>
                   <p className="font-semibold text-emerald-800">{profile.currentCity}</p>
-                </div>
-                <div className="bg-blue-50 p-2 rounded-lg text-center">
-                  <p className="text-xs text-blue-600">Weight</p>
-                  <p className="font-semibold text-blue-800">{profile.weight || '-'}</p>
                 </div>
               </div>
             </div>
@@ -633,10 +629,6 @@ export default function MatchesPage() {
                       <div>
                         <p className="text-xs text-gray-500">Mother Tongue</p>
                         <p className="font-medium">{profile.motherTongue || '-'}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500">Complexion</p>
-                        <p className="font-medium">{profile.complexion || '-'}</p>
                       </div>
                     </div>
                   </div>
@@ -746,14 +738,7 @@ export default function MatchesPage() {
                         <p className="text-xs text-gray-500">Rashi</p>
                         <p className="font-medium">{profile.rashi || '-'}</p>
                       </div>
-                      <div>
-                        <p className="text-xs text-gray-500">Nakshira</p>
-                        <p className="font-medium">{profile.nakshira || '-'}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500">Gotra/Devak</p>
-                        <p className="font-medium">{profile.gotraDevak || '-'}</p>
-                      </div>
+
                       <div>
                         <p className="text-xs text-gray-500">Mangal</p>
                         <p className="font-medium">{profile.mangal ? 'Yes' : 'No'}</p>
@@ -940,9 +925,9 @@ export default function MatchesPage() {
             </button>
 
             {match.mutualMatch ? (
-              <button className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-2 px-3 rounded-lg text-sm font-medium hover:shadow-md transition-all flex items-center justify-center shadow-sm">
-                <MessageCircle className="w-4 h-4 mr-1.5" />
-                Chat
+              <button disabled className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-2 px-3 rounded-lg text-sm font-medium flex items-center justify-center cursor-default opacity-85 shadow-sm">
+                <Heart className="w-4 h-4 mr-1.5 fill-current" />
+                Matched
               </button>
             ) : match.interestSent ? (
               <button

@@ -70,7 +70,6 @@ const fetchUsers = async (page = 1) => {
         education: user.education || 'N/A',
         familyBackground: user.occupation || 'N/A',
         height: user.height || 'N/A',
-        weight: user.weight ? `${user.weight}kg` : 'N/A',
         hobbies: 'N/A', // API doesn't have hobbies field
         gender: user.gender || 'N/A',
         maritalStatus: user.maritalStatus || 'N/A',
@@ -591,10 +590,6 @@ const fetchUsers = async (page = 1) => {
                     <div>
                       <p className="text-gray-500">Height</p>
                       <p className="font-medium">{selectedUser.height}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">Weight</p>
-                      <p className="font-medium">{selectedUser.weight}</p>
                     </div>
                   </div>
                 </div>

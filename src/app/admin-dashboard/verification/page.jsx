@@ -112,15 +112,7 @@ const EditProfileModal = ({
                     })}
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Weight</label>
-                  <input
-                    type="text"
-                    value={formData.weight || ''}
-                    onChange={(e) => handleChange('weight', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  />
-                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
                   <select
@@ -142,6 +134,7 @@ const EditProfileModal = ({
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   >
                     <option value="">Select</option>
+                    <option value="Never Married">Never Married</option>
                     <option value="Unmarried">Unmarried</option>
                     <option value="Divorced">Divorced</option>
                     <option value="Widowed">Widowed</option>
@@ -204,14 +197,18 @@ const EditProfileModal = ({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Complexion</label>
-                  <input
-                    type="text"
-                    value={formData.complexion || ''}
-                    onChange={(e) => handleChange('complexion', e.target.value)}
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Diet</label>
+                  <select
+                    value={formData.diet || ''}
+                    onChange={(e) => handleChange('diet', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  />
+                  >
+                    <option value="">Select</option>
+                    <option value="Veg">Veg</option>
+                    <option value="Non-Veg">Non-Veg</option>
+                  </select>
                 </div>
+
               </div>
             </div>
 
@@ -248,12 +245,16 @@ const EditProfileModal = ({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Gothra</label>
-                  <input
-                    type="text"
+                  <select
                     value={formData.gothra || ''}
                     onChange={(e) => handleChange('gothra', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  />
+                  >
+                    <option value="">Select Gothra</option>
+                    {["Kashyap", "Bharadwaj", "Vashishta", "Vishwamitra", "Gautam", "Jamadagni", "Atri", "Agastya", "Angiras", "Bhrigu", "Garg", "Haritas", "Kaundinya", "Sandilya", "Shandilya", "Upamanyu", "Vatsa", "Mudgala", "Parashar", "Kaushik", "Don't know"].map(g => (
+                      <option key={g} value={g}>{g}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>
@@ -467,49 +468,18 @@ const EditProfileModal = ({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Rashi</label>
-                  <input
-                    type="text"
+                  <select
                     value={formData.rashi || ''}
                     onChange={(e) => handleChange('rashi', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  />
+                  >
+                    <option value="">Select Rashi</option>
+                    {["Mesh", "Vrishabh", "Mithun", "Kark", "Simha", "Kanya", "Tula", "Vrishchik", "Dhanu", "Makar", "Kumbh", "Meen", "Don't know"].map(r => (
+                      <option key={r} value={r}>{r}</option>
+                    ))}
+                  </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nakshira</label>
-                  <input
-                    type="text"
-                    value={formData.nakshira || ''}
-                    onChange={(e) => handleChange('nakshira', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Charan</label>
-                  <input
-                    type="text"
-                    value={formData.charan || ''}
-                    onChange={(e) => handleChange('charan', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Gan</label>
-                  <input
-                    type="text"
-                    value={formData.gan || ''}
-                    onChange={(e) => handleChange('gan', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nadi</label>
-                  <input
-                    type="text"
-                    value={formData.nadi || ''}
-                    onChange={(e) => handleChange('nadi', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  />
-                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Mangal</label>
                   <select
@@ -533,21 +503,13 @@ const EditProfileModal = ({
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Birth Time</label>
                   <input
-                    type="text"
+                    type="time"
                     value={formData.birthTime || ''}
                     onChange={(e) => handleChange('birthTime', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Gotra/Devak</label>
-                  <input
-                    type="text"
-                    value={formData.gotraDevak || ''}
-                    onChange={(e) => handleChange('gotraDevak', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  />
-                </div>
+
               </div>
             </div>
 
@@ -1214,13 +1176,7 @@ export default function Verification() {
                         profile={selectedProfile}
                         onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
                       />
-                      <DetailItem 
-                        label="Weight" 
-                        value={selectedProfile.weight} 
-                        field="weight"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
+
                       <DetailItem 
                         label="Gender" 
                         value={selectedProfile.gender} 
@@ -1271,12 +1227,13 @@ export default function Verification() {
                         onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
                       />
                       <DetailItem 
-                        label="Complexion" 
-                        value={selectedProfile.complexion} 
-                        field="complexion"
+                        label="Diet" 
+                        value={selectedProfile.diet} 
+                        field="diet"
                         profile={selectedProfile}
                         onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
                       />
+
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -1544,34 +1501,7 @@ export default function Verification() {
                         profile={selectedProfile}
                         onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
                       />
-                      <DetailItem 
-                        label="Nakshira" 
-                        value={selectedProfile.nakshira} 
-                        field="nakshira"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Charan" 
-                        value={selectedProfile.charan} 
-                        field="charan"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Gan" 
-                        value={selectedProfile.gan} 
-                        field="gan"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Nadi" 
-                        value={selectedProfile.nadi} 
-                        field="nadi"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
+
                       <DetailItem 
                         label="Mangal" 
                         value={selectedProfile.mangal} 
@@ -1593,13 +1523,7 @@ export default function Verification() {
                         profile={selectedProfile}
                         onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
                       />
-                      <DetailItem 
-                        label="Gotra/Devak" 
-                        value={selectedProfile.gotraDevak} 
-                        field="gotraDevak"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
+
                     </motion.div>
                   )}
                 </AnimatePresence>

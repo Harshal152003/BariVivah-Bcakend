@@ -56,12 +56,14 @@ export async function POST(request) {
         existingPhoneUser.password = hashedPassword;
         existingPhoneUser.gender = gender;
         existingPhoneUser.createdFor = body.createdFor || 'Self';
+        existingPhoneUser.dob = body.dob ? new Date(body.dob) : null;
         existingPhoneUser.state = body.state || null;
         existingPhoneUser.currentCity = body.currentCity || null;
         existingPhoneUser.caste = body.caste || 'Bari';
-        existingPhoneUser.religion = 'Hindu';
+        existingPhoneUser.religion = body.religion || 'Hindu';
         existingPhoneUser.expectedCaste = 'Bari';
         existingPhoneUser.maritalStatus = body.maritalStatus || null;
+        existingPhoneUser.divorceDate = body.divorceDate ? new Date(body.divorceDate) : null;
         existingPhoneUser.height = body.height || null;
         existingPhoneUser.diet = body.diet || null;
         existingPhoneUser.education = body.education || null;
@@ -130,12 +132,14 @@ export async function POST(request) {
       phoneIsVerified: true,
       lastLoginAt: new Date(),
       createdFor: body.createdFor || 'Self',
+      dob: body.dob ? new Date(body.dob) : null,
       state: body.state || null,
       currentCity: body.currentCity || null,
       caste: body.caste || 'Bari',
-      religion: 'Hindu',
+      religion: body.religion || 'Hindu',
       expectedCaste: 'Bari',
       maritalStatus: body.maritalStatus || null,
+      divorceDate: body.divorceDate ? new Date(body.divorceDate) : null,
       height: body.height || null,
       diet: body.diet || null,
       education: body.education || null,

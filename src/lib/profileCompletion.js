@@ -26,8 +26,6 @@ export const calculateProfileCompletion = (user) => {
 
   const importantFields = [
     'email',
-    'weight',
-    'complexion',
     'bloodGroup',
     'company',
     'fieldOfStudy',
@@ -40,11 +38,6 @@ export const calculateProfileCompletion = (user) => {
     'relativeSurname',
     'birthPlace',
     'birthTime',
-    'nakshira',
-    'charan',
-    'gan',
-    'nadi',
-    'gotraDevak',
     'mangal',
     'expectedCaste',
     'expectedEducation',

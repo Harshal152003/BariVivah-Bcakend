@@ -28,7 +28,6 @@ const DynamicProfileForm = () => {
     // Basic Information
     'Full Name': 'name',
     'Height': 'height',
-    'Weight': 'weight',
     'Date of Birth': 'dob',
     'Marital Status': 'maritalStatus',
     'Mother Tongue': 'motherTongue',
@@ -38,7 +37,6 @@ const DynamicProfileForm = () => {
     'Gender': 'gender',
     'Blood Group': 'bloodGroup',
     'Wears Lens': 'wearsLens',
-    'Complexion': 'complexion',
 
     // Education & Profession
     'Highest Education': 'education',
@@ -71,14 +69,9 @@ const DynamicProfileForm = () => {
 
     // Horoscope Information
     "Rashi": 'rashi',
-    "Nadi": 'nadi',
-    "Nakshira": 'nakshira',
     "Mangal Dosha": 'mangal',
-    "Charan": 'charan',
     "Birth Place": 'birthPlace',
     "Birth Time": 'birthTime',
-    "Gan": 'gan',
-    "Gotra Devak": 'gotraDevak',
 
     // Expectations
     "Expected Caste": 'expectedCaste',

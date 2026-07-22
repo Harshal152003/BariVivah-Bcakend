@@ -758,12 +758,7 @@ export default function InterestsPage() {
                   <h4 className="font-semibold text-lg mb-3 text-gray-800 border-b pb-2">Astrological Details</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <ProfileDetailItem icon={Star} label="Rashi" value={selectedProfile.rashi} />
-                    <ProfileDetailItem icon={Star} label="Nakshatra" value={selectedProfile.nakshira} />
                     <ProfileDetailItem icon={Star} label="Gothra" value={selectedProfile.gothra} />
-                    <ProfileDetailItem icon={Star} label="Gotra Devak" value={selectedProfile.gotraDevak} />
-                    <ProfileDetailItem icon={Star} label="Charan" value={selectedProfile.charan} />
-                    <ProfileDetailItem icon={Star} label="Gan" value={selectedProfile.gan} />
-                    <ProfileDetailItem icon={Star} label="Nadi" value={selectedProfile.nadi} />
                     <ProfileDetailItem icon={Star} label="Mangal" value={selectedProfile.mangal ? "Yes" : "No"} />
                   </div>
                 </div>

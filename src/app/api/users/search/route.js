@@ -88,6 +88,14 @@ export async function GET(request) {
         // Exact Filters
         if (gender) {
             query.gender = gender;
+        } else if (currentUserId) {
+            const currentUser = await User.findById(currentUserId).select('gender').lean();
+            if (currentUser && currentUser.gender) {
+                const oppositeGender = currentUser.gender === 'Male' ? 'Female' : currentUser.gender === 'Female' ? 'Male' : null;
+                if (oppositeGender) {
+                    query.gender = oppositeGender;
+                }
+            }
         }
 
         if (religion && religion !== 'Any') {

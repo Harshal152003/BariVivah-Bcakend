@@ -67,6 +67,7 @@ const UserSchema = new mongoose.Schema({
     // enum: ["Unmarried", "Divorced", "Widowed"],
     default: "Unmarried",
   },
+  divorceDate: { type: Date, default: null },
   motherTongue:
   {
     type: String,
@@ -80,9 +81,7 @@ const UserSchema = new mongoose.Schema({
   college: String,
   occupation: String,
   company: String,
-  weight: String,
   permanentAddress: String,
-  complexion: String,
 
   income: { type: String, default: null },
   email: {
@@ -120,7 +119,7 @@ const UserSchema = new mongoose.Schema({
   nativePlace: String,
   diet: String,
   createdFor: { type: String, enum: ['Self', 'Brother', 'Sister', 'Son', 'Daughter', 'Relative'], default: 'Self' },
-  workSector: { type: String, enum: ['Private Company', 'Government', 'Defence / Civil Services', 'Business', 'Not Working'], default: 'Private Company' },
+  workSector: { type: String, enum: ['Private Company', 'Government', 'Defence / Civil Services', 'Business', 'Farmer', 'Not Working'], default: 'Private Company' },
   livesWithFamily: { type: String, enum: ['Yes', 'No'], default: 'Yes' },
   familyFinancialStatus: { type: String, enum: ['Upper Class', 'Upper Middle Class', 'Middle Class', 'Lower Middle Class'], default: 'Middle Class' },
   smokingDrinking: String,
@@ -147,14 +146,9 @@ const UserSchema = new mongoose.Schema({
 
   // Horoscope Info
   rashi: String,
-  nakshira: String,
-  charan: String,
-  gan: String,
-  nadi: String,
   mangal: { type: String },
   birthPlace: String,
   birthTime: String,
-  gotraDevak: String,
   //sample
   // Expectations
   expectedCaste: { type: String, default: "Bari" },

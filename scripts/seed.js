@@ -269,15 +269,15 @@ const formSections = [
             { name: "name", label: "Full Name", type: "text", required: true, order: 1 },
             { name: "gender", label: "Gender", type: "select", options: ["Male", "Female", "Other"], required: true, order: 2 },
             { name: "dob", label: "Date of Birth", type: "date", required: true, order: 3 },
-            { name: "maritalStatus", label: "Marital Status", type: "select", options: ["Unmarried", "Divorced", "Widowed"], required: true, order: 4 },
-            { name: "height", label: "Height", type: "text", required: true, order: 5 },
-            { name: "weight", label: "Weight", type: "text", required: true, order: 6 },
-            { name: "bloodGroup", label: "Blood Group", type: "select", options: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"], required: false, order: 7 },
-            { name: "complexion", label: "Complexion", type: "select", options: ["Fair", "Wheatish", "Dark"], required: false, order: 8 },
-            { name: "motherTongue", label: "Mother Tongue", type: "select", options: ["Hindi", "English", "Marathi", "Gujarati", "Tamil", "Telugu", "Kannada", "Malayalam", "Bengali", "Punjabi"], required: true, order: 9 },
-            { name: "currentCity", label: "Current City", type: "text", required: true, order: 10 },
-            { name: "permanentAddress", label: "Permanent Address", type: "textarea", required: true, order: 11 },
-            { name: "wearsLens", label: "Wears Lens", type: "select", options: ["Yes", "No"], required: false, order: 12 }
+            { name: "maritalStatus", label: "Marital Status", type: "select", options: ["Never Married", "Unmarried", "Divorced", "Widowed"], required: true, order: 4 },
+            { name: "divorceDate", label: "Date of Divorce", type: "date", required: false, order: 5 },
+            { name: "height", label: "Height", type: "text", required: true, order: 6 },
+            { name: "bloodGroup", label: "Blood Group", type: "select", options: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"], required: false, order: 6 },
+            { name: "motherTongue", label: "Mother Tongue", type: "select", options: ["Hindi", "English", "Marathi", "Gujarati", "Tamil", "Telugu", "Kannada", "Malayalam", "Bengali", "Punjabi"], required: true, order: 7 },
+            { name: "currentCity", label: "Current City", type: "text", required: true, order: 8 },
+            { name: "permanentAddress", label: "Permanent Address", type: "textarea", required: true, order: 9 },
+            { name: "wearsLens", label: "Wears Lens", type: "select", options: ["Yes", "No"], required: false, order: 10 },
+            { name: "diet", label: "Diet", type: "select", options: ["Veg", "Non-Veg"], required: false, order: 11 }
         ]
     },
     {
@@ -286,9 +286,9 @@ const formSections = [
         icon: "Briefcase",
         order: 2,
         fields: [
-            { name: "education", label: "Highest Education", type: "select", options: ["High School", "Bachelor's", "Master's", "Doctorate", "Diploma", "Other"], required: true, order: 1 },
+            { name: "education", label: "Highest Education", type: "select", options: ["B.E / B.Tech", "M.E / M.Tech", "MBA / PGDM", "MCA", "B.Sc", "M.Sc", "B.Com", "M.Com", "B.A", "M.A", "BCA", "BCS", "BBA", "MBBS", "MD / MS (Medical)", "BDS / MDS", "B.Pharm / M.Pharm", "B.Arch", "M.Arch", "LL.B / LL.M", "CA / CS / ICWA", "Ph.D / Doctorate", "Diploma", "12th Pass (HSC)", "10th Pass (SSC)", "Other"], required: true, order: 1 },
             { name: "occupation", label: "Occupation", type: "text", required: true, order: 2 },
-            { name: "income", label: "Annual Income", type: "select", options: ["0-2 Lakhs", "2-5 Lakhs", "5-8 Lakhs", "8-12 Lakhs", "12-18 Lakhs", "18-25 Lakhs", "25-35 Lakhs", "35+ Lakhs"], required: true, order: 3 },
+            { name: "income", label: "Annual Income", type: "select", options: ["₹0 - 3 LPA", "₹3 - 6 LPA", "₹6 - 10 LPA", "₹10 - 15 LPA", "₹15 - 20 LPA", "₹20 - 25 LPA", "₹25 - 30 LPA", "₹30 - 35 LPA", "₹35 - 40 LPA", "₹40 - 50 LPA", "₹50+ LPA"], required: true, order: 3 },
             { name: "fieldOfStudy", label: "Field of Study", type: "text", required: false, order: 4 },
             { name: "college", label: "College/University", type: "text", required: false, order: 5 },
             { name: "company", label: "Company", type: "text", required: false, order: 6 }
@@ -301,7 +301,7 @@ const formSections = [
         order: 3,
         fields: [
             { name: "subCaste", label: "Sub Caste", type: "text", required: false, order: 1 },
-            { name: "gothra", label: "Gothra", type: "text", required: false, order: 2 }
+            { name: "gothra", label: "Gothra", type: "select", options: ["Kashyap", "Bharadwaj", "Vashishta", "Vishwamitra", "Gautam", "Jamadagni", "Atri", "Agastya", "Angiras", "Bhrigu", "Garg", "Haritas", "Kaundinya", "Sandilya", "Shandilya", "Upamanyu", "Vatsa", "Mudgala", "Parashar", "Kaushik", "Don't know"], required: false, order: 2 }
         ]
     },
     {
@@ -331,15 +331,10 @@ const formSections = [
         icon: "User",
         order: 5,
         fields: [
-            { name: "rashi", label: "Rashi", type: "select", options: ["Mesh", "Vrishabh", "Mithun", "Kark", "Simha", "Kanya", "Tula", "Vrishchik", "Dhanu", "Makar", "Kumbh", "Meen"], required: false, order: 1 },
-            { name: "nakshatra", label: "Nakshatra", type: "text", required: false, order: 2 },
-            { name: "charan", label: "Charan", type: "text", required: false, order: 3 },
-            { name: "gan", label: "Gan", type: "text", required: false, order: 4 },
-            { name: "nadi", label: "Nadi", type: "text", required: false, order: 5 },
-            { name: "mangal", label: "Mangal", type: "select", options: ["Yes", "No", "Anshik"], required: false, order: 6 },
-            { name: "birthPlace", label: "Birth Place", type: "text", required: false, order: 7 },
-            { name: "birthTime", label: "Birth Time", type: "text", required: false, order: 8 },
-            { name: "gotraDevak", label: "Gotra Devak", type: "text", required: false, order: 9 }
+            { name: "rashi", label: "Rashi", type: "select", options: ["Mesh", "Vrishabh", "Mithun", "Kark", "Simha", "Kanya", "Tula", "Vrishchik", "Dhanu", "Makar", "Kumbh", "Meen", "Don't know"], required: false, order: 1 },
+            { name: "mangal", label: "Mangal", type: "select", options: ["Yes", "No"], required: false, order: 2 },
+            { name: "birthPlace", label: "Birth Place", type: "text", required: false, order: 3 },
+            { name: "birthTime", label: "Birth Time", type: "text", required: false, order: 4 }
         ]
     },
     {
@@ -349,10 +344,10 @@ const formSections = [
         order: 6,
         fields: [
             { name: "expectedHeight", label: "Expected Height", type: "select", options: ["4'5\" - 5'0\"", "5'0\" - 5'5\"", "5'5\" - 6'0\"", "6'0\"+"], required: false, order: 1 },
-            { name: "expectedEducation", label: "Expected Education", type: "select", options: ["High School", "Bachelor's", "Master's", "Doctorate", "Diploma", "Other"], required: false, order: 3 },
+            { name: "expectedEducation", label: "Expected Education", type: "select", options: ["B.E / B.Tech", "M.E / M.Tech", "MBA / PGDM", "MCA", "B.Sc", "M.Sc", "B.Com", "M.Com", "B.A", "M.A", "BCA", "BCS", "BBA", "MBBS", "MD / MS (Medical)", "BDS / MDS", "B.Pharm / M.Pharm", "B.Arch", "M.Arch", "LL.B / LL.M", "CA / CS / ICWA", "Ph.D / Doctorate", "Diploma", "12th Pass (HSC)", "10th Pass (SSC)", "Other"], required: false, order: 3 },
             { name: "preferredCity", label: "Preferred City", type: "text", placeholder: "Enter Preferred City", required: false, order: 4 },
             { name: "expectedAgeDifference", label: "Expected Age Difference", type: "select", options: ["1-3 Years", "3-5 Years", "5-7 Years", "7+ Years"], required: false, order: 5 },
-            { name: "expectedIncome", label: "Expected Income", type: "select", options: ["0-2 Lakhs", "2-5 Lakhs", "5-8 Lakhs", "8-12 Lakhs", "12-18 Lakhs", "18-25 Lakhs", "25-35 Lakhs", "35+ Lakhs"], required: false, order: 6 },
+            { name: "expectedIncome", label: "Expected Income", type: "select", options: ["₹0 - 3 LPA", "₹3 - 6 LPA", "₹6 - 10 LPA", "₹10 - 15 LPA", "₹15 - 20 LPA", "₹20 - 25 LPA", "₹25 - 30 LPA", "₹30 - 35 LPA", "₹35 - 40 LPA", "₹40 - 50 LPA", "₹50+ LPA"], required: false, order: 6 },
             { name: "divorcee", label: "Accept Divorcee", type: "select", options: ["Yes", "No"], required: false, order: 7 }
         ]
     }

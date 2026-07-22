@@ -128,12 +128,12 @@ export default function MyProfilePage() {
   const calculateCompletion = (section) => {
     if (!formData) return 0;
     const fields = {
-      basic: ['name', 'dob', 'height', 'gender', 'maritalStatus', 'motherTongue', 'currentCity', 'weight', 'email', 'permanentAddress', 'wearsLens', 'bloodGroup', 'complexion'],
+      basic: ['name', 'dob', 'height', 'gender', 'maritalStatus', 'motherTongue', 'currentCity', 'email', 'permanentAddress', 'wearsLens', 'bloodGroup', 'diet'],
       religious: ['religion', 'caste', 'subCaste', 'gothra'],
       education: ['education', 'fieldOfStudy', 'college', 'occupation', 'company', 'income'],
       relative: ['fatherName', 'parentResidenceCity', 'mother', 'brothers', 'marriedBrothers', 'sisters', 'marriedSisters', 'nativeDistrict', 'nativeCity', 'familyWealth', 'relativeSurname', 'parentOccupation', 'mamaSurname',],
-      horoscope: ['rashi', 'nakshira', 'charan', 'gan', 'nadi', 'mangal', 'birthPlace', 'birthTime', 'gotraDevak'],
-      expectations: ['expectedCaste', 'expectedSubCaste', 'preferredCity', 'expectedAgeDifference', 'expectedEducation', 'expectedWorkingStatus', 'divorcee', 'expectedHeight', 'expectedIncome',]
+      horoscope: ['rashi', 'mangal', 'birthPlace', 'birthTime'],
+      expectations: ['expectedCaste', 'expectedSubCaste', 'preferredCity', 'expectedAgeDifference', 'expectedEducation', 'expectedWorkingStatus', 'divorcee', 'expectedHeight', 'expectedIncome']
     };
 
 
@@ -233,11 +233,10 @@ export default function MyProfilePage() {
         occupation: data.occupation || '',
         company: data.company || '',
         income: data.income || '',
-        weight: data.weight || '',
         email: data.email || '',
         wearsLens: data.wearsLens || false,
         bloodGroup: data.bloodGroup || '',
-        complexion: data.complexion || '',
+        diet: data.diet || '',
         permanentAddress: data.permanentAddress || '',
         userId: user?.user?.id || '',
         verificationStatus: data?.verificationStatus || 'Unverified',
@@ -256,16 +255,9 @@ export default function MyProfilePage() {
         relativeSurname: data.relativeSurname || '',
         parentOccupation: data.parentOccupation || '',
         mamaSurname: data.mamaSurname || '',
-        // Horoscope Info
-        rashi: data.rashi || '',
-        nakshira: data.nakshira || '',
-        charan: data.charan || '',
-        gan: data.gan || '',
-        nadi: data.nadi || '',
         mangal: data.mangal || false,
         birthPlace: data.birthPlace || '',
         birthTime: data.birthTime || '',
-        gotraDevak: data.gotraDevak || '',
 
         // Expectations
         expectedCaste: data.expectedCaste || '',
@@ -500,16 +492,7 @@ export default function MyProfilePage() {
                     })}
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">weight</label>
-                  <input
-                    type="text"
-                    value={formData?.weight}
-                    onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
-                    placeholder="Enter your weight"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
-                  />
-                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
                   <select
@@ -542,14 +525,16 @@ export default function MyProfilePage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Complexion</label>
-                  <input
-                    type="text"
-                    value={formData?.complexion}
-                    onChange={(e) => setFormData({ ...formData, complexion: e.target.value })}
-                    placeholder="E.g. Fair, Wheatish, etc."
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Diet</label>
+                  <select
+                    value={formData?.diet}
+                    onChange={(e) => setFormData({ ...formData, diet: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
-                  />
+                  >
+                    <option value="">Select Diet</option>
+                    <option value="Veg">Veg</option>
+                    <option value="Non-Veg">Non-Veg</option>
+                  </select>
                 </div>
               </div>
               <div className="space-y-4">
@@ -561,6 +546,7 @@ export default function MyProfilePage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
                   >
                     <option value="">Select Status</option>
+                    <option>Never Married</option>
                     <option>Unmarried</option>
                     <option>Divorced</option>
                     <option>Widowed</option>
@@ -668,13 +654,16 @@ export default function MyProfilePage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Gothra</label>
-                  <input
-                    type="text"
+                  <select
                     value={formData?.gothra}
                     onChange={(e) => setFormData({ ...formData, gothra: e.target.value })}
-                    placeholder="Enter your gothra"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
-                  />
+                  >
+                    <option value="">Select Gothra</option>
+                    {["Kashyap", "Bharadwaj", "Vashishta", "Vishwamitra", "Gautam", "Jamadagni", "Atri", "Agastya", "Angiras", "Bhrigu", "Garg", "Haritas", "Kaundinya", "Sandilya", "Shandilya", "Upamanyu", "Vatsa", "Mudgala", "Parashar", "Kaushik", "Don't know"].map(g => (
+                      <option key={g} value={g}>{g}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>
@@ -1071,66 +1060,18 @@ export default function MyProfilePage() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Rashi</label>
-                  <input
-                    type="text"
+                  <select
                     value={formData.rashi}
                     onChange={(e) => setFormData({ ...formData, rashi: e.target.value })}
-                    placeholder="Enter your rashi"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
-                  />
+                  >
+                    <option value="">Select Rashi</option>
+                    {["Mesh", "Vrishabh", "Mithun", "Kark", "Simha", "Kanya", "Tula", "Vrishchik", "Dhanu", "Makar", "Kumbh", "Meen", "Don't know"].map(r => (
+                      <option key={r} value={r}>{r}</option>
+                    ))}
+                  </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Nakshira</label>
-                  <input
-                    type="text"
-                    value={formData.nakshira}
-                    onChange={(e) => setFormData({ ...formData, nakshira: e.target.value })}
-                    placeholder="Enter your nakshira"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Charan</label>
-                  <input
-                    type="text"
-                    value={formData.charan}
-                    onChange={(e) => setFormData({ ...formData, charan: e.target.value })}
-                    placeholder="Enter your charan"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Gan</label>
-                  <input
-                    type="text"
-                    value={formData.gan}
-                    onChange={(e) => setFormData({ ...formData, gan: e.target.value })}
-                    placeholder="Enter your gan"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Gotra/Devak</label>
-                  <input
-                    type="text"
-                    value={formData.gotraDevak}
-                    onChange={(e) => setFormData({ ...formData, gotraDevak: e.target.value })}
-                    placeholder="Enter gotra/devak"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Nadi</label>
-                  <input
-                    type="text"
-                    value={formData.nadi}
-                    onChange={(e) => setFormData({ ...formData, nadi: e.target.value })}
-                    placeholder="Enter your nadi"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
-                  />
-                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Mangal</label>
                   <select
@@ -1155,10 +1096,9 @@ export default function MyProfilePage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Birth Time</label>
                   <input
-                    type="text"
+                    type="time"
                     value={formData.birthTime}
                     onChange={(e) => setFormData({ ...formData, birthTime: e.target.value })}
-                    placeholder="Enter birth time"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
                   />
                 </div>
@@ -1258,16 +1198,7 @@ export default function MyProfilePage() {
                     <option>5'10" - 6'0"</option>
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Gotra/Devak</label>
-                  <input
-                    type="text"
-                    value={formData.gotraDevak}
-                    onChange={(e) => setFormData({ ...formData, gotraDevak: e.target.value })}
-                    placeholder="Expected gotra"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
-                  />
-                </div>
+
               </div>
             </div>
           </div>

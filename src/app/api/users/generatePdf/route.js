@@ -337,7 +337,6 @@ export async function POST(request) {
       ['Caste', userData.caste],
       ['Sub Caste', userData.subCaste],
       ['Height', userData.height],
-      ['Weight', userData.weight],
       ['Address', userData.address],
       ['Hobbies', userData.hobbies]
     ]);

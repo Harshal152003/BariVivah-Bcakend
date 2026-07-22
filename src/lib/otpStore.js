@@ -1,3 +1,6 @@
-const otpStore = new Map();
+if (!global.otpStore) {
+  global.otpStore = new Map();
+}
+const otpStore = global.otpStore;
 
 export default otpStore;
