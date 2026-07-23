@@ -300,13 +300,17 @@ const EditProfileModal = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
-                  <input
-                    type="text"
-                    value={formData.company || ''}
-                    onChange={(e) => handleChange('company', e.target.value)}
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Work Sector</label>
+                  <select
+                    value={formData.workSector || ''}
+                    onChange={(e) => handleChange('workSector', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  />
+                  >
+                    <option value="">Select Work Sector</option>
+                    {['Private Company', 'Government', 'Defence / Civil Services', 'Business', 'Farmer', 'Not Working'].map((sect) => (
+                      <option key={sect} value={sect}>{sect}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Income</label>
@@ -1337,9 +1341,9 @@ export default function Verification() {
                         onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
                       />
                       <DetailItem 
-                        label="Company" 
-                        value={selectedProfile.company} 
-                        field="company"
+                        label="Work Sector" 
+                        value={selectedProfile.workSector} 
+                        field="workSector"
                         profile={selectedProfile}
                         onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
                       />

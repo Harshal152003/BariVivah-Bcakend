@@ -291,7 +291,7 @@ const formSections = [
             { name: "income", label: "Annual Income", type: "select", options: ["₹0 - 3 LPA", "₹3 - 6 LPA", "₹6 - 10 LPA", "₹10 - 15 LPA", "₹15 - 20 LPA", "₹20 - 25 LPA", "₹25 - 30 LPA", "₹30 - 35 LPA", "₹35 - 40 LPA", "₹40 - 50 LPA", "₹50+ LPA"], required: true, order: 3 },
             { name: "fieldOfStudy", label: "Field of Study", type: "text", required: false, order: 4 },
             { name: "college", label: "College/University", type: "text", required: false, order: 5 },
-            { name: "company", label: "Company", type: "text", required: false, order: 6 }
+            { name: "workSector", label: "Work Sector", type: "select", options: ["Private Company", "Government", "Defence / Civil Services", "Business", "Farmer", "Not Working"], required: false, order: 6 }
         ]
     },
     {

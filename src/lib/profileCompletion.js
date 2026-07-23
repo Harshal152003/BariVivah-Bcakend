@@ -27,7 +27,7 @@ export const calculateProfileCompletion = (user) => {
   const importantFields = [
     'email',
     'bloodGroup',
-    'company',
+    'workSector',
     'fieldOfStudy',
     'college',
     'parentOccupation',

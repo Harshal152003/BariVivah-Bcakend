@@ -346,7 +346,7 @@ export async function POST(request) {
       ['Field of Study', userData.fieldOfStudy],
       ['College', userData.college],
       ['Occupation', userData.familyBackground],
-      ['Company', userData.company],
+      ['Work Sector', userData.workSector],
       ['Annual Income', userData.income]
     ]);
 

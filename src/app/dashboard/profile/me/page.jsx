@@ -130,7 +130,7 @@ export default function MyProfilePage() {
     const fields = {
       basic: ['name', 'dob', 'height', 'gender', 'maritalStatus', 'motherTongue', 'currentCity', 'email', 'permanentAddress', 'wearsLens', 'bloodGroup', 'diet'],
       religious: ['religion', 'caste', 'subCaste', 'gothra'],
-      education: ['education', 'fieldOfStudy', 'college', 'occupation', 'company', 'income'],
+      education: ['education', 'fieldOfStudy', 'college', 'occupation', 'workSector', 'income'],
       relative: ['fatherName', 'parentResidenceCity', 'mother', 'brothers', 'marriedBrothers', 'sisters', 'marriedSisters', 'nativeDistrict', 'nativeCity', 'familyWealth', 'relativeSurname', 'parentOccupation', 'mamaSurname',],
       horoscope: ['rashi', 'mangal', 'birthPlace', 'birthTime'],
       expectations: ['expectedCaste', 'expectedSubCaste', 'preferredCity', 'expectedAgeDifference', 'expectedEducation', 'expectedWorkingStatus', 'divorcee', 'expectedHeight', 'expectedIncome']
@@ -231,7 +231,7 @@ export default function MyProfilePage() {
         fieldOfStudy: data.fieldOfStudy || '',
         college: data.college || '',
         occupation: data.occupation || '',
-        company: data.company || '',
+        workSector: data.workSector || '',
         income: data.income || '',
         email: data.email || '',
         wearsLens: data.wearsLens || false,
@@ -721,14 +721,17 @@ export default function MyProfilePage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Company</label>
-                  <input
-                    type="text"
-                    value={formData?.company}
-                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                    placeholder='Enter your company name'
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Work Sector</label>
+                  <select
+                    value={formData?.workSector}
+                    onChange={(e) => setFormData({ ...formData, workSector: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
-                  />
+                  >
+                    <option value="">Select Work Sector</option>
+                    {['Private Company', 'Government', 'Defence / Civil Services', 'Business', 'Farmer', 'Not Working'].map((sect) => (
+                      <option key={sect} value={sect}>{sect}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Annual Income</label>

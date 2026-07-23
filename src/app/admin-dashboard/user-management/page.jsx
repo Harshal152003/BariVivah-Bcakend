@@ -79,7 +79,7 @@ const fetchUsers = async (page = 1) => {
         subCaste: user.subCaste || 'N/A',
         gothra: user.gothra || 'N/A',
         college: user.college || 'N/A',
-        company: user.company || 'N/A',
+        workSector: user.workSector || 'N/A',
         fieldOfStudy: user.fieldOfStudy || 'N/A',
         profilePhoto : user.profilePhoto || '',
         income: user.income || 'N/A',
@@ -667,8 +667,8 @@ const fetchUsers = async (page = 1) => {
                         <p className="font-medium">{selectedUser.familyBackground}</p>
                       </div>
                       <div>
-                        <p className="text-gray-500">Company</p>
-                        <p className="font-medium">{selectedUser.company}</p>
+                        <p className="text-gray-500">Work Sector</p>
+                        <p className="font-medium">{selectedUser.workSector}</p>
                       </div>
                       <div>
                         <p className="text-gray-500">Income</p>
