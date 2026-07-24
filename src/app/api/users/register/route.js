@@ -41,6 +41,30 @@ export async function POST(request) {
       );
     }
 
+    if (body.dob) {
+      const birthDate = new Date(body.dob);
+      if (isNaN(birthDate.getTime())) {
+        return new NextResponse(
+          JSON.stringify({ success: false, message: "Invalid Date of Birth" }),
+          { status: 400, headers }
+        );
+      }
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      const isMale = gender.toLowerCase() === "male";
+      const requiredAge = isMale ? 21 : 18;
+      if (age < requiredAge) {
+        return new NextResponse(
+          JSON.stringify({ success: false, message: `Legal age for registration is ${requiredAge} for ${gender} candidates` }),
+          { status: 400, headers }
+        );
+      }
+    }
+
     const fullPhone = `+91${cleanPhone}`;
 
     // Hash Password

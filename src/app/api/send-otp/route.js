@@ -52,12 +52,15 @@
 //   });
 // }
 
-import otpStore from "../../../lib/otpStore"; 
+import otpStore from "../../../lib/otpStore";
 import { NextResponse } from "next/server";
+import dbConnect from "@/lib/dbConnect";
+import User from "@/models/User";
+import { emailService } from "@/services/email/email.service";
 
 export async function POST(req) {
   try {
-    const { phoneNumber } = await req.json();
+    const { phoneNumber, email } = await req.json();
     if (!phoneNumber || phoneNumber.length !== 10) {
       return NextResponse.json(
         { success: false, message: "Invalid phone number" },
@@ -66,6 +69,7 @@ export async function POST(req) {
     }
 
     const fullPhoneNumber = `+91${phoneNumber}`;
+    console.log("Generating OTP...");
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     // Send OTP via Fast2SMS (DLT template)
@@ -100,7 +104,42 @@ export async function POST(req) {
 
     // Store OTP in memory
     otpStore.set(fullPhoneNumber, otp);
-    setTimeout(() => otpStore.delete(fullPhoneNumber), 5 * 60 * 1000);
+    console.log("OTP stored successfully.");
+    const deleteTimeout = setTimeout(() => otpStore.delete(fullPhoneNumber), 5 * 60 * 1000);
+
+    // Try to resolve recipient email
+    let recipientEmail = email;
+    if (!recipientEmail) {
+      try {
+        await dbConnect();
+        const user = await User.findOne({ phone: { $in: [fullPhoneNumber, phoneNumber] } });
+        if (user && user.email) {
+          recipientEmail = user.email;
+        }
+      } catch (dbError) {
+        console.error("[send-otp] DB error looking up user email:", dbError);
+      }
+    }
+
+    // If an email is available, deliver the OTP via Resend
+    if (recipientEmail) {
+      console.log("Sending OTP email...");
+      try {
+        await emailService.sendOTPEmail(recipientEmail, otp, 5);
+        console.log("Email delivered successfully.");
+      } catch (emailError) {
+        console.error("Resend API Error:", emailError);
+        // Rollback/Clean up OTP store mapping to avoid inconsistent state on delivery failure
+        clearTimeout(deleteTimeout);
+        otpStore.delete(fullPhoneNumber);
+        return NextResponse.json(
+          { success: false, message: "Failed to deliver verification email", error: emailError.message },
+          { status: 500 }
+        );
+      }
+    } else {
+      console.log(`[send-otp] No email address associated/provided for +91${phoneNumber}. Skipping email OTP delivery.`);
+    }
 
     return NextResponse.json({ success: true, message: "OTP sent successfully" });
   } catch (error) {
@@ -110,3 +149,4 @@ export async function POST(req) {
     );
   }
 }
+
