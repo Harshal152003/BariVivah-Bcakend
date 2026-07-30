@@ -267,7 +267,7 @@ const formSections = [
         order: 1,
         fields: [
             { name: "name", label: "Full Name", type: "text", required: true, order: 1 },
-            { name: "gender", label: "Gender", type: "select", options: ["Male", "Female", "Other"], required: true, order: 2 },
+            { name: "gender", label: "Gender", type: "select", options: ["Male", "Female"], required: true, order: 2 },
             { name: "dob", label: "Date of Birth", type: "date", required: true, order: 3 },
             { name: "maritalStatus", label: "Marital Status", type: "select", options: ["Never Married", "Unmarried", "Divorced", "Widowed"], required: true, order: 4 },
             { name: "divorceDate", label: "Date of Divorce", type: "date", required: false, order: 5 },
@@ -319,9 +319,8 @@ const formSections = [
             { name: "parentResidenceCity", label: "Parent's Residence City", type: "text", required: false, order: 7 },
             { name: "nativeDistrict", label: "Native District", type: "text", required: false, order: 8 },
             { name: "nativeCity", label: "Native City", type: "text", required: false, order: 9 },
-            { name: "familyWealth", label: "Family Wealth", type: "text", required: false, placeholder: "e.g. 50 Lakhs, 1 Crore", order: 10 },
             { name: "parentOccupation", label: "Parent's Occupation", type: "text", required: false, order: 11 },
-            { name: "mamaSurname", label: "Mama's Surname", type: "text", required: false, order: 12 },
+            { name: "mamaSurname", label: "Mamekul (mama's surname)", type: "text", required: false, order: 12 },
             { name: "relativeSurname", label: "Relative Surnames", type: "text", required: false, placeholder: "Comma separated", order: 13 }
         ]
     },
@@ -332,7 +331,7 @@ const formSections = [
         order: 5,
         fields: [
             { name: "rashi", label: "Rashi", type: "select", options: ["Mesh", "Vrishabh", "Mithun", "Kark", "Simha", "Kanya", "Tula", "Vrishchik", "Dhanu", "Makar", "Kumbh", "Meen", "Don't know"], required: false, order: 1 },
-            { name: "mangal", label: "Mangal", type: "select", options: ["Yes", "No"], required: false, order: 2 },
+            { name: "mangal", label: "Mangal", type: "select", options: ["Yes", "No", "Don't know"], required: false, order: 2 },
             { name: "birthPlace", label: "Birth Place", type: "text", required: false, order: 3 },
             { name: "birthTime", label: "Birth Time", type: "text", required: false, order: 4 }
         ]

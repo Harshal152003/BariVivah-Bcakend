@@ -15,3 +15,97 @@
     font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
 }
+
+/* Custom Uiverse Input styling */
+.group {
+  position: relative;
+}
+
+.uiverse-input {
+  font-size: 16px;
+  padding: 10px 10px 10px 5px;
+  display: block;
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #e5e7eb;
+  background: transparent;
+  transition: border-color 0.2s ease;
+}
+
+.uiverse-input:focus {
+  outline: none;
+  border-bottom-color: transparent;
+}
+
+.uiverse-label {
+  color: #9ca3af;
+  font-size: 15px;
+  font-weight: 500;
+  position: absolute;
+  pointer-events: none;
+  left: 5px;
+  top: 10px;
+  transition: 0.2s ease all;
+}
+
+.uiverse-input:focus ~ .uiverse-label,
+.uiverse-input:not(:placeholder-shown) ~ .uiverse-label {
+  top: -20px;
+  font-size: 12px;
+  color: #7E5D8C;
+  font-weight: 600;
+}
+
+.uiverse-bar {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.uiverse-bar:before, .uiverse-bar:after {
+  content: '';
+  height: 2px;
+  width: 0;
+  bottom: 0px;
+  position: absolute;
+  background: #7E5D8C;
+  transition: 0.2s ease all;
+}
+
+.uiverse-bar:before {
+  left: 50%;
+}
+
+.uiverse-bar:after {
+  right: 50%;
+}
+
+.uiverse-input:focus ~ .uiverse-bar:before, 
+.uiverse-input:focus ~ .uiverse-bar:after {
+  width: 50%;
+}
+
+.uiverse-highlight {
+  position: absolute;
+  height: 60%;
+  width: 100px;
+  top: 25%;
+  left: 0;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.uiverse-input:focus ~ .uiverse-highlight {
+  animation: uiverseInputHighlighter 0.3s ease;
+}
+
+@keyframes uiverseInputHighlighter {
+  from {
+    background: #7E5D8C;
+  }
+  to {
+    width: 0;
+    background: transparent;
+  }
+}
+

@@ -56,7 +56,7 @@ const DynamicProfileForm = () => {
     "Married Sisters": 'marriedSisters',
     "Native District": 'nativeDistrict',
     "Native City": 'nativeCity',
-    "Family Wealth": 'familyWealth',
+    "Mamekul (mama's surname)": 'mamaSurname',
     "Mama's Surname": 'mamaSurname',
     "Parent's Occupation": 'parentOccupation',
     "Relative Surnames": 'relativeSurname',
@@ -88,8 +88,7 @@ const DynamicProfileForm = () => {
     'motherName': 'mother',
     'mangaldosha': 'mangal',
     'nativeState': 'state',
-    'state': 'state',
-    'familyWealth': 'familyWealth'
+    'state': 'state'
   };
 
   // Helper function to normalize field names for comparison
@@ -472,7 +471,7 @@ const DynamicProfileForm = () => {
 
       case 'number':
         return (
-          <div className="relative">
+          <>
             <input
               type="number"
               min="0"
@@ -497,33 +496,47 @@ const DynamicProfileForm = () => {
                   handleInputChange(field.name, val);
                 }
               }}
-              placeholder={field.placeholder || 'Enter Number'}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              placeholder=" "
+              className="uiverse-input pr-16"
+              required={field.required}
             />
-            <span className="absolute right-3 top-2 text-xs text-gray-400 pointer-events-none">
+            <span className="uiverse-highlight"></span>
+            <span className="uiverse-bar"></span>
+            <label className="uiverse-label">
+              {field.label}
+              {field.required && <span className="text-primary ml-1">*</span>}
+            </label>
+            <span className="absolute right-3 top-2.5 text-xs text-gray-400 pointer-events-none">
               (Numeric)
             </span>
             {field.placeholder && (
               <p className="text-xs text-gray-500 mt-1">{field.placeholder}</p>
             )}
-          </div>
+          </>
         );
 
       case 'text':
       case 'email':
         return (
-          <div className="relative">
+          <>
             <input
               type={field.type.toLowerCase()}
               value={value}
               onChange={(e) => handleInputChange(field.name, e.target.value)}
-              placeholder={field.placeholder || `Enter ${field.label}`}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              placeholder=" "
+              className="uiverse-input"
+              required={field.required}
             />
+            <span className="uiverse-highlight"></span>
+            <span className="uiverse-bar"></span>
+            <label className="uiverse-label">
+              {field.label}
+              {field.required && <span className="text-primary ml-1">*</span>}
+            </label>
             {field.placeholder && (
               <p className="text-xs text-gray-500 mt-1">{field.placeholder}</p>
             )}
-          </div>
+          </>
         );
     }
   };
@@ -656,15 +669,28 @@ const DynamicProfileForm = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {currentSection.fields
             .filter(f => f.name !== 'religion' && f.name !== 'caste' && f.name !== 'expectedCaste')
-            .map((field) => (
-              <div key={field._id} className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {field.label}
-                  {field.required && <span className="text-primary ml-1">*</span>}
-                </label>
-                {renderFieldInput(field)}
-              </div>
-            ))}
+            .filter(f => f.name !== 'divorceDate' || formData.maritalStatus === 'Divorced')
+            .map((field) => {
+              const isUiverseField = ['text', 'email', 'number'].includes(field.type.toLowerCase());
+              
+              if (isUiverseField) {
+                return (
+                  <div key={field._id} className="group relative mt-6 mb-4">
+                    {renderFieldInput(field)}
+                  </div>
+                );
+              }
+
+              return (
+                <div key={field._id} className="space-y-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {field.label}
+                    {field.required && <span className="text-primary ml-1">*</span>}
+                  </label>
+                  {renderFieldInput(field)}
+                </div>
+              );
+            })}
         </div>
       </div>
     );

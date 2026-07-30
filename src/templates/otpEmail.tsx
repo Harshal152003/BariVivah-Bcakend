@@ -6,7 +6,7 @@ interface OTPEmailProps {
 }
 
 export function getOTPEmailHtml(otp: string, expiryMinutes: number = 5): string {
-  const logoUrl = 'https://res.cloudinary.com/et4vgn8w/image/upload/v1784918442/barivivah_branding/logo.png';
+  const logoUrl = 'https://res.cloudinary.com/et4vgn8w/image/upload/v1785177386/barivivah_branding/logo.png';
 
   return `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; padding: 40px 20px; margin: 0 auto; max-width: 560px;">
@@ -118,7 +118,7 @@ export const OTPEmail: React.FC<OTPEmailProps> = ({ otp, expiryMinutes = 5 }) =>
     fontWeight: '500',
   };
 
-  const logoUrl = 'https://res.cloudinary.com/et4vgn8w/image/upload/v1784918442/barivivah_branding/logo.png';
+  const logoUrl = 'https://res.cloudinary.com/et4vgn8w/image/upload/v1785177386/barivivah_branding/logo.png';
 
   return (
     <div style={containerStyle}>

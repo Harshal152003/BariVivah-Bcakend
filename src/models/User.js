@@ -149,6 +149,7 @@ const UserSchema = new mongoose.Schema({
   mangal: { type: String },
   birthPlace: String,
   birthTime: String,
+  kundali: { type: String, default: null },
   //sample
   // Expectations
   expectedCaste: { type: String, default: "Bari" },

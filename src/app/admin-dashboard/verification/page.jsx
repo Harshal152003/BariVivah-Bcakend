@@ -409,15 +409,7 @@ const EditProfileModal = ({
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Family Wealth</label>
-                  <input
-                    type="text"
-                    value={formData.familyWealth || ''}
-                    onChange={(e) => handleChange('familyWealth', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  />
-                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Parent Occupation</label>
                   <input
@@ -428,7 +420,7 @@ const EditProfileModal = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Mama Surname</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Mamekul (mama's surname)</label>
                   <input
                     type="text"
                     value={formData.mamaSurname || ''}
@@ -487,12 +479,13 @@ const EditProfileModal = ({
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Mangal</label>
                   <select
-                    value={formData.mangal ? 'Yes' : 'No'}
-                    onChange={(e) => handleChange('mangal', e.target.value === 'Yes')}
+                    value={formData.mangal || 'No'}
+                    onChange={(e) => handleChange('mangal', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   >
                     <option value="No">No</option>
                     <option value="Yes">Yes</option>
+                    <option value="Don't know">Don't know</option>
                   </select>
                 </div>
                 <div>
@@ -1440,13 +1433,7 @@ export default function Verification() {
                         profile={selectedProfile}
                         onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
                       />
-                      <DetailItem 
-                        label="Family Wealth" 
-                        value={selectedProfile.familyWealth} 
-                        field="familyWealth"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
+
                       <DetailItem 
                         label="Parent Occupation" 
                         value={selectedProfile.parentOccupation} 
@@ -1455,7 +1442,7 @@ export default function Verification() {
                         onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
                       />
                       <DetailItem 
-                        label="Mama Surname" 
+                        label="Mamekul (mama's surname)" 
                         value={selectedProfile.mamaSurname} 
                         field="mamaSurname"
                         profile={selectedProfile}

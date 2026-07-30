@@ -55,6 +55,7 @@ export async function GET(request) {
       name: user.name,
       phone: user.phone,
       profilePhoto: user.profilePhoto,
+      photos: user.photos || [],
       gender: user.gender,
       dob: user.dob,
       height: user.height,
@@ -113,6 +114,7 @@ export async function GET(request) {
       birthPlace: user.birthPlace,
       birthTime: user.birthTime,
       gotraDevak: user.gotraDevak,
+      kundali: user.kundali,
 
       // Expectations
       expectedCaste: user.expectedCaste,

@@ -131,7 +131,7 @@ export default function MyProfilePage() {
       basic: ['name', 'dob', 'height', 'gender', 'maritalStatus', 'motherTongue', 'currentCity', 'email', 'permanentAddress', 'wearsLens', 'bloodGroup', 'diet'],
       religious: ['religion', 'caste', 'subCaste', 'gothra'],
       education: ['education', 'fieldOfStudy', 'college', 'occupation', 'workSector', 'income'],
-      relative: ['fatherName', 'parentResidenceCity', 'mother', 'brothers', 'marriedBrothers', 'sisters', 'marriedSisters', 'nativeDistrict', 'nativeCity', 'familyWealth', 'relativeSurname', 'parentOccupation', 'mamaSurname',],
+      relative: ['fatherName', 'parentResidenceCity', 'mother', 'brothers', 'marriedBrothers', 'sisters', 'marriedSisters', 'nativeDistrict', 'nativeCity', 'relativeSurname', 'parentOccupation', 'mamaSurname',],
       horoscope: ['rashi', 'mangal', 'birthPlace', 'birthTime'],
       expectations: ['expectedCaste', 'expectedSubCaste', 'preferredCity', 'expectedAgeDifference', 'expectedEducation', 'expectedWorkingStatus', 'divorcee', 'expectedHeight', 'expectedIncome']
     };
@@ -1010,16 +1010,7 @@ export default function MyProfilePage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Family Wealth</label>
-                  <input
-                    type="text"
-                    value={formData.familyWealth}
-                    onChange={(e) => setFormData({ ...formData, familyWealth: e.target.value })}
-                    placeholder="Enter family wealth details"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
-                  />
-                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Parent Occupation</label>
                   <input
@@ -1041,12 +1032,12 @@ export default function MyProfilePage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Mama Surname</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Mamekul (mama's surname)</label>
                   <input
                     type="text"
                     value={formData.mamaSurname}
                     onChange={(e) => setFormData({ ...formData, mamaSurname: e.target.value })}
-                    placeholder="Enter mama surname"
+                    placeholder="Enter Mamekul (mama's surname)"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
                   />
                 </div>

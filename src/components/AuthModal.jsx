@@ -20,6 +20,11 @@ export default function AuthModal({ isOpen, onClose }) {
   const [signupPassword, setSignupPassword] = useState('');
   const [signupGender, setSignupGender] = useState('Male');
   
+  // Terms & Conditions States
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [termsModalVisible, setTermsModalVisible] = useState(false);
+  const [termsModalType, setTermsModalType] = useState('terms'); // 'terms' or 'privacy'
+  
   const [isLoading, setIsLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
   const [error, setError] = useState('');
@@ -36,6 +41,7 @@ export default function AuthModal({ isOpen, onClose }) {
       setSignupPhone('');
       setSignupEmail('');
       setSignupPassword('');
+      setAcceptTerms(false);
     }
   }, [isOpen]);
 
@@ -149,6 +155,10 @@ export default function AuthModal({ isOpen, onClose }) {
       setError('Please select your gender');
       return;
     }
+    if (!acceptTerms) {
+      setError('Please accept the Terms & Conditions and Privacy Policy to proceed');
+      return;
+    }
 
     setIsLoading(true);
 
@@ -181,6 +191,11 @@ export default function AuthModal({ isOpen, onClose }) {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const openTerms = (type) => {
+    setTermsModalType(type);
+    setTermsModalVisible(true);
   };
 
   const formatPhoneDisplay = (phone) => {
@@ -473,8 +488,29 @@ export default function AuthModal({ isOpen, onClose }) {
                 >
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
-                  <option value="Other">Other</option>
                 </select>
+              </div>
+
+              {/* Terms and Conditions Checkbox */}
+              <div className="flex items-start space-x-2 my-3">
+                <input
+                  type="checkbox"
+                  id="acceptTerms"
+                  checked={acceptTerms}
+                  onChange={(e) => setAcceptTerms(e.target.checked)}
+                  className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary accent-primary cursor-pointer"
+                  required
+                />
+                <label htmlFor="acceptTerms" className="text-xs text-gray-500 cursor-pointer select-none leading-relaxed">
+                  I agree to the{' '}
+                  <button type="button" onClick={() => openTerms('terms')} className="text-primary hover:underline font-semibold focus:outline-none">
+                    Terms & Conditions
+                  </button>{' '}
+                  and{' '}
+                  <button type="button" onClick={() => openTerms('privacy')} className="text-primary hover:underline font-semibold focus:outline-none">
+                    Privacy Policy
+                  </button>
+                </label>
               </div>
 
               {/* Error Banner */}
@@ -503,6 +539,85 @@ export default function AuthModal({ isOpen, onClose }) {
           )}
         </div>
       </div>
+      
+      {/* Terms & Conditions Modal Overlay */}
+      {termsModalVisible && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+              <h3 className="font-bold text-lg text-gray-800">
+                {termsModalType === 'terms' ? 'Terms & Conditions' : 'Privacy Policy'}
+              </h3>
+              <button 
+                onClick={() => setTermsModalVisible(false)}
+                className="p-1 hover:bg-gray-100 rounded-full transition-colors focus:outline-none"
+              >
+                <X size={20} className="text-gray-500" />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto space-y-4 text-sm text-gray-600 leading-relaxed max-h-[60vh] text-left">
+              {termsModalType === 'terms' ? (
+                <>
+                  <h4 className="font-semibold text-gray-900">1. Minimum Eligibility Criteria</h4>
+                  <p>
+                    To register as a member of BariVivah, you must be of legal marriageable age as per the laws of India (currently 21 years for males and 18 years for females) and legally single/divorced/widowed.
+                  </p>
+                  
+                  <h4 className="font-semibold text-gray-900">2. Accuracy of Profile Information</h4>
+                  <p>
+                    You agree to provide true, accurate, and complete information. Providing fake credentials, educational statuses, or uploading photos of other people will result in permanent account termination.
+                  </p>
+
+                  <h4 className="font-semibold text-gray-900">3. Background Verification Disclaimer</h4>
+                  <p>
+                    BariVivah facilitates phone and photo identification check verification. However, users are strongly advised to perform independent background checks, legal inquiries, and family visits before finalizing a marriage. The platform is not liable for character issues or misrepresentation of matches.
+                  </p>
+
+                  <h4 className="font-semibold text-gray-900">4. Strict Code of Conduct</h4>
+                  <p>
+                    No commercial advertisement or commercial matches are allowed. Any financial request (asking match for loans, cash, or deposits) is strictly prohibited. Violating this will lead to a permanent ban and local law enforcement reports.
+                  </p>
+
+                  <h4 className="font-semibold text-gray-900">5. Premium Subscription Policy</h4>
+                  <p>
+                    All premium unlock tokens or contact plans are non-refundable once matches are viewed or contacts are revealed.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h4 className="font-semibold text-gray-900">1. Collection of Information</h4>
+                  <p>
+                    We collect personal data (Name, Date of Birth, Gender, Photos, Caste, Income, and Education parameters) to generate matching profiles. Contact details are verified via secure OTP.
+                  </p>
+
+                  <h4 className="font-semibold text-gray-900">2. Information Visibility</h4>
+                  <p>
+                    Your match-making profile is visible to registered users of BariVivah. Phone numbers and emails are hidden by default and are only revealed if you explicitly approve contact exchange or unlock matches.
+                  </p>
+
+                  <h4 className="font-semibold text-gray-900">3. Secure Cloud Storage</h4>
+                  <p>
+                    We use industry-standard secure cloud servers to encrypt and protect your files and passwords. Your password is securely encrypted at rest.
+                  </p>
+
+                  <h4 className="font-semibold text-gray-900">4. Data Deletion</h4>
+                  <p>
+                    You hold full rights to permanently delete your account profile at any time. When deleted, all your active records are immediately wiped from our active databases.
+                  </p>
+                </>
+              )}
+            </div>
+            <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+              <button
+                onClick={() => setTermsModalVisible(false)}
+                className="px-5 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary/95 transition-colors focus:outline-none"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
