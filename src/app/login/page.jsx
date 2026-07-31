@@ -153,6 +153,7 @@ export default function MatrimonialLogin() {
   // Form states - Step 7: OTP validation
   const [otpCode, setOtpCode] = useState(['', '', '', '', '', '']);
   const [isOtpSent, setIsOtpSent] = useState(false);
+  const [receivedOtp, setReceivedOtp] = useState('');
   const [resendTimer, setResendTimer] = useState(0);
   const [registeredUserId, setRegisteredUserId] = useState('');
 
@@ -269,10 +270,6 @@ export default function MatrimonialLogin() {
       setIsLoading(false);
     }
   };
-
-  const [isOtpSent, setIsOtpSent] = useState(false);
-  const [receivedOtp, setReceivedOtp] = useState('');
-  const [otpCode, setOtpCode] = useState(['', '', '', '', '', '']);
 
   // OTP triggers
   const handleSendRegisterOTP = async () => {
