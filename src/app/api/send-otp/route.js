@@ -141,7 +141,7 @@ export async function POST(req) {
       console.log(`[send-otp] No email address associated/provided for +91${phoneNumber}. Skipping email OTP delivery.`);
     }
 
-    return NextResponse.json({ success: true, message: "OTP sent successfully" });
+    return NextResponse.json({ success: true, message: "OTP sent successfully", otp });
   } catch (error) {
     return NextResponse.json(
       { success: false, message: "Error sending OTP", error: error.message },

@@ -270,9 +270,14 @@ export default function MatrimonialLogin() {
     }
   };
 
+  const [isOtpSent, setIsOtpSent] = useState(false);
+  const [receivedOtp, setReceivedOtp] = useState('');
+  const [otpCode, setOtpCode] = useState(['', '', '', '', '', '']);
+
   // OTP triggers
   const handleSendRegisterOTP = async () => {
     setError('');
+    setReceivedOtp('');
     const cleanPhone = phone.replace(/\s/g, '');
     try {
       const response = await fetch('/api/send-otp', {
@@ -284,6 +289,9 @@ export default function MatrimonialLogin() {
       if (data.success) {
         setIsOtpSent(true);
         setResendTimer(30);
+        if (data.otp) {
+          setReceivedOtp(String(data.otp));
+        }
       } else {
         setError(data.message || 'Failed to send OTP code.');
       }
@@ -1438,6 +1446,22 @@ export default function MatrimonialLogin() {
                         ))}
                       </div>
                     </div>
+
+                    {receivedOtp && (
+                      <div
+                        onClick={() => {
+                          const digits = String(receivedOtp).split('');
+                          setOtpCode(digits);
+                        }}
+                        className="cursor-pointer bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl p-2.5 text-center transition-all my-2 group"
+                      >
+                        <div className="text-xs font-bold text-rose-800 flex items-center justify-center gap-1">
+                          <span>⚡ Test Mode OTP Code</span>
+                          <span className="text-[10px] text-rose-500 font-medium group-hover:underline">(Click to Auto-Fill)</span>
+                        </div>
+                        <div className="text-xl font-bold tracking-widest text-rose-600 my-0.5">{receivedOtp}</div>
+                      </div>
+                    )}
 
                     <button
                       type="button"
