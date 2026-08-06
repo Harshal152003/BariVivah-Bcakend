@@ -95,7 +95,7 @@ const Footer = () => {
               <li className="flex items-start space-x-3 group">
                 <MapPin className="text-primary mt-1 group-hover:text-primary-light transition-colors" size={20} />
                 <span className="text-white/70 text-sm leading-relaxed">
-                  123, Pride World City,<br />Charholi Budruk, Pune, Maharashtra 412105
+                  Office No 209,<br />Business Square, Bavdhan, Pune, Maharashtra 411021
                 </span>
               </li>
               <li className="flex items-center space-x-3 group">
@@ -107,7 +107,7 @@ const Footer = () => {
               <li className="flex items-center space-x-3 group">
                 <Phone className="text-primary group-hover:text-primary-light transition-colors" size={20} />
                 <a href="tel:+919876543210" className="text-white/70 hover:text-white transition-colors text-sm">
-                  +91 98765 43210
+                  +91 9503424635
                 </a>
               </li>
             </ul>
@@ -143,8 +143,8 @@ const Footer = () => {
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-white/50">
           <p>© {new Date().getFullYear()} BariVivah. All rights reserved.</p>
           <div className="flex items-center space-x-2 mt-4 md:mt-0">
-            <a 
-              href="/admin-login" 
+            <a
+              href="/admin-login"
               className="text-white/40 hover:text-white transition-colors duration-200 text-xs font-medium"
             >
               Admin Login
