@@ -51,32 +51,32 @@ export default function UserTestimonials() {
   };
 
   return (
-    <div className="relative w-full overflow-hidden bg-bg-light py-24">
+    <div className="relative w-full overflow-hidden bg-white py-24">
       {/* Decorative Background Elements */}
       <div className="absolute inset-0 pointer-events-none select-none">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent"></div>
-        <div className="absolute -left-20 top-40 w-72 h-72 bg-secondary/10 rounded-full blur-[80px]"></div>
+        <div className="absolute -left-20 top-40 w-72 h-72 bg-[#FFEBEF] rounded-full blur-[80px]"></div>
         <div className="absolute -right-20 bottom-40 w-80 h-80 bg-primary/10 rounded-full blur-[80px]"></div>
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="w-full max-w-[1200px] mx-auto px-6 relative z-10">
         <div className={`text-center mb-16 transition-all duration-1000 transform ${isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
           <div className="inline-block mb-3">
-            <span className="px-4 py-1 rounded-full bg-white border border-primary/20 text-primary text-sm font-medium shadow-sm">
+            <span className="px-4 py-1 rounded-full bg-[#f8f8f8] text-primary text-sm font-medium shadow-sm">
               Real Stories
             </span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-secondary mb-4 font-serif">
-            Matches Made in <span className="text-primary italic">Heaven</span>
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-sans tracking-tight">
+            Matches Made in <span className="text-primary">Heaven</span>
           </h2>
-          <p className="text-lg text-secondary/70 max-w-2xl mx-auto font-light">
+          <p className="text-lg text-[#5C3F43] max-w-2xl mx-auto">
             Read heartwarming stories from couples who found their forever through BariVivah.
           </p>
         </div>
 
         {/* Testimonial Slider */}
         <div className="relative max-w-6xl mx-auto mb-20">
-          <div className="relative bg-white rounded-[2.5rem] shadow-2xl overflow-hidden min-h-[500px] md:min-h-[400px] border border-white/50">
+          <div className="relative bg-white rounded-[2.5rem] shadow-md overflow-hidden min-h-[500px] md:min-h-[400px] border border-gray-100">
             {testimonials.map((testimonial, index) => (
               <div
                 key={testimonial.id}
@@ -94,7 +94,7 @@ export default function UserTestimonials() {
                   <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:to-white/10"></div>
                   {/* Mobile Name Overlay */}
                   <div className="absolute bottom-4 left-4 text-white md:hidden">
-                    <h3 className="text-xl font-serif font-bold">{testimonial.name}</h3>
+                    <h3 className="text-xl font-sans font-bold">{testimonial.name}</h3>
                     <p className="text-sm opacity-90">{testimonial.location}</p>
                   </div>
                 </div>
@@ -106,19 +106,19 @@ export default function UserTestimonials() {
 
                   <div className="relative z-10">
                     <div className="hidden md:block mb-6">
-                      <h3 className="text-3xl font-serif font-bold text-secondary">{testimonial.name}</h3>
+                      <h3 className="text-3xl font-sans font-bold text-gray-900">{testimonial.name}</h3>
                       <p className="text-primary font-medium">{testimonial.location}</p>
                     </div>
 
                     <div className="mb-8">
                       <Quote className="text-primary w-8 h-8 mb-4 opacity-50 rotate-180" />
-                      <p className="text-xl md:text-2xl text-secondary/80 font-serif italic leading-relaxed">
+                      <p className="text-xl md:text-2xl text-[#5C3F43] font-sans italic leading-relaxed">
                         {testimonial.content}
                       </p>
                     </div>
 
                     <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
-                      <div className="text-sm text-gray-500 font-medium tracking-wide uppercase">
+                      <div className="text-sm text-[#5C3F43] font-medium tracking-wide uppercase">
                         Married since {testimonial.joined}
                       </div>
                       <div className="h-px bg-gray-300 flex-grow max-w-[50px]"></div>
@@ -136,12 +136,12 @@ export default function UserTestimonials() {
 
           {/* Navigation Buttons (Floating) */}
           <div className="absolute top-1/2 -left-4 md:-left-8 -translate-y-1/2 z-20">
-            <button onClick={prevTestimonial} className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white text-secondary shadow-lg hover:bg-primary hover:text-white transition-all duration-300 flex items-center justify-center border border-gray-100 group">
+            <button onClick={prevTestimonial} className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white text-gray-900 shadow-lg hover:bg-primary hover:text-white transition-all duration-300 flex items-center justify-center border border-gray-100 group">
               <ChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
             </button>
           </div>
           <div className="absolute top-1/2 -right-4 md:-right-8 -translate-y-1/2 z-20">
-            <button onClick={nextTestimonial} className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white text-secondary shadow-lg hover:bg-primary hover:text-white transition-all duration-300 flex items-center justify-center border border-gray-100 group">
+            <button onClick={nextTestimonial} className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white text-gray-900 shadow-lg hover:bg-primary hover:text-white transition-all duration-300 flex items-center justify-center border border-gray-100 group">
               <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
@@ -160,7 +160,7 @@ export default function UserTestimonials() {
         </div>
 
         {/* Stats Grid */}
-        <div className={`grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto transition-all duration-1000 delay-300 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+        <div className={`grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto transition-all duration-1000 delay-300 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
           {[
             { value: "20,000+", label: "Happy Couples", Icon: HeartHandshake },
             { value: "98%", label: "Success Rate", Icon: Gem },
@@ -173,8 +173,8 @@ export default function UserTestimonials() {
               <div className="mb-4 inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                 <stat.Icon size={24} strokeWidth={1.5} />
               </div>
-              <div className="text-2xl md:text-3xl font-bold text-secondary mb-1 font-sans group-hover:text-primary transition-colors">{stat.value}</div>
-              <div className="text-sm md:text-base text-gray-500 font-medium uppercase tracking-wide">{stat.label}</div>
+              <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-1 font-sans group-hover:text-primary transition-colors">{stat.value}</div>
+              <div className="text-sm md:text-base text-[#5C3F43] font-medium uppercase tracking-wide">{stat.label}</div>
             </div>
           ))}
         </div>

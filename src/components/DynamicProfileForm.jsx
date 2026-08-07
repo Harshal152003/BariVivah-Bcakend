@@ -510,7 +510,7 @@ const DynamicProfileForm = () => {
               (Numeric)
             </span>
             {field.placeholder && (
-              <p className="text-xs text-gray-500 mt-1">{field.placeholder}</p>
+              <p className="text-xs text-[#5C3F43] mt-1">{field.placeholder}</p>
             )}
           </>
         );
@@ -534,7 +534,7 @@ const DynamicProfileForm = () => {
               {field.required && <span className="text-primary ml-1">*</span>}
             </label>
             {field.placeholder && (
-              <p className="text-xs text-gray-500 mt-1">{field.placeholder}</p>
+              <p className="text-xs text-[#5C3F43] mt-1">{field.placeholder}</p>
             )}
           </>
         );
@@ -629,7 +629,7 @@ const DynamicProfileForm = () => {
                         ) : (
                           <div className="text-center">
                             <Camera className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                            <p className="text-xs text-gray-500">Add Photo</p>
+                            <p className="text-xs text-[#5C3F43]">Add Photo</p>
                           </div>
                         )}
                         {photo.isPrimary && photo.url && (
@@ -648,7 +648,7 @@ const DynamicProfileForm = () => {
                         {photo.url && !photo.isPrimary && (
                           <button
                             onClick={() => handleMakePrimary(photo.id)}
-                            className="w-full bg-gray-50 text-gray-600 py-1 px-2 rounded text-xs font-medium hover:bg-gray-100 transition-colors"
+                            className="w-full bg-gray-50 text-[#5C3F43] py-1 px-2 rounded text-xs font-medium hover:bg-gray-100 transition-colors"
                           >
                             Make Primary
                           </button>
@@ -683,7 +683,7 @@ const DynamicProfileForm = () => {
 
               return (
                 <div key={field._id} className="space-y-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[#5C3F43] mb-2">
                     {field.label}
                     {field.required && <span className="text-primary ml-1">*</span>}
                   </label>
@@ -701,7 +701,7 @@ const DynamicProfileForm = () => {
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-secondary/30 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading your profile...</p>
+          <p className="text-[#5C3F43] text-lg">Loading your profile...</p>
         </div>
       </div>
     );
@@ -709,7 +709,7 @@ const DynamicProfileForm = () => {
   //sample
   return (
     <div className="min-h-screen bg-gradient-to-br from-secondary/5 via-white to-primary/5">
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-[1200px] mx-auto space-y-6">
         {/* Profile Header */}
         <div className="bg-white rounded-2xl p-8 shadow-xl border border-primary/20 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-2xl opacity-50"></div>
@@ -770,7 +770,7 @@ const DynamicProfileForm = () => {
                     <h1 className="text-2xl font-bold text-gray-900">{formData?.name || 'Your Name'}</h1>
                     {verificationStatus === 'Verified' && <Award className="w-5 h-5 text-green-500" />}
                   </div>
-                  <div className="space-y-1 text-gray-600">
+                  <div className="space-y-1 text-[#5C3F43]">
                     <div className="flex items-center space-x-4 text-sm">
                       {formData?.height && <span>{formData?.height}</span>}
                       {formData?.religion && <span>{formData?.religion}</span>}
@@ -791,7 +791,7 @@ const DynamicProfileForm = () => {
               <div className="flex flex-col space-y-3">
                 <div className="bg-primary/5 rounded-lg p-4 min-w-[200px]">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700">Profile Completion</span>
+                    <span className="text-sm font-medium text-[#5C3F43]">Profile Completion</span>
                     <span className="text-sm font-bold text-primary">
                       {profileCompletion}%
                     </span>
@@ -836,7 +836,7 @@ const DynamicProfileForm = () => {
                       onClick={() => setActiveTab(section._id)}
                       className={`w-full px-4 flex items-center p-3 rounded-lg transition-all duration-200 ${activeTab === section._id
                         ? 'bg-gradient-to-r from-secondary/10 to-primary/10 text-primary border border-primary/20 shadow-sm'
-                        : 'text-gray-700 hover:bg-gray-50'
+                        : 'text-[#5C3F43] hover:bg-gray-50'
                         }`}
                     >
                       <div className="flex items-center whitespace-nowrap">
@@ -899,7 +899,7 @@ const DynamicProfileForm = () => {
                 <div className="flex justify-end space-x-3">
                   <button
                     onClick={() => setActiveTab(formSections[0]?._id)}
-                    className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                    className="px-6 py-2 border border-gray-300 text-[#5C3F43] rounded-lg font-medium hover:bg-gray-50 transition-colors"
                   >
                     Cancel
                   </button>

@@ -13,107 +13,117 @@ export default function MatrimonialHero({ onAction }) {
   }, []);
 
   return (
-    <div className="relative min-h-[90vh] w-full flex items-center justify-center bg-bg-light overflow-hidden pt-10">
-      {/* Background Pattern Layer */}
-      <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
-        <div className="absolute inset-0 bg-[url('/background-pattern.jpg')] bg-cover bg-center"></div>
-      </div>
+    <div className="relative w-full flex bg-white overflow-hidden pt-4 lg:pt-8">
 
       {/* Hero Content */}
-      <div className="container relative z-10 mx-auto px-6 py-12 lg:py-20">
+      <div className="w-full max-w-[1200px] relative z-10 mx-auto px-6 pt-8 lg:pt-12 pb-12 lg:pb-20">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
 
           {/* Left Side: Text Content */}
           <div className={`flex-1 text-center lg:text-left space-y-8 transition-all duration-1000 transform ${isLoaded ? 'translate-x-0 opacity-100' : '-translate-x-10 opacity-0'}`}>
 
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 border border-primary/20 backdrop-blur-sm self-center lg:self-start mx-auto lg:mx-0 shadow-sm">
-              <Heart size={16} className="text-secondary fill-secondary" />
-              <span className="text-secondary font-medium text-sm tracking-wide uppercase">Trusted Matrimony Service</span>
-            </div>
-
-            <h1 className="text-4xl md:text-6xl font-serif font-bold text-secondary leading-tight">
-              Begin Your Journey to <br />
-              <span className="text-primary italic relative">
-                Forever
-                <svg className="absolute w-full h-3 -bottom-1 left-0 text-primary/30" viewBox="0 0 200 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.00025 6.99997C25.7509 2.15575 102.49 2.48835 200.001 6.99997" stroke="currentColor" strokeWidth="3" /></svg>
-              </span>
+            <h1 
+              className="text-gray-900 font-bold"
+              style={{ 
+                fontFamily: '"Plus Jakarta Sans", sans-serif',
+                fontSize: '60px',
+                lineHeight: '70px',
+                letterSpacing: '-0.25px',
+                verticalAlign: 'middle'
+              }}
+            >
+              Find Your <br className="hidden lg:block"/>
+              <span className="whitespace-nowrap"><span className="text-primary">Perfect</span> Life Partner</span>
             </h1>
 
-            <p className="text-lg md:text-xl text-secondary/70 max-w-2xl mx-auto lg:mx-0 font-sans leading-relaxed">
-              Discover a Match Made in Heaven. We blend tradition with modern matchmaking to help you find a partner who shares your values, dreams, and culture.
+            <p className="text-[17px] text-[#5C3F43] max-w-lg mx-auto lg:mx-0 font-sans leading-relaxed">
+              Join India's most trusted premium matchmaking service.<br className="hidden lg:block"/>
+              Discover thousands of verified profiles tailored to your<br className="hidden lg:block"/>
+              community and preferences.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
               <button 
                 onClick={() => onAction ? onAction(() => router.push('/dashboard')) : router.push('/dashboard')}
-                className="px-8 py-4 bg-secondary text-white rounded-full hover:bg-secondary/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center gap-3 group min-w-[180px] justify-center"
+                className="px-7 py-3.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-300 shadow-sm flex items-center gap-2 group min-w-[180px] justify-center"
               >
-                <span className="font-medium text-lg">Find a Match</span>
-                <ArrowRight size={20} className="transform group-hover:translate-x-1 transition-transform" />
+                <span className="font-medium text-base">Create Free Profile</span>
+                <ArrowRight size={18} className="transform group-hover:translate-x-1 transition-transform" />
               </button>
 
               <button 
-                onClick={() => onAction ? onAction(() => {
-                  const section = document.getElementById('how-it-works');
-                  if (section) section.scrollIntoView({ behavior: 'smooth' });
-                }) : null}
-                className="px-8 py-4 bg-white text-secondary border border-secondary/20 rounded-full hover:bg-primary/5 transition-all duration-300 shadow-md hover:shadow-lg min-w-[180px]"
+                onClick={() => onAction ? onAction(() => router.push('/matches')) : router.push('/matches')}
+                className="px-7 py-3.5 bg-white text-gray-800 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all duration-300 shadow-sm min-w-[180px]"
               >
-                <span className="font-medium text-lg">How It Works</span>
+                <span className="font-medium text-base">Browse Matches</span>
               </button>
             </div>
 
-            <div className="pt-8 flex items-center justify-center lg:justify-start gap-6">
-              <div className="flex -space-x-4">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="w-12 h-12 rounded-full border-2 border-bg-light relative overflow-hidden bg-gray-200">
-                    <Image width={100} height={100} src={`/people/rohan.jpg`} alt="Member" className="w-full h-full object-cover" />
+            <div className="pt-6 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5">
+              <div className="flex -space-x-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="w-[42px] h-[42px] rounded-full border-2 border-white relative overflow-hidden bg-gray-200 shadow-sm">
+                    <Image width={42} height={42} src={`/people/rohan.jpg`} alt="Member" className="w-full h-full object-cover" />
                   </div>
                 ))}
+                <div className="w-[42px] h-[42px] rounded-full border-2 border-white relative overflow-hidden bg-pink-50 flex items-center justify-center z-10 shadow-sm">
+                  <span className="text-[11px] font-bold text-primary">+2M</span>
+                </div>
               </div>
-              <div className="text-left">
-                <p className="text-2xl font-bold text-secondary">20k+</p>
-                <p className="text-sm text-secondary/60">Success Stories</p>
+              <div className="text-center sm:text-left">
+                <div className="flex items-center justify-center sm:justify-start text-yellow-400 gap-1 mb-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <svg key={star} className="w-[18px] h-[18px] fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                  ))}
+                </div>
+                <p className="text-sm text-[#5C3F43] font-medium">Trusted by millions</p>
               </div>
             </div>
           </div>
 
           {/* Right Side: Image Composition */}
-          <div className={`flex-1 relative w-full max-w-xl lg:max-w-none transition-all duration-1000 delay-300 transform ${isLoaded ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'}`}>
+          <div className={`flex-1 relative w-full max-w-xl lg:max-w-none lg:pl-16 transition-all duration-1000 delay-300 transform ${isLoaded ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'}`}>
             <div className="relative z-10">
-              {/* Main Image Frame (Arch Shape) */}
-              <div className="relative w-full aspect-[3/4] md:aspect-[4/5] lg:aspect-[3/4] rounded-t-[10rem] rounded-b-[2rem] overflow-hidden border-[8px] border-white shadow-2xl">
+              {/* Main Image Frame */}
+              <div className="relative w-full max-w-[544px] mx-auto opacity-100">
                 <img
-                  src="/images/HeroImage.png"
+                  src="/images/image_230.png"
                   alt="Happy Couple"
-                  className="w-full h-full object-cover scale-105 hover:scale-100 transition-transform duration-700"
+                  className="w-full h-auto object-contain rounded-xl"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-secondary/40 via-transparent to-transparent"></div>
 
-                {/* Floating Badge Bottom */}
-                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md px-6 py-3 rounded-2xl shadow-lg border border-white/50 w-[80%]">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="text-xs text-secondary/60 uppercase tracking-wider font-semibold">Match Rate</p>
-                      <p className="text-2xl font-bold text-primary">98.5%</p>
-                    </div>
-                    <div className="h-10 w-[1px] bg-secondary/10"></div>
-                    <div>
-                      <p className="text-xs text-secondary/60 uppercase tracking-wider font-semibold">Verified Profiles</p>
-                      <p className="text-2xl font-bold text-secondary">100%</p>
-                    </div>
+                {/* Badge 1: Top Left */}
+                <div className="absolute top-[15%] -left-8 md:-left-12 bg-white px-5 py-3 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.03)] flex items-center gap-3 animate-float-slow z-20 border border-gray-100">
+                  <div className="w-[32px] h-[32px] rounded-full bg-[#FFEBEF] flex items-center justify-center text-primary">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path></svg>
                   </div>
+                  <div>
+                    <p className="text-[10px] text-[#5C3F43] uppercase tracking-widest font-semibold mb-0.5">Status</p>
+                    <p className="text-[14px] font-bold text-gray-900 leading-none">100% Verified</p>
+                  </div>
+                </div>
+
+                {/* Badge 2: Bottom Left */}
+                <div className="absolute bottom-[20%] -left-6 md:-left-10 bg-white px-5 py-4 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.03)] flex items-center gap-3 animate-float-medium z-20 border border-gray-100">
+                  <div className="w-[36px] h-[36px] rounded-full border-[2.5px] border-primary flex items-center justify-center">
+                    <span className="text-primary font-bold text-[13px]">98%</span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-[#5C3F43] uppercase tracking-widest font-semibold mb-0.5">Match</p>
+                    <p className="text-[14px] font-bold text-gray-900 leading-none">Compatibility</p>
+                  </div>
+                </div>
+
+                {/* Badge 3: Middle Right */}
+                <div className="absolute top-[55%] -right-8 md:-right-12 bg-white px-4 py-3 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.03)] flex items-center gap-2.5 animate-float-fast z-20 border border-gray-100">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#22C55E]"></div>
+                  <span className="text-[14px] font-bold text-gray-900 leading-none">Online Now</span>
                 </div>
               </div>
 
-              {/* Decorative Elements behind text/image */}
-              <div className="absolute -top-12 -right-12 w-64 h-64 bg-primary/10 rounded-full blur-3xl -z-10"></div>
-              <div className="absolute -bottom-12 -left-12 w-64 h-64 bg-secondary/10 rounded-full blur-3xl -z-10"></div>
+              {/* Decorative Elements behind text/image (Removed for flat white bg) */}
 
-              {/* Floral decoration (CSS shapes or SVG) */}
-              <svg className="absolute -top-6 -left-6 w-24 h-24 text-primary opacity-80" viewBox="0 0 100 100" fill="currentColor">
-                <path d="M50 0 C60 20 80 20 100 20 C80 40 80 60 100 80 C80 80 60 80 50 100 C40 80 20 80 0 80 C20 60 20 40 0 20 C20 20 40 20 50 0 Z" />
-              </svg>
+              {/* Floral decoration removed as requested */}
             </div>
           </div>
         </div>

@@ -39,7 +39,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen }) {
       `}>
         {/* Mobile close button */}
         <button
-          className="lg:hidden absolute top-4 right-4 p-1 rounded-full bg-rose-50 text-gray-500 hover:text-primary transition-colors"
+          className="lg:hidden absolute top-4 right-4 p-1 rounded-full bg-rose-50 text-[#5C3F43] hover:text-primary transition-colors"
           onClick={() => setMobileOpen(false)}
         >
           <X className="w-5 h-5" />
@@ -82,7 +82,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen }) {
                 href={item.href}
                 className={`group flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 relative overflow-hidden ${isActive
                   ? "bg-gradient-to-r from-secondary to-primary text-white shadow-lg shadow-primary/20 transform scale-[1.02]"
-                  : "hover:bg-gradient-to-r hover:from-rose-50 hover:to-amber-50 text-gray-700 hover:text-primary hover:shadow-md hover:transform hover:scale-[1.02]"
+                  : "hover:bg-gradient-to-r hover:from-rose-50 hover:to-amber-50 text-[#5C3F43] hover:text-primary hover:shadow-md hover:transform hover:scale-[1.02]"
                   }`}
               >
                 {/* Active indicator */}
@@ -96,7 +96,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen }) {
                   }`}>
                   <Icon className={`w-5 h-5 transition-all duration-300 ${isActive
                     ? "text-white"
-                    : "text-gray-500 group-hover:text-primary"
+                    : "text-[#5C3F43] group-hover:text-primary"
                     }`} />
                 </div>
 

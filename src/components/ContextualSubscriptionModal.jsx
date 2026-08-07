@@ -22,7 +22,7 @@ export default function ContextualSubscriptionModal({ isOpen, onClose, interestD
                         onClick={onClose}
                         className="absolute top-4 right-4 p-1 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors z-10"
                     >
-                        <X className="w-5 h-5 text-gray-500" />
+                        <X className="w-5 h-5 text-[#5C3F43]" />
                     </button>
 
                     {/* Header Image/Gradient */}
@@ -53,15 +53,15 @@ export default function ContextualSubscriptionModal({ isOpen, onClose, interestD
                             </h3>
                             <div className="flex items-center">
                                 <CheckCircle className="w-5 h-5 text-primary mr-3 flex-shrink-0" />
-                                <span className="text-gray-700">See full profile & photos (Unblurred)</span>
+                                <span className="text-[#5C3F43]">See full profile & photos (Unblurred)</span>
                             </div>
                             <div className="flex items-center">
                                 <CheckCircle className="w-5 h-5 text-primary mr-3 flex-shrink-0" />
-                                <span className="text-gray-700">Accept interest and start chatting</span>
+                                <span className="text-[#5C3F43]">Accept interest and start chatting</span>
                             </div>
                             <div className="flex items-center">
                                 <CheckCircle className="w-5 h-5 text-primary mr-3 flex-shrink-0" />
-                                <span className="text-gray-700">View contact details</span>
+                                <span className="text-[#5C3F43]">View contact details</span>
                             </div>
                         </div>
 

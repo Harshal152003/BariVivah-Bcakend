@@ -35,118 +35,103 @@ export default function SearchMatchesWidget({ onAction }) {
   };
 
   return (
-    <div className="w-full bg-white shadow-lg rounded-2xl overflow-hidden transform -mt-8 relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-0">
-      <div className={`p-1 transition-all duration-1000 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-        <div className="bg-gradient-to-r from-rose-50 to-amber-50 rounded-xl p-4 sm:p-6">
-          <form onSubmit={handleSubmit}>
-            <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:items-center gap-2 md:gap-4">
-              <h3 className="text-secondary font-semibold text-lg flex items-center md:mr-2 lg:mr-4 md:pr-2 lg:pr-4 md:border-r md:border-gray-200">
-                <Heart className="text-primary mr-2" size={20} />
-                <span className="whitespace-nowrap">Find Matches</span>
-              </h3>
+    <div className="w-full bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[24px] overflow-hidden transform -mt-12 relative z-30 max-w-[1200px] mx-auto px-6 py-6 md:px-10 md:py-8 border border-gray-50">
+      <div className={`transition-all duration-1000 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+        <form onSubmit={handleSubmit} className="flex flex-col md:flex-row items-end gap-4 md:gap-6 justify-between">
+          
+          {/* Looking For */}
+          <div className="w-full md:flex-1">
+            <label className="block text-[#5C3F43] text-[13px] font-medium mb-2 pl-2">Looking For</label>
+            <div className="relative">
+              <select
+                name="gender"
+                value={filters.gender}
+                onChange={handleChange}
+                className="w-full bg-[#f8f8f8] text-gray-800 rounded-[14px] px-5 py-3.5 appearance-none focus:outline-none focus:ring-1 focus:ring-primary text-[15px] font-medium cursor-pointer"
+              >
+                <option value="female">Bride</option>
+                <option value="male">Groom</option>
+              </select>
+              <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-[#5C3F43]">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              </div>
+            </div>
+          </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 flex-1 w-full">
-                {/* Age Range Filter */}
-                <div className="relative w-full">
-                  <div className="absolute left-3 top-3 text-secondary/50">
-                    <Calendar size={18} />
-                  </div>
-                  <div className="flex items-center w-full">
-                    <select
-                      name="ageMin"
-                      value={filters.ageMin}
-                      onChange={handleChange}
-                      className="pl-10 py-2 pr-2 bg-white rounded-l-lg border border-r-0 border-gray-200 text-secondary text-sm focus:ring-1 focus:ring-primary focus:outline-none w-full"
-                    >
-                      {Array.from({ length: 30 }, (_, i) => i + 18).map(age => (
-                        <option key={`min-${age}`} value={age}>{age}</option>
-                      ))}
-                    </select>
-                    <span className="bg-white border-t border-b border-gray-200 py-2 px-2 text-secondary/70 text-sm whitespace-nowrap">to</span>
-                    <select
-                      name="ageMax"
-                      value={filters.ageMax}
-                      onChange={handleChange}
-                      className="pr-4 py-2 pl-2 bg-white rounded-r-lg border border-l-0 border-gray-200 text-secondary text-sm focus:ring-1 focus:ring-primary focus:outline-none w-full"
-                    >
-                      {Array.from({ length: 42 }, (_, i) => i + 18).map(age => (
-                        <option key={`max-${age}`} value={age}>{age}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Gender Filter */}
-                <div className="relative w-full">
-                  <div className="absolute left-3 top-3 text-secondary/50">
-                    <Users size={18} />
-                  </div>
-                  <select
-                    name="gender"
-                    value={filters.gender}
-                    onChange={handleChange}
-                    className="pl-10 py-2 pr-4 bg-white rounded-lg border border-gray-200 text-secondary w-full text-sm focus:ring-1 focus:ring-primary focus:outline-none appearance-none"
-                  >
-                    <option value="">Looking for</option>
-                    <option value="female">Bride</option>
-                    <option value="male">Groom</option>
-                  </select>
-                </div>
-
-                {/* Location Filter */}
-                <div className="relative w-full">
-                  <div className="absolute left-3 top-3 text-secondary/50">
-                    <MapPin size={18} />
-                  </div>
-                  <select
-                    name="location"
-                    value={filters.location}
-                    onChange={handleChange}
-                    className="pl-10 py-2 pr-4 bg-white rounded-lg border border-gray-200 text-secondary w-full text-sm focus:ring-1 focus:ring-primary focus:outline-none appearance-none"
-                  >
-                    <option value="">Any Location</option>
-                    <option value="mumbai">Mumbai</option>
-                    <option value="delhi">Delhi</option>
-                    <option value="bangalore">Bangalore</option>
-                    <option value="chennai">Chennai</option>
-                    <option value="kolkata">Kolkata</option>
-                    <option value="international">International</option>
-                  </select>
-                </div>
-
-                {/* Religion/Caste Filter */}
-                <div className="relative w-full">
-                  <div className="absolute left-3 top-3 text-secondary/50">
-                    <Heart size={18} />
-                  </div>
-                  <select
-                    name="religion"
-                    value={filters.religion}
-                    onChange={handleChange}
-                    className="pl-10 py-2 pr-4 bg-white rounded-lg border border-gray-200 text-secondary w-full text-sm focus:ring-1 focus:ring-primary focus:outline-none appearance-none"
-                  >
-                    <option value="">Any Religion</option>
-                    <option value="hindu">Hindu</option>
-                    <option value="muslim">Muslim</option>
-                    <option value="christian">Christian</option>
-                    <option value="sikh">Sikh</option>
-                    <option value="jain">Jain</option>
-                    <option value="buddhist">Buddhist</option>
-                    <option value="other">Other</option>
-                  </select>
+          {/* Age Range */}
+          <div className="w-full md:flex-[1.5]">
+            <label className="block text-[#5C3F43] text-[13px] font-medium mb-2 pl-2">Age</label>
+            <div className="flex items-center gap-3">
+              <div className="relative flex-1">
+                <select
+                  name="ageMin"
+                  value={filters.ageMin}
+                  onChange={handleChange}
+                  className="w-full bg-[#f8f8f8] text-gray-800 rounded-[14px] px-5 py-3.5 appearance-none focus:outline-none focus:ring-1 focus:ring-primary text-[15px] font-medium cursor-pointer"
+                >
+                  {Array.from({ length: 30 }, (_, i) => i + 18).map(age => (
+                    <option key={`min-${age}`} value={age}>{age}</option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-[#5C3F43]">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                 </div>
               </div>
-
-              <button
-                type="submit"
-                className="flex-shrink-0 px-4 py-2 sm:px-6 sm:py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-full hover:from-secondary hover:to-primary transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center whitespace-nowrap w-full sm:w-auto"
-              >
-                <Search size={18} className="mr-2" />
-                <span className="font-medium">Search</span>
-              </button>
+              <span className="text-[#5C3F43] font-medium text-[15px]">to</span>
+              <div className="relative flex-1">
+                <select
+                  name="ageMax"
+                  value={filters.ageMax}
+                  onChange={handleChange}
+                  className="w-full bg-[#f8f8f8] text-gray-800 rounded-[14px] px-5 py-3.5 appearance-none focus:outline-none focus:ring-1 focus:ring-primary text-[15px] font-medium cursor-pointer"
+                >
+                  {Array.from({ length: 42 }, (_, i) => i + 18).map(age => (
+                    <option key={`max-${age}`} value={age}>{age}</option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-[#5C3F43]">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+              </div>
             </div>
-          </form>
-        </div>
+          </div>
+
+          {/* Religion */}
+          <div className="w-full md:flex-1">
+            <label className="block text-[#5C3F43] text-[13px] font-medium mb-2 pl-2">Religion</label>
+            <div className="relative">
+              <select
+                name="religion"
+                value={filters.religion}
+                onChange={handleChange}
+                className="w-full bg-[#f8f8f8] text-gray-800 rounded-[14px] px-5 py-3.5 appearance-none focus:outline-none focus:ring-1 focus:ring-primary text-[15px] font-medium cursor-pointer"
+              >
+                <option value="hindu">Hindu</option>
+                <option value="muslim">Muslim</option>
+                <option value="christian">Christian</option>
+                <option value="sikh">Sikh</option>
+                <option value="jain">Jain</option>
+                <option value="buddhist">Buddhist</option>
+                <option value="other">Other</option>
+              </select>
+              <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-[#5C3F43]">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <div className="w-full md:w-auto h-[52px]">
+            <button
+              type="submit"
+              className="w-full md:w-auto h-full px-10 bg-primary text-white rounded-[14px] hover:bg-primary/90 transition-all duration-300 flex items-center justify-center font-medium text-[16px]"
+            >
+              <Search size={18} className="mr-2" strokeWidth={2.5} />
+              Search
+            </button>
+          </div>
+
+        </form>
       </div>
     </div>
   );

@@ -55,7 +55,7 @@ export default function SuccessStories() {
   // Number of cards to show per view based on screen size
   const getVisibleCards = () => {
     if (typeof window !== 'undefined') {
-      if (window.innerWidth >= 1280) return 3;
+      if (window.innerWidth >= 1280) return 2;
       if (window.innerWidth >= 768) return 2;
     }
     return 1;
@@ -99,7 +99,7 @@ export default function SuccessStories() {
         <div className="absolute bottom-20 right-20 w-80 h-80 rounded-full bg-secondary/20 blur-3xl opacity-40"></div>
       </div>
 
-      <div className="container mx-auto px-4">
+      <div className="w-full max-w-[1440px] mx-auto px-4">
         <div className={`transition-all duration-1000 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
           {/* Section header */}
           <div className="text-center mb-16">
@@ -111,7 +111,7 @@ export default function SuccessStories() {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
               Celebrating <span className="text-primary">Success</span> Stories
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <p className="text-[#5C3F43] max-w-2xl mx-auto">
               Thousands of couples have found their perfect match through our platform.
               Here are some heartwarming journeys to inspire your own love story.
             </p>
@@ -123,14 +123,14 @@ export default function SuccessStories() {
             <div className="flex justify-between absolute top-1/2 left-0 right-0 -mt-6 px-2 md:px-4 z-10">
               <button
                 onClick={prevSlide}
-                className="w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-700 hover:bg-primary/10 hover:text-primary transition-all"
+                className="w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center text-[#5C3F43] hover:bg-primary/10 hover:text-primary transition-all"
                 aria-label="Previous testimonials"
               >
                 <ChevronLeft size={20} />
               </button>
               <button
                 onClick={nextSlide}
-                className="w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-700 hover:bg-primary/10 hover:text-primary transition-all"
+                className="w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center text-[#5C3F43] hover:bg-primary/10 hover:text-primary transition-all"
                 aria-label="Next testimonials"
               >
                 <ChevronRight size={20} />
@@ -146,7 +146,7 @@ export default function SuccessStories() {
                 {successStories.map((story) => (
                   <div
                     key={story.id}
-                    className={`w-full md:w-1/2 xl:w-1/3 flex-shrink-0 px-4`}
+                    className={`w-full md:w-1/2 xl:w-1/2 flex-shrink-0 px-3 md:px-4`}
                   >
                     <div className="bg-white rounded-2xl shadow-xl overflow-hidden h-full transform hover:-translate-y-1 transition-all duration-300">
                       <div className="relative">
@@ -160,7 +160,7 @@ export default function SuccessStories() {
                       </div>
 
                       <div className="p-6 pb-8 pt-10">
-                        <p className="text-gray-600 italic mb-6">"{story.story}"</p>
+                        <p className="text-[#5C3F43] italic mb-6">"{story.story}"</p>
 
                         <div className="flex items-center">
                           <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-primary/20">

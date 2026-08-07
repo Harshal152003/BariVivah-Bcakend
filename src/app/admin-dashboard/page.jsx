@@ -36,7 +36,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-rose-500"></div>
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary-dark"></div>
       </div>
     );
   }
@@ -44,12 +44,12 @@ export default function AdminDashboard() {
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="text-center max-w-md p-6 rounded-xl bg-rose-50 border border-rose-100">
-          <h2 className="text-xl font-bold text-rose-600 mb-2">Error loading dashboard</h2>
-          <p className="text-rose-500 mb-4">{error}</p>
+        <div className="text-center max-w-md p-6 rounded-xl bg-primary-dark/5 border border-primary-dark/20">
+          <h2 className="text-xl font-bold text-primary-dark mb-2">Error loading dashboard</h2>
+          <p className="text-primary-dark/80 mb-4">{error}</p>
           <button 
             onClick={() => window.location.reload()}
-            className="px-6 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-all shadow hover:shadow-md"
+            className="px-6 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark/90 transition-all shadow hover:shadow-md"
           >
             Retry
           </button>

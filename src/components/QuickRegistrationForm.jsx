@@ -126,11 +126,11 @@ export default function QuickRegistrationForm() {
           {[1, 2].map((stepNumber) => (
             <div key={stepNumber} className="flex flex-col items-center">
               <div className={`w-10 h-10 rounded-full flex items-center justify-center 
-                ${step >= stepNumber ? 'bg-primary text-white' : 'bg-gray-200 text-gray-600'} 
+                ${step >= stepNumber ? 'bg-primary text-white' : 'bg-gray-200 text-[#5C3F43]'} 
                 ${step === stepNumber ? 'ring-4 ring-primary/20' : ''}`}>
                 {step > stepNumber ? <Check size={16} /> : stepNumber}
               </div>
-              <span className={`text-xs mt-1 ${step >= stepNumber ? 'text-primary font-medium' : 'text-gray-500'}`}>
+              <span className={`text-xs mt-1 ${step >= stepNumber ? 'text-primary font-medium' : 'text-[#5C3F43]'}`}>
                 Step {stepNumber}
               </span>
             </div>
@@ -141,7 +141,7 @@ export default function QuickRegistrationForm() {
           {step === 1 ? (
             <div className="space-y-4">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="name" className="block text-sm font-medium text-[#5C3F43] mb-1">
                   Full Name *
                 </label>
                 <input
@@ -158,7 +158,7 @@ export default function QuickRegistrationForm() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Gender *</label>
+                <label className="block text-sm font-medium text-[#5C3F43] mb-1">Gender *</label>
                 <div className="grid grid-cols-2 gap-3">
                   {['Male', 'Female'].map((gender) => (
                     <label key={gender} className="flex items-center space-x-2">
@@ -171,7 +171,7 @@ export default function QuickRegistrationForm() {
                         onBlur={handleBlur}
                         className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
                       />
-                      <span className="text-gray-700">{gender}</span>
+                      <span className="text-[#5C3F43]">{gender}</span>
                     </label>
                   ))}
                 </div>
@@ -179,7 +179,7 @@ export default function QuickRegistrationForm() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Looking For *</label>
+                <label className="block text-sm font-medium text-[#5C3F43] mb-1">Looking For *</label>
                 <div className="grid grid-cols-2 gap-3">
                   {['Male', 'Female'].map((option) => (
                     <label key={option} className="flex items-center space-x-2">
@@ -192,7 +192,7 @@ export default function QuickRegistrationForm() {
                         onBlur={handleBlur}
                         className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
                       />
-                      <span className="text-gray-700">{option}</span>
+                      <span className="text-[#5C3F43]">{option}</span>
                     </label>
                   ))}
                 </div>
@@ -211,7 +211,7 @@ export default function QuickRegistrationForm() {
           ) : (
             <div className="space-y-4">
               <div>
-                <label htmlFor="dob" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="dob" className="block text-sm font-medium text-[#5C3F43] mb-1">
                   Date of Birth *
                 </label>
                 <input
@@ -227,7 +227,7 @@ export default function QuickRegistrationForm() {
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="email" className="block text-sm font-medium text-[#5C3F43] mb-1">
                   Email *
                 </label>
                 <input
@@ -244,7 +244,7 @@ export default function QuickRegistrationForm() {
               </div>
 
               <div>
-                <label htmlFor="mobile" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="mobile" className="block text-sm font-medium text-[#5C3F43] mb-1">
                   Mobile Number *
                 </label>
                 <input
@@ -281,7 +281,7 @@ export default function QuickRegistrationForm() {
           )}
         </form>
 
-        <p className="text-xs text-gray-500 mt-6 text-center">
+        <p className="text-xs text-[#5C3F43] mt-6 text-center">
           By registering, you agree to our Terms and Privacy Policy
         </p>
       </div>

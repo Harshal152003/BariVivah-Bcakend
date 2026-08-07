@@ -17,7 +17,7 @@
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.509.0",
     "mongoose": "^8.15.1",
-    "next": "15.3.8",
+    "next": "^15.5.23",
     "next-cloudinary": "^6.16.0",
     "node-cron": "^4.2.1",
     "pdf-lib": "^1.17.1",

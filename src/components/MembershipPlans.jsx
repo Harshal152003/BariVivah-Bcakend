@@ -57,21 +57,21 @@ export default function MembershipPlans() {
     }, []);
 
     return (
-        <section className="py-24 bg-bg-light relative overflow-hidden">
+        <section className="py-24 bg-white relative overflow-hidden">
             {/* Background Decorative */}
             <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px]"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#f8f8f8] rounded-full blur-[120px]"></div>
             </div>
 
-            <div className="container mx-auto px-6 relative z-10">
+            <div className="w-full max-w-[1200px] mx-auto px-6 relative z-10">
                 <div className={`text-center mb-16 transition-all duration-1000 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-                    <span className="px-4 py-1 rounded-full bg-white border border-primary/20 text-primary text-sm font-medium shadow-sm">
+                    <span className="px-4 py-1 rounded-full bg-[#f8f8f8] text-primary text-sm font-medium shadow-sm">
                         Pricing Plans
                     </span>
-                    <h2 className="text-4xl md:text-5xl font-bold text-secondary mt-4 mb-4 font-serif">
-                        Invest in Your <span className="text-primary italic">Future</span>
+                    <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-4 mb-4 font-sans tracking-tight">
+                        Invest in Your <span className="text-primary">Future</span>
                     </h2>
-                    <p className="text-lg text-secondary/70 max-w-2xl mx-auto">
+                    <p className="text-lg text-[#5C3F43] max-w-2xl mx-auto">
                         Choose a plan that brings you closer to your soulmate.
                     </p>
                 </div>
@@ -84,27 +84,27 @@ export default function MembershipPlans() {
                             border-gray-100
                             ${plan.popular
                                     ? 'shadow-xl z-10 hover:border-yellow-500'
-                                    : 'shadow-md hover:border-secondary'
+                                    : 'shadow-md hover:border-primary/50'
                                 } 
                             ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
                             style={{ transitionDelay: `${index * 150}ms` }}
                         >
                             {plan.popular && (
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-primary to-secondary text-white px-6 py-1.5 rounded-full text-sm font-bold shadow-lg flex items-center gap-2">
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white px-6 py-1.5 rounded-full text-sm font-bold shadow-lg flex items-center gap-2">
                                     <Sparkles size={14} className="animate-pulse" /> Most Popular
                                 </div>
                             )}
 
                             <div className="text-center mb-8">
-                                <h3 className="text-2xl font-serif font-bold text-secondary mb-2">{plan.name}</h3>
+                                <h3 className="text-2xl font-sans font-bold text-gray-900 mb-2">{plan.name}</h3>
                                 <div className="text-4xl font-bold text-primary mb-1">{plan.price}</div>
                                 <div className="text-sm text-gray-400 font-medium uppercase tracking-wider">{plan.duration}</div>
                             </div>
 
                             <ul className="space-y-4 mb-8">
                                 {plan.features.map((feature, i) => (
-                                    <li key={i} className="flex items-center text-secondary/80 text-sm">
-                                        <div className={`w-5 h-5 rounded-full mr-3 flex items-center justify-center ${plan.popular ? 'bg-primary/20 text-primary' : 'bg-gray-100 text-gray-500'}`}>
+                                    <li key={i} className="flex items-center text-[#5C3F43] text-sm">
+                                        <div className={`w-5 h-5 rounded-full mr-3 flex items-center justify-center ${plan.popular ? 'bg-primary/20 text-primary' : 'bg-gray-100 text-[#5C3F43]'}`}>
                                             <Check size={12} strokeWidth={3} />
                                         </div>
                                         {feature}
@@ -112,7 +112,7 @@ export default function MembershipPlans() {
                                 ))}
                             </ul>
 
-                            <button className={`w-full py-3.5 rounded-xl font-bold transition-all duration-300 ${plan.popular ? 'bg-gradient-to-r from-primary to-secondary text-white hover:shadow-lg hover:opacity-90' : 'bg-gray-50 text-secondary hover:bg-gray-100 border border-gray-200'}`}>
+                            <button className={`w-full py-3.5 rounded-xl font-bold transition-all duration-300 ${plan.popular ? 'bg-primary text-white hover:shadow-lg hover:bg-primary/90' : 'bg-gray-50 text-gray-900 hover:bg-gray-100 border border-gray-200'}`}>
                                 {plan.cta}
                             </button>
                         </div>

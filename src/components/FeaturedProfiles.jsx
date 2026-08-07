@@ -97,18 +97,18 @@ export default function FeaturedProfiles({ onAction }) {
   };
 
   return (
-    <div className="relative py-24 w-full overflow-hidden bg-white lg:px-20">
+    <div id="browse-profiles" className="relative py-24 w-full overflow-hidden bg-white lg:px-20">
       {/* Decorative elements */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-40 left-20 w-72 h-72 rounded-full bg-primary/20 blur-3xl opacity-20"></div>
-        <div className="absolute bottom-20 right-20 w-80 h-80 rounded-full bg-secondary/20 blur-3xl opacity-20"></div>
-        <div className="absolute top-60 right-1/4 w-60 h-60 rounded-full bg-accent/20 blur-3xl opacity-20"></div>
+        <div className="absolute top-40 left-20 w-72 h-72 rounded-full bg-white/10 blur-3xl opacity-20"></div>
+        <div className="absolute bottom-20 right-20 w-80 h-80 rounded-full bg-white/10 blur-3xl opacity-20"></div>
+        <div className="absolute top-60 right-1/4 w-60 h-60 rounded-full bg-white/10 blur-3xl opacity-20"></div>
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="w-full max-w-[1200px] mx-auto px-4 relative z-10">
         <div className={`text-center mb-16 transition-all duration-700 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-          <h2 className="text-4xl font-bold text-secondary mb-4 font-serif">Featured Profiles</h2>
-          <p className="text-lg text-secondary/70 max-w-2xl mx-auto">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4 font-sans tracking-tight">Featured Profiles</h2>
+          <p className="text-lg text-[#5C3F43] max-w-2xl mx-auto">
             Meet some of our exceptional members looking for meaningful connections
           </p>
         </div>
@@ -143,7 +143,7 @@ export default function FeaturedProfiles({ onAction }) {
                 ref={el => cardsRef.current[index] = el}
                 className="flex-shrink-0 w-80 snap-center p-2"
               >
-                <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:border-2 hover:border-[#7E5D8C] transition-all duration-300 transform hover:scale-105 group border border-gray-100 h-full flex flex-col">
+                <div className="bg-white rounded-2xl overflow-hidden hover:border-primary hover:border-2 transition-all duration-300 transform hover:scale-105 group border border-gray-100 h-full flex flex-col">
                   {/* Profile image */}
                   <div className="relative h-96 overflow-hidden flex-shrink-0">
                     <Image
@@ -181,7 +181,7 @@ export default function FeaturedProfiles({ onAction }) {
 
                     <button 
                       onClick={() => onAction ? onAction(() => router.push('/dashboard')) : router.push('/dashboard')}
-                      className="w-full py-3 px-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-medium hover:from-secondary hover:to-primary transition-all duration-300 shadow-md hover:shadow-lg"
+                      className="w-full py-3 px-4 bg-primary text-white rounded-xl font-medium hover:bg-primary/90 transition-all duration-300 shadow-md hover:shadow-lg"
                     >
                       View Profile
                     </button>

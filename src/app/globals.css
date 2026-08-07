@@ -1,14 +1,19 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #FDB1C7;         /* Figma Accent Pink */
+  --color-primary: #FB2467;         /* Vibrant Pink */
   --color-primary-light: #FFEBEF;   /* Light Pink */
+  --color-primary-dark: #FDB1C7;    /* Previous Light Pink */
   --color-secondary: #7E5D8C;       /* Brand Purple */
   --color-accent: #E29BB2;          /* Muted Pink */
   --color-bg-light: #FFFDFB;        /* Figma Background Cream/Pink */
 }
 
 @layer base {
+  html {
+    font-size: 85%; /* Scales down all rem-based sizes to simulate 80-85% zoom */
+    scroll-behavior: smooth;
+  }
   body {
     background-color: var(--color-bg-light);
     color: var(--color-secondary);
@@ -33,6 +38,8 @@
 }
 
 .uiverse-input:focus {
+  transform: scale(1.02);
+  box-shadow: 0 4px 15px rgba(242, 100, 146, 0.1);
   outline: none;
   border-bottom-color: transparent;
 }
@@ -107,5 +114,19 @@
     width: 0;
     background: transparent;
   }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float-slow {
+  animation: float 4.5s ease-in-out infinite;
+}
+.animate-float-medium {
+  animation: float 3.5s ease-in-out infinite;
+}
+.animate-float-fast {
+  animation: float 2.5s ease-in-out infinite;
 }
 

@@ -214,7 +214,7 @@ export default function AuthModal({ isOpen, onClose }) {
         <button 
           onClick={onClose}
           type="button"
-          className="absolute top-5 right-5 text-gray-400 hover:text-gray-600 transition-colors z-30 p-1 hover:bg-gray-100 rounded-full"
+          className="absolute top-5 right-5 text-gray-400 hover:text-[#5C3F43] transition-colors z-30 p-1 hover:bg-gray-100 rounded-full"
         >
           <X size={20} />
         </button>
@@ -233,7 +233,7 @@ export default function AuthModal({ isOpen, onClose }) {
           <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1">
             {activeTab === 'login' ? 'Welcome Back' : 'Create Account'}
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-[#5C3F43]">
             {activeTab === 'login' ? 'Find your perfect match' : 'Register to find your perfect match'}
           </p>
         </div>
@@ -246,7 +246,7 @@ export default function AuthModal({ isOpen, onClose }) {
             className={`flex-1 pb-3 text-sm font-semibold transition-all border-b-2 ${
               activeTab === 'login'
                 ? 'border-primary text-primary'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-[#5C3F43] hover:text-[#5C3F43]'
             }`}
           >
             Login
@@ -257,7 +257,7 @@ export default function AuthModal({ isOpen, onClose }) {
             className={`flex-1 pb-3 text-sm font-semibold transition-all border-b-2 ${
               activeTab === 'signup'
                 ? 'border-primary text-primary'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-[#5C3F43] hover:text-[#5C3F43]'
             }`}
           >
             Register
@@ -271,7 +271,7 @@ export default function AuthModal({ isOpen, onClose }) {
               // Phone Number Step
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <label className="block text-xs sm:text-sm font-medium text-[#5C3F43] mb-2 flex items-center">
                     <Phone size={14} className="mr-2 text-primary" />
                     Enter Mobile Number
                   </label>
@@ -328,13 +328,13 @@ export default function AuthModal({ isOpen, onClose }) {
                     <Shield size={16} className="text-green-600" />
                   </div>
                   <h3 className="text-sm font-semibold text-gray-800 mb-1">Verify OTP</h3>
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-[#5C3F43]">
                     OTP sent to {countryCode} {formatPhoneDisplay(phoneNumber)}
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-2 text-center">
+                  <label className="block text-xs font-medium text-[#5C3F43] mb-2 text-center">
                     Enter 6-digit OTP
                   </label>
 
@@ -394,7 +394,7 @@ export default function AuthModal({ isOpen, onClose }) {
                       setError('');
                     }}
                     type="button"
-                    className="text-gray-600 hover:text-gray-700 text-xs font-medium flex items-center justify-center"
+                    className="text-[#5C3F43] hover:text-[#5C3F43] text-xs font-medium flex items-center justify-center"
                   >
                     <Edit size={12} className="mr-1.5" />
                     Change Number
@@ -407,7 +407,7 @@ export default function AuthModal({ isOpen, onClose }) {
             <form onSubmit={handleSignUp} className="space-y-3.5">
               {/* Full Name */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <label className="block text-xs font-medium text-[#5C3F43] mb-1 flex items-center">
                   <User size={12} className="mr-1.5 text-primary" />
                   Full Name
                 </label>
@@ -423,12 +423,12 @@ export default function AuthModal({ isOpen, onClose }) {
 
               {/* Mobile Number */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <label className="block text-xs font-medium text-[#5C3F43] mb-1 flex items-center">
                   <Phone size={12} className="mr-1.5 text-primary" />
                   Mobile Number
                 </label>
                 <div className="flex space-x-2">
-                  <span className="px-2.5 py-2 border border-gray-200 bg-gray-50 rounded-lg sm:rounded-xl text-sm flex items-center justify-center font-medium text-gray-500">
+                  <span className="px-2.5 py-2 border border-gray-200 bg-gray-50 rounded-lg sm:rounded-xl text-sm flex items-center justify-center font-medium text-[#5C3F43]">
                     +91
                   </span>
                   <input
@@ -445,7 +445,7 @@ export default function AuthModal({ isOpen, onClose }) {
 
               {/* Email (Optional) */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <label className="block text-xs font-medium text-[#5C3F43] mb-1 flex items-center">
                   <Mail size={12} className="mr-1.5 text-primary" />
                   Email Address (Optional)
                 </label>
@@ -460,7 +460,7 @@ export default function AuthModal({ isOpen, onClose }) {
 
               {/* Password */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <label className="block text-xs font-medium text-[#5C3F43] mb-1 flex items-center">
                   <Lock size={12} className="mr-1.5 text-primary" />
                   Password
                 </label>
@@ -476,7 +476,7 @@ export default function AuthModal({ isOpen, onClose }) {
 
               {/* Gender Dropdown */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <label className="block text-xs font-medium text-[#5C3F43] mb-1 flex items-center">
                   <UserCheck size={12} className="mr-1.5 text-primary" />
                   Gender
                 </label>
@@ -501,7 +501,7 @@ export default function AuthModal({ isOpen, onClose }) {
                   className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary accent-primary cursor-pointer"
                   required
                 />
-                <label htmlFor="acceptTerms" className="text-xs text-gray-500 cursor-pointer select-none leading-relaxed">
+                <label htmlFor="acceptTerms" className="text-xs text-[#5C3F43] cursor-pointer select-none leading-relaxed">
                   I agree to the{' '}
                   <button type="button" onClick={() => openTerms('terms')} className="text-primary hover:underline font-semibold focus:outline-none">
                     Terms & Conditions
@@ -552,10 +552,10 @@ export default function AuthModal({ isOpen, onClose }) {
                 onClick={() => setTermsModalVisible(false)}
                 className="p-1 hover:bg-gray-100 rounded-full transition-colors focus:outline-none"
               >
-                <X size={20} className="text-gray-500" />
+                <X size={20} className="text-[#5C3F43]" />
               </button>
             </div>
-            <div className="p-6 overflow-y-auto space-y-4 text-sm text-gray-600 leading-relaxed max-h-[60vh] text-left">
+            <div className="p-6 overflow-y-auto space-y-4 text-sm text-[#5C3F43] leading-relaxed max-h-[60vh] text-left">
               {termsModalType === 'terms' ? (
                 <>
                   <h4 className="font-semibold text-gray-900">1. Minimum Eligibility Criteria</h4>

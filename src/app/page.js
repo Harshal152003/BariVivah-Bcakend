@@ -31,20 +31,22 @@ export default function HomePage() {
   return (
     <>
       <Navbar />
-      <HeroSection onAction={handleAction} />
+      <div id="home"><HeroSection onAction={handleAction} /></div>
       {/* <QuickRegistrationForm /> */}
-      <SearchMatchesWidget onAction={handleAction} />
-      <WhyChooseUs />
+      <div id="search-matches" className="scroll-mt-24 w-full bg-white relative z-20">
+        <SearchMatchesWidget onAction={handleAction} />
+      </div>
+      <div id="about" className="scroll-mt-24"><WhyChooseUs /></div>
       <HowItWorks onAction={handleAction} />
       <FeaturedProfiles onAction={handleAction} />
       {/* <SuccessStories /> */}
 
       <AppDownload />
-      <UserTestimonials />
+      <div id="success-stories" className="scroll-mt-24"><UserTestimonials /></div>
 
       <BlogPreview />
-      <MembershipPlans />
-      <Footer />
+      <div id="membership" className="scroll-mt-24"><MembershipPlans /></div>
+      <div id="contact"><Footer /></div>
 
       <AuthModal 
         isOpen={showAuthModal} 

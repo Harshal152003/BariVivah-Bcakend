@@ -8,28 +8,28 @@ const steps = [
         title: "Create Profile",
         description: "Register for free & create your profile",
         icon: UserPlus,
-        color: "bg-blue-100 text-blue-600"
+        color: "bg-[#f8f8f8] text-primary"
     },
     {
         id: 2,
         title: "Search Matches",
         description: "Search matches by your preference",
         icon: Search,
-        color: "bg-pink-100 text-pink-600"
+        color: "bg-[#f8f8f8] text-primary"
     },
     {
         id: 3,
         title: "Interact",
         description: "Connect & Chat with verified members",
         icon: MessageCircleHeart,
-        color: "bg-purple-100 text-purple-600"
+        color: "bg-[#f8f8f8] text-primary"
     },
     {
         id: 4,
         title: "Marriage",
         description: "Find your perfect match & get married",
         icon: Gem,
-        color: "bg-red-100 text-red-600"
+        color: "bg-[#f8f8f8] text-primary"
     }
 ];
 
@@ -46,13 +46,13 @@ export default function HowItWorks() {
             <div className="absolute top-0 left-0 w-64 h-64 bg-secondary/5 rounded-full blur-[80px] -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
             <div className="absolute bottom-0 right-0 w-80 h-80 bg-primary/5 rounded-full blur-[80px] translate-x-1/2 translate-y-1/2 pointer-events-none"></div>
 
-            <div className="container mx-auto px-6 relative z-10">
+            <div className="w-full max-w-[1200px] mx-auto px-6 relative z-10">
                 <div className={`text-center mb-16 transition-all duration-1000 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-                    <span className="px-4 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">Simple Process</span>
-                    <h2 className="text-4xl md:text-5xl font-bold text-secondary mt-4 mb-4 font-serif">
-                        How it <span className="text-primary italic">Works</span>
+                    <span className="px-4 py-1 rounded-full bg-[#f8f8f8] text-primary text-sm font-medium">Simple Process</span>
+                    <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-4 mb-4 font-sans tracking-tight">
+                        How it <span className="text-primary">Works</span>
                     </h2>
-                    <p className="text-lg text-secondary/70 max-w-2xl mx-auto">
+                    <p className="text-lg text-[#5C3F43] max-w-2xl mx-auto">
                         3 easy steps to find your life partner.
                     </p>
                 </div>
@@ -71,8 +71,8 @@ export default function HowItWorks() {
                                 <step.icon size={32} strokeWidth={1.5} />
                                 <div className="absolute -bottom-2 bg-white px-2 py-0.5 rounded-full text-xs font-bold border border-gray-100 shadow-sm">0{step.id}</div>
                             </div>
-                            <h3 className="text-xl font-bold text-secondary mb-2 font-serif">{step.title}</h3>
-                            <p className="text-secondary/60 text-sm max-w-[200px]">{step.description}</p>
+                            <h3 className="text-xl font-bold text-gray-900 mb-2 font-sans">{step.title}</h3>
+                            <p className="text-[#5C3F43] text-sm max-w-[200px]">{step.description}</p>
                         </div>
                     ))}
                 </div>

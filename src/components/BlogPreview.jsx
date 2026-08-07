@@ -49,16 +49,16 @@ export default function BlogPreview() {
 
   return (
     <section className="py-24 bg-white overflow-hidden">
-      <div className="container mx-auto px-6">
+      <div className="w-full max-w-[1200px] mx-auto px-6">
         {/* Minimal Header */}
         <div className={`flex flex-col md:flex-row justify-between items-end mb-12 transition-all duration-1000 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
           <div className="max-w-xl">
             <span className="text-primary font-bold tracking-widest uppercase text-xs mb-3 block">Our Journal</span>
-            <h2 className="text-4xl md:text-5xl font-serif font-bold text-secondary leading-tight">
-              Wedding & <span className="italic text-primary">Relationship</span> Guide
+            <h2 className="text-4xl md:text-5xl font-sans font-bold text-gray-900 leading-tight tracking-tight">
+              Wedding & <span className="text-primary">Relationship</span> Guide
             </h2>
           </div>
-          <button className="hidden md:flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-primary transition-colors group">
+          <button className="hidden md:flex items-center gap-2 text-sm font-medium text-[#5C3F43] hover:text-primary transition-colors group">
             View All Articles
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </button>
@@ -74,7 +74,7 @@ export default function BlogPreview() {
                 alt={featuredPost.title}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
-              <span className="absolute top-6 left-6 bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-bold text-secondary uppercase tracking-wider">
+              <span className="absolute top-6 left-6 bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-bold text-gray-900 uppercase tracking-wider">
                 Featured
               </span>
             </div>
@@ -87,10 +87,10 @@ export default function BlogPreview() {
                 <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
                 <span>{featuredPost.readTime}</span>
               </div>
-              <h3 className="text-3xl md:text-4xl font-serif font-bold text-secondary mb-4 leading-tight group-hover:text-primary transition-colors">
+              <h3 className="text-3xl md:text-4xl font-sans font-bold text-gray-900 mb-4 leading-tight group-hover:text-primary transition-colors tracking-tight">
                 {featuredPost.title}
               </h3>
-              <p className="text-gray-500 text-lg font-light leading-relaxed mb-6">
+              <p className="text-[#5C3F43] text-lg font-light leading-relaxed mb-6">
                 {featuredPost.excerpt}
               </p>
               <span className="inline-flex items-center gap-2 text-primary font-medium border-b border-primary/20 hover:border-primary pb-0.5 transition-all">
@@ -117,7 +117,7 @@ export default function BlogPreview() {
                   </div>
                   <div className="flex flex-col justify-center">
                     <span className="text-primary text-xs font-bold uppercase tracking-wider mb-2">{post.category}</span>
-                    <h4 className="text-xl font-serif font-bold text-secondary mb-2 leading-snug group-hover:text-primary transition-colors">
+                    <h4 className="text-xl font-sans font-bold text-gray-900 mb-2 leading-snug group-hover:text-primary transition-colors">
                       {post.title}
                     </h4>
                     <div className="flex items-center gap-3 text-xs text-gray-400 mt-auto">
@@ -131,12 +131,12 @@ export default function BlogPreview() {
             </div>
 
             {/* Newsletter (Cleaner: Minimalist box) */}
-            <div className={`mt-10 bg-bg-light rounded-2xl p-8 transition-all duration-700 delay-700 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-              <h4 className="text-xl font-serif font-bold text-secondary mb-2">Subscribe to our newsletter</h4>
-              <p className="text-gray-500 text-sm mb-4">Weekly advice for your journey to forever.</p>
+            <div className={`mt-10 bg-[#f8f8f8] rounded-2xl p-8 transition-all duration-700 delay-700 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+              <h4 className="text-xl font-sans font-bold text-gray-900 mb-2">Subscribe to our newsletter</h4>
+              <p className="text-[#5C3F43] text-sm mb-4">Weekly advice for your journey to forever.</p>
               <div className="flex gap-2">
-                <input type="email" placeholder="Email address" className="bg-white border-0 rounded-lg px-4 py-3 text-sm w-full focus:ring-2 focus:ring-primary/20" />
-                <button className="bg-secondary hover:bg-primary text-white px-5 rounded-lg transition-colors font-medium">
+                <input type="email" placeholder="Email address" className="bg-white border-0 rounded-lg px-4 py-3 text-sm w-full focus:ring-2 focus:ring-primary/20 shadow-sm" />
+                <button className="bg-primary hover:bg-primary/90 text-white px-5 rounded-lg transition-colors font-medium shadow-sm">
                   Join
                 </button>
               </div>
@@ -146,7 +146,7 @@ export default function BlogPreview() {
 
         {/* Mobile View All Button */}
         <div className="mt-12 text-center md:hidden">
-          <button className="inline-flex items-center gap-2 text-secondary font-medium text-sm">
+          <button className="inline-flex items-center gap-2 text-gray-900 font-medium text-sm hover:text-primary transition-colors">
             View All Articles <ArrowRight size={16} />
           </button>
         </div>
