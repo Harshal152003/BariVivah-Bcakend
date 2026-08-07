@@ -95,7 +95,7 @@ const Footer = () => {
               <li className="flex items-start space-x-3 group">
                 <MapPin className="text-primary mt-1 group-hover:text-primary-light transition-colors" size={20} />
                 <span className="text-white/70 text-sm leading-relaxed">
-                  Office No 209,<br />Business Square, Bavdhan, Pune, Maharashtra 411021
+                  <br />Pune, Maharashtra 411021
                 </span>
               </li>
               <li className="flex items-center space-x-3 group">
@@ -104,12 +104,12 @@ const Footer = () => {
                   support@barivivah.com
                 </a>
               </li>
-              <li className="flex items-center space-x-3 group">
+              {/* <li className="flex items-center space-x-3 group">
                 <Phone className="text-primary group-hover:text-primary-light transition-colors" size={20} />
                 <a href="tel:+919876543210" className="text-white/70 hover:text-white transition-colors text-sm">
                   +91 9503424635
                 </a>
-              </li>
+              </li> */}
             </ul>
           </div>
         </div>
