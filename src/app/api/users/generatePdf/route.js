@@ -47,7 +47,7 @@ export async function POST(request) {
         const response = await fetch(userData.profilePhoto);
         if (response.ok) {
           const imageBuffer = await response.arrayBuffer();
-          
+
           // Try to embed as JPEG first, then PNG if that fails
           try {
             profileImage = await pdfDoc.embedJpg(imageBuffer);
@@ -102,7 +102,7 @@ export async function POST(request) {
           return `${parts[0]}/${parts[1]}/${parts[2]}`;
         }
       }
-      
+
       try {
         const d = new Date(date);
         return isNaN(d) ? date : d.toLocaleDateString('en-IN', {
@@ -117,7 +117,7 @@ export async function POST(request) {
 
     const calculateAge = (dob) => {
       if (!dob) return '';
-      
+
       // Handle different date formats
       let birthDate;
       if (typeof dob === 'string' && dob.includes('/')) {
@@ -130,9 +130,9 @@ export async function POST(request) {
       } else {
         birthDate = new Date(dob);
       }
-      
+
       if (isNaN(birthDate)) return '';
-      
+
       const ageDiff = Date.now() - birthDate.getTime();
       const ageDate = new Date(ageDiff);
       return Math.abs(ageDate.getUTCFullYear() - 1970);
@@ -153,36 +153,36 @@ export async function POST(request) {
 
     // Company name and branding
     const headerX = logoImage ? margin + 120 : margin;
-    drawText('SHIVBANDHAN MATRIMONIAL SERVICES', headerX, currentY, {
+    drawText('Barivivah Matrimony', headerX, currentY, {
       size: 16,
       bold: true,
       color: primaryRed
     });
     currentY -= 25;
 
-    drawText('Durga Prasad Apartments, S. No. 26/6, Flat No. 1, Above Udyam Vikas Bank,', 
-             headerX, currentY, {
+    drawText('Office No 209, Business Square, Bavdhan Pune 411021',
+      headerX, currentY, {
       size: 9,
       color: darkText
     });
     currentY -= 12;
 
-    drawText('Hingne KD, Sinhagad Road, Pune 411051, Maharashtra, India', 
-             headerX, currentY, {
+    drawText('',
+      headerX, currentY, {
       size: 9,
       color: darkText
     });
     currentY -= 12;
 
-    drawText('Mobile: +91-8888438693 / +91-8888438694 • Email: support@shivbandhan.com', 
-             headerX, currentY, {
+    drawText('Mobile: +91-9503424635 • Email: support@barivivah.in',
+      headerX, currentY, {
       size: 9,
       color: darkText
     });
     currentY -= 12;
 
-    drawText('Website: www.shivbandhan.com', 
-             headerX, currentY, {
+    drawText('Website: www.barivivah.in',
+      headerX, currentY, {
       size: 9,
       color: accentBlue,
       italic: true
@@ -198,21 +198,21 @@ export async function POST(request) {
     });
     currentY -= 50;
 
-    
-    const profileId = userData.id ? userData.id.toString().slice(-6).toUpperCase() : 
-                     (userData._id ? userData._id.toString().slice(-6).toUpperCase() : 
-                     Date.now().toString().slice(-6));
-    
+
+    const profileId = userData.id ? userData.id.toString().slice(-6).toUpperCase() :
+      (userData._id ? userData._id.toString().slice(-6).toUpperCase() :
+        Date.now().toString().slice(-6));
+
     // Calculate text area width based on whether we have a profile image
     // Increased the space for the larger profile photo
     const textAreaWidth = profileImage ? contentWidth - 180 : contentWidth;
-    
+
     // Draw profile image if available - INCREASED SIZE
     if (profileImage) {
       const imgDims = profileImage.scale(0.35); // Increased from 0.25 to 0.35
       const imgX = width - margin - imgDims.width - 10;
       const imgY = currentY - 5; // Adjusted to align with text
-      
+
       // Draw a border around the image
       page.drawRectangle({
         x: imgX - 5,
@@ -222,7 +222,7 @@ export async function POST(request) {
         borderColor: borderGray,
         borderWidth: 1,
       });
-      
+
       page.drawImage(profileImage, {
         x: imgX,
         y: imgY,
@@ -230,7 +230,7 @@ export async function POST(request) {
         height: imgDims.height,
       });
     }
-    
+
     // Background for profile header - increased height to accommodate larger image
     const profileHeaderHeight = profileImage ? 80 : 60;
     page.drawRectangle({
@@ -250,7 +250,7 @@ export async function POST(request) {
       color: primaryRed,
       maxWidth: textAreaWidth - 20
     });
-    
+
     // Profile ID positioned correctly
     const profileIdText = `Profile ID: SB-${profileId}`;
     const profileIdWidth = boldFont.widthOfTextAtSize(profileIdText, 10);
@@ -258,7 +258,7 @@ export async function POST(request) {
       size: 10,
       color: lightText
     });
-    
+
     // DOB and Age
     const dobText = `DOB: ${formatDate(userData.dob) || 'N/A'} | Age: ${userData.age || calculateAge(userData.dob) || 'N/A'} years`;
     drawText(dobText, margin + 10, currentY + 35, {
@@ -266,7 +266,7 @@ export async function POST(request) {
       color: darkText,
       maxWidth: textAreaWidth - 20
     });
-    
+
     // Gender and Education
     const genderEduText = `Gender: ${userData.gender || 'N/A'} | Education: ${userData.education || 'N/A'}`;
     drawText(genderEduText, margin + 10, currentY + 20, {
@@ -274,7 +274,7 @@ export async function POST(request) {
       color: darkText,
       maxWidth: textAreaWidth - 20
     });
-    
+
     currentY -= (profileHeaderHeight + 15);
 
     // Draw section with improved styling
@@ -300,7 +300,7 @@ export async function POST(request) {
 
       // Section content with alternating row colors
       const rows = data.filter(([_, value]) => value || value === 0 || value === false);
-      
+
       rows.forEach(([label, value], index) => {
         if (index % 2 === 0) {
           page.drawRectangle({
@@ -313,11 +313,11 @@ export async function POST(request) {
           });
         }
 
-        const display = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : 
-                       (Array.isArray(value) ? value.join(', ') : value);
+        const display = typeof value === 'boolean' ? (value ? 'Yes' : 'No') :
+          (Array.isArray(value) ? value.join(', ') : value);
 
         drawText(`${label}:`, margin + 10, currentY, { size: 10, bold: true });
-        drawText(sanitizeText(display.toString()), margin + 120, currentY, { 
+        drawText(sanitizeText(display.toString()), margin + 120, currentY, {
           size: 10,
           maxWidth: contentWidth - 130
         });
@@ -357,7 +357,7 @@ export async function POST(request) {
 
     // Footer with branding
     currentY = Math.max(currentY - 20, 60);
-    
+
     // Footer divider
     page.drawLine({
       start: { x: margin, y: currentY },
@@ -368,26 +368,26 @@ export async function POST(request) {
     currentY -= 15;
 
     // Footer content
-    drawText('ShivBandhan Matrimonial Services • Trusted Since 2010', margin, currentY, {
+    drawText('Barivivah Matrimony', margin, currentY, {
       size: 10,
       bold: true,
       color: primaryRed
     });
     currentY -= 12;
 
-    drawText('Pune • Mumbai • Delhi • Bangalore • Hyderabad', margin, currentY, {
+    drawText('', margin, currentY, {
       size: 9,
       color: darkText
     });
-    
+
     drawText(`Generated on ${new Date().toLocaleDateString('en-IN')}`, width - margin - 120, currentY, {
       size: 9,
       color: lightText
     });
     currentY -= 12;
 
-    drawText('Contact: +91-8888438693 | Email: support@shivbandhan.com | Website: www.shivbandhan.com', 
-             margin, currentY, {
+    drawText('Contact: +91-9503424635 | Email: support@barivivah.in | Website: www.barivivah.in',
+      margin, currentY, {
       size: 8,
       color: lightText
     });
@@ -396,7 +396,7 @@ export async function POST(request) {
     const pdfBytes = await pdfDoc.save();
     const base64Pdf = Buffer.from(pdfBytes).toString('base64');
     const sanitizedName = (userData.name || 'Profile').replace(/[^a-zA-Z0-9]/g, '_');
-    const fileName = `ShivBandhan_Profile_${sanitizedName}.pdf`;
+    const fileName = `Barivivah_Profile_${sanitizedName}.pdf`;
 
     return NextResponse.json({
       success: true,
