@@ -370,7 +370,7 @@ export async function GET(request) {
 
     // 3. Fetch Candidate Pool
     const candidatePool = await User.find(query)
-      .select('-password -__v')
+      .select('-password -__v -verificationSelfieUrl -verificationDocUrl')
       .lean();
 
     // 4. Calculate Scores for candidates

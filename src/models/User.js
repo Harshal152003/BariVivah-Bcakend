@@ -42,6 +42,12 @@ const UserSchema = new mongoose.Schema({
     enum: ["Unverified", "Pending", "Verified", "Rejected"],
     default: "Unverified",
   },
+  verificationSelfieUrl: { type: String, default: null },
+  verificationDocType: { type: String, default: null },
+  verificationDocUrl: { type: String, default: null },
+  verificationRejectReason: { type: String, default: null },
+  verificationSubmittedAt: { type: Date, default: null },
+  verificationApprovedAt: { type: Date, default: null },
   profileCompletion: {
     type: Number,
     default: 0,
@@ -112,6 +118,8 @@ const UserSchema = new mongoose.Schema({
     type: String,
   },
   bio: String,
+  about: String,
+  description: String,
   familyType: String,
   fatherOccupation: String,
   motherOccupation: String,
@@ -173,6 +181,18 @@ const UserSchema = new mongoose.Schema({
     city: String,
   },
 
+  // GPS & Location Info
+  location: {
+    latitude: { type: Number, default: null },
+    longitude: { type: Number, default: null },
+    currentCity: { type: String, default: null },
+    state: { type: String, default: null },
+    country: { type: String, default: 'India' },
+    formattedAddress: { type: String, default: null },
+    permissionGranted: { type: Boolean, default: false },
+    lastUpdated: { type: Date, default: null }
+  },
+
   // Privacy settings
   privacySettings: {
     showname: { type: Boolean, default: false },
@@ -216,9 +236,15 @@ const UserSchema = new mongoose.Schema({
   profileSetup: {
     willAdminFill: Boolean,  // true if admin should fill, false if user will fill
     dontAskAgain: Boolean,   // true if we shouldn't show popup again
-
   },
 });
+
+// --- HIGH PERFORMANCE DATABASE INDEXES (Scale to 10,000+ Users) ---
+UserSchema.index({ gender: 1, isVerified: 1, createdAt: -1 });
+UserSchema.index({ caste: 1, currentCity: 1, isVerified: 1 });
+UserSchema.index({ phone: 1 });
+UserSchema.index({ email: 1 });
+UserSchema.index({ 'location.latitude': 1, 'location.longitude': 1 });
 
 delete mongoose.models.User; // Remove existing model if it exists
 export default mongoose.models.User || mongoose.model("User", UserSchema);

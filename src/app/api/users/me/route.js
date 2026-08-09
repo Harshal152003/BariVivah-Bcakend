@@ -69,6 +69,9 @@ export async function GET(request) {
       permanentAddress: user.permanentAddress,
       diet: user.diet,
       hobbies: user.hobbies,
+      bio: user.bio,
+      about: user.about,
+      description: user.description,
 
       // Religious & Community
       religion: user.religion,
@@ -88,6 +91,7 @@ export async function GET(request) {
       // Location
       currentCity: user.currentCity,
       state: user.state,
+      location: user.location || null,
 
       // Relative Info
       fatherName: user.fatherName,
