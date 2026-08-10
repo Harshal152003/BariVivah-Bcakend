@@ -45,7 +45,7 @@ const fetchUsers = async (page = 1) => {
   try {
     setLoading(true);
     // Remove pagination parameters to get all users
-    const response = await fetch(`/api/users/fetchAllUsers`);
+    const response = await fetch(`/api/users/fetchAllUsers?limit=all`);
     
     if (!response.ok) {
       throw new Error('Failed to fetch users');
