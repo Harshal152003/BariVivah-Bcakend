@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/db';
+import connectDB from "@/lib/dbConnect";
 import User from '@/models/User';
 import ContactUnlock from '@/models/ContactUnlock';
 import { verifyToken } from '@/lib/auth';

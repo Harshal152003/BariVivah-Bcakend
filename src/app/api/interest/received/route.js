@@ -35,18 +35,30 @@ export async function GET(req) {
     // Find all interests where the user is the receiver
     const interests = await Interest.find({ receiverId: userId });
 
-    // Populate sender and receiver details
-    const populatedInterests = await Promise.all(
-      interests.map(async (interest) => {
-        const sender = await User.findById(interest.senderId).select('-password'); // Exclude sensitive data
-        const receiver = await User.findById(interest.receiverId).select('-password');
-        return {
-          ...interest._doc,
-          sender,
-          receiver
-        };
-      })
-    );
+    // Collect unique sender IDs
+    const senderIds = [...new Set(interests.map(interest => interest.senderId.toString()))];
+
+    // Fetch all required users in a single query (optimized)
+    const users = await User.find({ _id: { $in: [userId, ...senderIds] } })
+      .select('-password')
+      .lean();
+
+    // Create a map for quick lookup
+    const userMap = {};
+    users.forEach(u => {
+      userMap[u._id.toString()] = u;
+    });
+
+    const receiverUser = userMap[userId] || null;
+
+    // Attach sender and receiver details
+    const populatedInterests = interests.map(interest => {
+      return {
+        ...(interest._doc || interest),
+        sender: userMap[interest.senderId.toString()] || null,
+        receiver: receiverUser
+      };
+    });
 
     return NextResponse.json({ 
       success: true,

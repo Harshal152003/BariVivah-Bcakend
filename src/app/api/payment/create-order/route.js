@@ -2,7 +2,7 @@
 
 import { NextResponse } from "next/server";
 import Razorpay from "razorpay";
-import connectDB from "@/lib/db";
+import connectDB from "@/lib/dbConnect";
 import Subscription from "@/models/Subscription";
 
 export async function POST(req) {

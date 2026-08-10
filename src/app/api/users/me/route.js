@@ -41,7 +41,7 @@ export async function GET(request) {
       );
     }
 
-    const user = await User.findById(decoded.userId).select('-__v');
+    const user = await User.findById(decoded.userId).select('-__v').lean();
     if (!user) {
       return NextResponse.json(
         { message: 'User not found' },

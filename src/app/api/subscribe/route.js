@@ -1,6 +1,6 @@
 // /app/api/user/subscribe/route.js
 import { NextResponse } from "next/server";
-import connectDB from "@/lib/db";
+import connectDB from "@/lib/dbConnect";
 import User from "@/models/User";
 import Subscription from "@/models/Subscription";
 

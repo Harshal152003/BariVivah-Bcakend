@@ -46,17 +46,30 @@ export async function GET(req) {
       status: 'accepted'
     });
 
-    // Populate the other user's details for each match
-    const populatedMatches = await Promise.all(
-      matches.map(async (match) => {
-        const otherUserId = match.senderId.toString() === userId ? match.receiverId : match.senderId;
-        const otherUser = await User.findById(otherUserId).select('-password');
-        return {
-          ...match._doc,
-          matchedUser: otherUser
-        };
-      })
+    // Get all unique user IDs involved in these matches
+    const otherUserIds = matches.map(match => 
+      match.senderId.toString() === userId ? match.receiverId : match.senderId
     );
+
+    // Fetch all other users in a single query (optimized)
+    const otherUsers = await User.find({ _id: { $in: otherUserIds } })
+      .select('-password')
+      .lean();
+
+    // Create a map for quick lookup
+    const userMap = {};
+    otherUsers.forEach(u => {
+      userMap[u._id.toString()] = u;
+    });
+
+    // Attach the user details to each match
+    const populatedMatches = matches.map(match => {
+      const otherUserId = match.senderId.toString() === userId ? match.receiverId.toString() : match.senderId.toString();
+      return {
+        ...(match._doc || match),
+        matchedUser: userMap[otherUserId] || null
+      };
+    });
 
     return NextResponse.json({ 
       success: true,
