@@ -339,7 +339,7 @@ export default function SettingsLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50/50 via-white to-amber-50/30 p-4 sm:p-6">
+    <div className="min-h-screen bg-[#FFFFFF] p-4 sm:p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className={`transform transition-all duration-1000 mb-4 sm:mb-6 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>

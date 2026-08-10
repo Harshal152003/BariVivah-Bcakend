@@ -57,7 +57,7 @@ export default function MatrimonialDashboard() {
         month: 'short',
         day: 'numeric'
       }),
-      color: isSubscribed && !isExpired ? 'bg-gradient-to-br from-primary to-secondary' : 'bg-gradient-to-br from-primary to-secondary'
+      color: isSubscribed && !isExpired ? 'bg-primary' : 'bg-primary'
     };
   };
 
@@ -84,14 +84,14 @@ export default function MatrimonialDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50/50 via-white to-amber-50/30 p-6">
+    <div className="min-h-screen bg-[#FFFFFF] p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Welcome Section */}
         {!isLoaded ? (
           <SkeletonCard height="h-32" />
         ) : (
           <div className={`transform transition-all duration-1000 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
-            <div className="bg-gradient-to-r from-secondary to-primary rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+            <div className="bg-primary rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
               <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full blur-xl"></div>
               <div className="relative z-10">
@@ -233,7 +233,7 @@ export default function MatrimonialDashboard() {
                 <div className="text-xs text-gray-500 mb-4">
                   {subscriptionInfo.plan} Member
                 </div>
-                <Link href="/dashboard/profile/me" className="w-full block bg-gradient-to-r px-3 from-secondary to-secondary/80 text-white py-2 rounded-lg font-medium hover:from-secondary/90 hover:to-secondary transition-all duration-300 text-center shadow-md">
+                <Link href="/dashboard/profile/me" className="w-full block bg-primary text-white py-2 rounded-lg font-medium hover:bg-primary/90 transition-all duration-300 text-center shadow-md">
                   Edit Profile
                 </Link>
               </div>
@@ -277,7 +277,7 @@ export default function MatrimonialDashboard() {
           <SkeletonCard height="h-24" />
         ) : (
           <div className={`transform transition-all duration-1000 delay-500 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
-            <div className="bg-gradient-to-r from-secondary to-primary rounded-xl p-6 text-white shadow-xl">
+            <div className="bg-primary rounded-xl p-6 text-white shadow-xl">
               <div className="flex flex-col md:flex-row items-center justify-between">
                 <div className="mb-4 md:mb-0">
                   <h3 className="font-serif font-bold text-xl mb-2">Ready to find your perfect match?</h3>

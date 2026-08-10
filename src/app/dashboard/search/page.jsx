@@ -216,7 +216,7 @@ export default function SearchProfilesPage() {
     <div className="bg-white rounded-xl shadow-lg border border-rose-100/50 hover:shadow-xl transition-all duration-300 overflow-hidden">
       <div className="relative">
         {/* Profile Image */}
-        <div className="aspect-[4/5] bg-gradient-to-br from-rose-100 to-amber-100 flex items-center justify-center relative">
+        <div className="aspect-[4/5] bg-gray-100 flex items-center justify-center relative">
           {profile.hasPhoto ? (
             <div className={`w-full h-full flex items-center justify-center ${profile.isBlurred ? 'blur-md' : ''}`}>
               <User className="w-16 h-16 text-primary" />
@@ -247,7 +247,7 @@ export default function SearchProfilesPage() {
               </div>
             )}
             {profile.premium && (
-              <div className="bg-gradient-to-r from-primary to-secondary text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
+              <div className="bg-primary text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
                 <Crown className="w-3 h-3 mr-1" />
                 Premium
               </div>
@@ -311,12 +311,12 @@ export default function SearchProfilesPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50/50 via-white to-amber-50/30">
+    <div className="min-h-screen bg-[#FFFFFF]">
       <div className="max-w-7xl mx-auto p-6">
 
         {/* Header Section */}
         <div className={`transform transition-all duration-1000 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
-          <div className="bg-gradient-to-r from-secondary to-primary rounded-2xl p-6 text-white shadow-xl relative overflow-hidden mb-6">
+          <div className="bg-primary rounded-2xl p-6 text-white shadow-xl relative overflow-hidden mb-6">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
             <div className="relative z-10">
               <h1 className="text-2xl font-serif font-bold mb-2">Find Your Perfect Match</h1>
@@ -562,7 +562,7 @@ export default function SearchProfilesPage() {
 
                 {/* Apply Filters Button */}
                 <div className="mt-6 pt-6 border-t border-gray-200">
-                  <button className="w-full bg-gradient-to-r from-secondary to-primary text-white py-3 rounded-lg font-medium hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
+                  <button className="w-full bg-primary text-white py-3 rounded-lg font-medium hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
                     Apply Filters
                   </button>
                 </div>

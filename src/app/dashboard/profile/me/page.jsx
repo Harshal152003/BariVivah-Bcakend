@@ -1220,7 +1220,7 @@ export default function MyProfilePage() {
         {/* Loading Text */}
         <p className="text-gray-600 text-lg">Loading...</p>
       </div>
-    </div> : <div className="min-h-screen bg-gradient-to-br from-rose-50/50 via-white to-amber-50/30 p-6">
+    </div> : <div className="min-h-screen bg-[#FFFFFF] p-6">
       <div className="max-w-7xl mx-auto space-y-6">
 
         {/* Profile Header */}

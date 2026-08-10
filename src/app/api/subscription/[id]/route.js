@@ -5,9 +5,10 @@ import Subscription from "@/models/Subscription";
 // Get a subscription by ID
 export async function GET(_, { params }) {
   const { id } = await params;
-  await connectDB();
+  
 
   try {
+    await connectDB();
     const plan = await Subscription.findById(id);
     if (!plan) return NextResponse.json({ message: "Not found" }, { status: 404 });
     return NextResponse.json(plan);

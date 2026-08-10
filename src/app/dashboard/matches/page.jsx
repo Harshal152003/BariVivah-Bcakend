@@ -524,7 +524,7 @@ export default function MatchesPage() {
             className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl border border-rose-100 flex flex-col lg:flex-row"
           >
             {/* Fixed Left Side - Profile Image & Quick Stats */}
-            <div className="w-full lg:w-1/3 p-4 border-r border-rose-100 bg-gradient-to-b from-rose-50/30 to-amber-50/30 flex flex-col items-center">
+            <div className="w-full lg:w-1/3 p-4 border-r border-rose-100 bg-gray-50 flex flex-col items-center">
               {/* Close button for desktop */}
 
 
@@ -541,7 +541,7 @@ export default function MatchesPage() {
                 onClick={() => setIsImagePopupOpen(true)}
                 className="w-full max-w-[240px] mx-auto mb-4 cursor-pointer"
               >
-                <div className="aspect-[3/4] bg-gradient-to-br from-rose-100 to-amber-100 rounded-xl overflow-hidden shadow-lg relative group">
+                <div className="aspect-[3/4] bg-gray-100 rounded-xl overflow-hidden shadow-lg relative group">
                   {profile.profilePhoto ? (
                     <>
                       <img
@@ -580,7 +580,7 @@ export default function MatchesPage() {
             {/* Scrollable Right Side - Profile Details */}
             <div className="w-full lg:w-2/3 overflow-y-auto flex flex-col">
               {/* Header for desktop */}
-              <div className="hidden lg:flex sticky top-0 bg-gradient-to-r from-rose-50 to-amber-50 p-4 border-b border-rose-200 z-10">
+              <div className="hidden lg:flex sticky top-0 bg-white p-4 border-b border-rose-200 z-10">
                 <div>
                   <h3 className="text-xl font-bold text-rose-800">Profile Details</h3>
                   <p className="text-sm text-rose-600">Compatibility: {profile.compatibility}% Match</p>
@@ -776,7 +776,7 @@ export default function MatchesPage() {
                     className="w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
                   />
                 ) : (
-                  <div className="aspect-[3/4] bg-gradient-to-br from-rose-100 to-amber-100 rounded-lg flex items-center justify-center">
+                  <div className="aspect-[3/4] bg-gray-100 rounded-lg flex items-center justify-center">
                     <Camera className="w-16 h-16 text-rose-300" />
                   </div>
                 )}
@@ -810,7 +810,7 @@ export default function MatchesPage() {
         )}
 
         {/* Profile Image */}
-        <div className={`aspect-[4/5] bg-gradient-to-br from-rose-50 to-amber-50 flex items-center justify-center relative ${match.mutualMatch ? 'mt-8' : ''}`}>
+        <div className={`aspect-[4/5] bg-gray-50 flex items-center justify-center relative ${match.mutualMatch ? 'mt-8' : ''}`}>
           {match.profilePhoto ? (
             <>
               <img
@@ -950,7 +950,7 @@ export default function MatchesPage() {
                 disabled={checkingSubscription}
                 className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium flex items-center justify-center transition-all shadow-sm group ${checkingSubscription
                   ? 'bg-gray-100 text-gray-400'
-                  : 'bg-gradient-to-r from-secondary to-primary text-white hover:shadow-md hover:scale-[1.02]'
+                  : 'bg-primary text-white hover:shadow-md hover:scale-[1.02]'
                   }`}
               >
                 {checkingSubscription ? (
@@ -999,12 +999,12 @@ export default function MatchesPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50/50 via-white to-amber-50/30">
+    <div className="min-h-screen bg-[#FFFFFF]">
       <Toaster position="top-right" />
       <div className="max-w-6xl mx-auto p-4 sm:p-6">
         {/* Header Section */}
         <div className={`transform transition-all duration-1000 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
-          <div className="bg-gradient-to-r from-secondary to-primary rounded-xl p-4 sm:p-6 text-white shadow-xl relative overflow-hidden mb-4 sm:mb-6">
+          <div className="bg-primary rounded-xl p-4 sm:p-6 text-white shadow-xl relative overflow-hidden mb-4 sm:mb-6">
             <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-white/10 rounded-full blur-2xl"></div>
             <div className="relative z-10">
               <h1 className="text-xl sm:text-2xl font-serif font-bold mb-1 sm:mb-2">Your Personalized Matches</h1>
@@ -1336,7 +1336,7 @@ export default function MatchesPage() {
                   <button
                     onClick={handleLoadMore}
                     disabled={loadingMore}
-                    className="bg-gradient-to-r from-secondary to-primary text-white px-8 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                    className="bg-primary text-white px-8 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                   >
                     {loadingMore ? 'Loading...' : 'Load More Matches'}
                   </button>

@@ -4,7 +4,7 @@ import User from '@/models/User';
 import Subscription from '@/models/Subscription';
 
 export async function PATCH(req) {
-  await connectDB();
+  
 
   const { userId, planId, razorpay_payment_id } = await req.json();
 
@@ -13,6 +13,7 @@ export async function PATCH(req) {
   }
 
   try {
+    await connectDB();
     // Find plan details from the Subscription collection
     const plan = await Subscription.findById(planId);
     if (!plan) {

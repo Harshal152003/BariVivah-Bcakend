@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #FB2467;         /* Vibrant Pink */
+  --color-primary: #F26492;         /* Vibrant Pink from Login */
   --color-primary-light: #FFEBEF;   /* Light Pink */
-  --color-primary-dark: #FDB1C7;    /* Previous Light Pink */
-  --color-secondary: #7E5D8C;       /* Brand Purple */
+  --color-primary-dark: #D1557D;    /* Darker Pink */
+  --color-secondary: #2A295C;       /* Dark Blue/Purple for text from Login */
   --color-accent: #E29BB2;          /* Muted Pink */
-  --color-bg-light: #FFFDFB;        /* Figma Background Cream/Pink */
+  --color-bg-light: #FFFFFF;        /* Pure White */
 }
 
 @layer base {

@@ -708,7 +708,7 @@ const DynamicProfileForm = () => {
   }
   //sample
   return (
-    <div className="min-h-screen bg-gradient-to-br from-secondary/5 via-white to-primary/5">
+    <div className="min-h-screen bg-[#FFFFFF]">
       <div className="max-w-[1200px] mx-auto space-y-6">
         {/* Profile Header */}
         <div className="bg-white rounded-2xl p-8 shadow-xl border border-primary/20 relative overflow-hidden">
@@ -742,7 +742,7 @@ const DynamicProfileForm = () => {
                           </div>
                         ) : (
                           <div
-                            className="w-24 h-24 bg-gradient-to-br from-secondary/20 to-primary/20 rounded-full flex items-center justify-center cursor-pointer border-2 border-white shadow-md"
+                            className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center cursor-pointer border-2 border-white shadow-md"
                             onClick={() => open()}
                           >
                             <User className="w-12 h-12 text-primary" />
@@ -798,13 +798,13 @@ const DynamicProfileForm = () => {
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
                     <div
-                      className="bg-gradient-to-r from-secondary to-primary h-2 rounded-full"
+                      className="bg-primary h-2 rounded-full"
                       style={{ width: `${profileCompletion}%` }}
                     ></div>
                   </div>
                   <button
                     onClick={handleProfileUpdate}
-                    className="w-full bg-gradient-to-r from-secondary to-primary text-white py-2 rounded-lg text-sm font-medium hover:shadow-lg hover:scale-[1.02] transition-all"
+                    className="w-full bg-primary text-white py-2 rounded-lg text-sm font-medium hover:shadow-lg hover:scale-[1.02] transition-all"
                     disabled={isSaving}
                   >
                     {isSaving ? 'Saving...' : "Save Profile"}
@@ -835,7 +835,7 @@ const DynamicProfileForm = () => {
                       key={section._id}
                       onClick={() => setActiveTab(section._id)}
                       className={`w-full px-4 flex items-center p-3 rounded-lg transition-all duration-200 ${activeTab === section._id
-                        ? 'bg-gradient-to-r from-secondary/10 to-primary/10 text-primary border border-primary/20 shadow-sm'
+                        ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm'
                         : 'text-[#5C3F43] hover:bg-gray-50'
                         }`}
                     >
@@ -849,7 +849,7 @@ const DynamicProfileForm = () => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-secondary to-primary rounded-xl p-4 text-white shadow-lg">
+            <div className="bg-primary rounded-xl p-4 text-white shadow-lg">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-semibold">{formData.subscription?.plan || 'Free Plan'}</h3>
                 <Crown className="w-5 h-5 text-yellow-200" />
@@ -906,7 +906,7 @@ const DynamicProfileForm = () => {
                   <button
                     onClick={handleProfileUpdate}
                     disabled={isSaving}
-                    className="px-6 py-2 bg-gradient-to-r from-secondary to-primary text-white rounded-lg font-medium hover:shadow-lg hover: from-secondary/90 hover:to-primary/90 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                    className="px-6 py-2 bg-primary text-white rounded-lg font-medium hover:shadow-lg hover: from-secondary/90 hover:to-primary/90 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                   >
                     {isSaving ? 'Saving...' : 'Save Changes'}
                   </button>

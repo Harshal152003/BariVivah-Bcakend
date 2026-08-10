@@ -205,7 +205,7 @@ export default function InterestsPage() {
           {/* Profile Image with blur effect for non-subscribers */}
           <div className="relative flex-shrink-0 self-center sm:self-start">
             <motion.div
-              className={`w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-rose-100 to-amber-100 rounded-full flex items-center justify-center overflow-hidden cursor-pointer hover:ring-2 hover:ring-rose-300 transition-all ${!hasSubscription && profileImage ? 'blur-sm' : ''
+              className={`w-14 h-14 sm:w-16 sm:h-16 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden cursor-pointer hover:ring-2 hover:ring-rose-300 transition-all ${!hasSubscription && profileImage ? 'blur-sm' : ''
                 }`}
               onClick={() => {
                 if (!hasSubscription) {
@@ -306,7 +306,7 @@ export default function InterestsPage() {
                             setSelectedProfile(null); // Clear detailed profile
                             setShowModal(true); // Show upgrade modal
                           }}
-                          className="flex items-center px-4 py-2 bg-gradient-to-r from-secondary to-primary text-white rounded-lg text-sm font-bold shadow-md hover:shadow-lg transition-all"
+                          className="flex items-center px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold shadow-md hover:shadow-lg transition-all"
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
@@ -449,7 +449,7 @@ export default function InterestsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50/50 via-white to-amber-50/30 p-6">
+    <div className="min-h-screen bg-[#FFFFFF] p-6">
       {/* Expanded Image Viewer */}
       <AnimatePresence>
         {expandedImage && (
@@ -650,7 +650,7 @@ export default function InterestsPage() {
             >
               {/* Modal Header */}
               {/* Modal Header */}
-              <div className="sticky top-0 bg-gradient-to-r from-secondary to-primary p-4 z-10">
+              <div className="sticky top-0 bg-primary p-4 z-10">
                 <div className="flex justify-between items-center">
                   <h2 className="text-xl font-bold text-white">
                     {selectedProfile.name}'s Profile
@@ -669,7 +669,7 @@ export default function InterestsPage() {
                 {/* Profile Header */}
                 <div className="flex items-start mb-6">
                   <div className="relative mr-6">
-                    <div className="w-24 h-24 bg-gradient-to-br from-rose-100 to-amber-100 rounded-full flex items-center justify-center overflow-hidden">
+                    <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
                       <img
                         src={selectedProfile?.image || selectedProfile?.profilePhoto}
                         alt={selectedProfile.name}

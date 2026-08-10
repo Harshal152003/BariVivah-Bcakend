@@ -202,7 +202,7 @@ export default function QuickRegistrationForm() {
               <button
                 type="button"
                 onClick={nextStep}
-                className="w-full mt-6 px-6 py-3 bg-gradient-to-r from-secondary to-primary text-white rounded-lg hover:shadow-lg transition-all duration-300 flex items-center justify-center group"
+                className="w-full mt-6 px-6 py-3 bg-primary text-white rounded-lg hover:shadow-lg transition-all duration-300 flex items-center justify-center group"
               >
                 <span className="font-medium">Continue</span>
                 <ArrowRight size={18} className="ml-2 transform group-hover:translate-x-1 transition-transform duration-200" />
@@ -272,7 +272,7 @@ export default function QuickRegistrationForm() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-secondary to-primary text-white rounded-lg hover:shadow-lg transition-all duration-300 flex items-center justify-center disabled:opacity-70"
+                  className="flex-1 px-6 py-3 bg-primary text-white rounded-lg hover:shadow-lg transition-all duration-300 flex items-center justify-center disabled:opacity-70"
                 >
                   {isSubmitting ? 'Processing...' : 'Start Finding Matches'}
                 </button>

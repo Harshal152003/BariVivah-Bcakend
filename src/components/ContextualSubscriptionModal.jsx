@@ -26,7 +26,7 @@ export default function ContextualSubscriptionModal({ isOpen, onClose, interestD
                     </button>
 
                     {/* Header Image/Gradient */}
-                    <div className="bg-gradient-to-br from-primary to-secondary p-8 text-center relative overflow-hidden">
+                    <div className="bg-primary p-8 text-center relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                         <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-white/30">
                             <Lock className="w-8 h-8 text-white" />

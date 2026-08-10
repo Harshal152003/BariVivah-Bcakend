@@ -112,6 +112,10 @@ export default function DynamicSubscriptionPlans() {
 
       const order = await res.json();
 
+      if (!res.ok) {
+        throw new Error(order.details || order.error || "Failed to create payment order. Please check your Razorpay keys.");
+      }
+
       // 2. Configure Razorpay checkout
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -196,7 +200,7 @@ export default function DynamicSubscriptionPlans() {
       },
       Premium: {
         icon: Crown,
-        color: "from-secondary to-primary",
+        color: "bg-primary",
         bgColor: "bg-rose-50",
         textColor: "text-primary",
         badgeColor: "bg-primary",
@@ -251,7 +255,7 @@ export default function DynamicSubscriptionPlans() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50/50 via-white to-amber-50/30 p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FFFFFF] p-6 flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
@@ -264,11 +268,11 @@ export default function DynamicSubscriptionPlans() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50/50 via-white to-amber-50/30 p-6">
+    <div className="min-h-screen bg-[#FFFFFF] p-6">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-rose-100 to-amber-100 rounded-full mb-6 shadow-lg transform hover:scale-105 transition-transform duration-300">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-6 shadow-lg transform hover:scale-105 transition-transform duration-300">
             <Crown className="w-10 h-10 text-primary" />
           </div>
           <h1 className="text-4xl font-serif font-bold text-gray-900 mb-4">
@@ -305,7 +309,7 @@ export default function DynamicSubscriptionPlans() {
                   </div>
 
                   <div className="space-y-4 mb-8">
-                    {freePlan.features?.map((feature, idx) => (
+                    {(freePlan.displayFeatures || []).map((feature, idx) => (
                       <div key={idx} className="flex items-center space-x-3">
                         <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-gray-100">
                           <Check className="w-4 h-4 text-gray-500" />
@@ -370,7 +374,7 @@ export default function DynamicSubscriptionPlans() {
                     </div>
 
                     <div className="space-y-4 mb-8">
-                      {plan.features?.map((feature, idx) => (
+                      {(plan.displayFeatures || []).map((feature, idx) => (
                         <div key={idx} className="flex items-center space-x-3">
                           <div
                             className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${config.bgColor}`}

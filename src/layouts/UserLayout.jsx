@@ -72,7 +72,7 @@ export default function UserLayout({ children }) {
   const isProfileCompletedEnough = (user?.profileCompletion || 0) >= 50;
   if (!user?.isVerified && !isProfileCompletedEnough && !isProfilePage) {
     return (
-      <div className="flex min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50">
+      <div className="flex min-h-screen bg-[#FFFFFF]">
         <Sidebar mobileOpen={sidebarOpen} setMobileOpen={setSidebarOpen} />
         <div className="flex-1 p-6 overflow-y-auto flex items-center justify-center">
           <motion.div
@@ -111,7 +111,7 @@ export default function UserLayout({ children }) {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => router.push("/dashboard/profile/me")}
-                className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-secondary to-primary text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all"
+                className="inline-flex items-center justify-center px-6 py-3 bg-primary text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all"
               >
                 Complete My Profile
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -135,9 +135,9 @@ export default function UserLayout({ children }) {
 
       <Sidebar mobileOpen={sidebarOpen} setMobileOpen={setSidebarOpen} />
 
-      <main className="flex-1 p-4 lg:p-6 overflow-y-auto bg-gradient-to-br from-rose-50 via-white to-amber-50 relative">
+      <main className="flex-1 p-4 lg:p-6 overflow-y-auto bg-[#FFFFFF] relative">
         {/* Mobile header */}
-        <div className="lg:hidden flex items-center justify-between mb-4 bg-white/80 backdrop-blur-sm p-3 rounded-lg shadow-sm border border-primary/20">
+        <div className="lg:hidden flex items-center justify-between mb-4 bg-white/80 backdrop-blur-sm p-3 rounded-lg shadow-sm border border-gray-100">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="p-2 rounded-lg text-gray-600 hover:bg-primary/10 hover:text-primary transition-colors"

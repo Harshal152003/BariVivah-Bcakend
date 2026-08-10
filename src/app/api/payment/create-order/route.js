@@ -6,7 +6,7 @@ import connectDB from "@/lib/db";
 import Subscription from "@/models/Subscription";
 
 export async function POST(req) {
-  await connectDB();
+  
   const { userId, planId } = await req.json();
 
   if (!userId || !planId) {
@@ -17,6 +17,7 @@ export async function POST(req) {
   }
 
   try {
+    await connectDB();
     // ✅ 1. Get the actual plan from DB using planId
     const plan = await Subscription.findById(planId);
     if (!plan) {

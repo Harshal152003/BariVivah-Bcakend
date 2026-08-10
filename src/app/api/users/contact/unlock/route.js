@@ -25,7 +25,7 @@ function getUserIdFromRequest(request) {
 }
 
 export async function POST(request) {
-  await connectDB();
+  
 
   const userId = getUserIdFromRequest(request);
   if (!userId) {
@@ -38,6 +38,7 @@ export async function POST(request) {
   }
 
   try {
+    await connectDB();
     const targetUser = await User.findById(targetUserId);
     if (!targetUser) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404, headers: corsHeaders });

@@ -308,7 +308,7 @@ export default function AuthModal({ isOpen, onClose }) {
                   onClick={handleSendOTP}
                   disabled={isLoading}
                   type="button"
-                  className="w-full py-3 bg-gradient-to-r from-secondary to-primary text-white rounded-lg sm:rounded-xl hover:shadow-lg transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group text-sm font-medium"
+                  className="w-full py-3 bg-primary text-white rounded-lg sm:rounded-xl hover:shadow-lg transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group text-sm font-medium"
                 >
                   {isLoading ? (
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -364,7 +364,7 @@ export default function AuthModal({ isOpen, onClose }) {
                   onClick={handleVerifyOTP}
                   disabled={isLoading}
                   type="button"
-                  className="w-full py-3 bg-gradient-to-r from-secondary to-primary text-white rounded-lg sm:rounded-xl hover:shadow-lg transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group text-sm font-medium"
+                  className="w-full py-3 bg-primary text-white rounded-lg sm:rounded-xl hover:shadow-lg transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group text-sm font-medium"
                 >
                   {isLoading ? (
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -524,7 +524,7 @@ export default function AuthModal({ isOpen, onClose }) {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 bg-gradient-to-r from-secondary to-primary text-white rounded-lg sm:rounded-xl hover:shadow-lg transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group text-sm font-medium"
+                className="w-full py-3 bg-primary text-white rounded-lg sm:rounded-xl hover:shadow-lg transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group text-sm font-medium"
               >
                 {isLoading ? (
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

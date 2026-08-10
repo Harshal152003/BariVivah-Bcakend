@@ -33,7 +33,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen }) {
     <>
       <aside className={`
         fixed lg:sticky top-0 left-0 z-30
-        w-72 bg-gradient-to-b from-white to-rose-50/30 shadow-xl border-r border-rose-100/50 
+        w-72 bg-white shadow-xl border-r border-gray-100 
         h-screen flex flex-col overflow-hidden transition-all duration-300 ease-in-out
         ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
@@ -46,7 +46,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen }) {
         </button>
 
         {/* Header Section */}
-        <div className="p-6 border-b border-rose-100/50 bg-gradient-to-r from-rose-50 to-amber-50/50 flex-shrink-0 flex justify-center">
+        <div className="p-6 border-b border-gray-100 flex-shrink-0 flex justify-center">
           <Link href="/dashboard" className="flex items-center">
             <Image
               src="/logo.png"
@@ -81,8 +81,8 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen }) {
                 key={item.href}
                 href={item.href}
                 className={`group flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 relative overflow-hidden ${isActive
-                  ? "bg-gradient-to-r from-secondary to-primary text-white shadow-lg shadow-primary/20 transform scale-[1.02]"
-                  : "hover:bg-gradient-to-r hover:from-rose-50 hover:to-amber-50 text-[#5C3F43] hover:text-primary hover:shadow-md hover:transform hover:scale-[1.02]"
+                  ? "bg-primary text-white shadow-lg shadow-primary/20 transform scale-[1.02]"
+                  : "hover:bg-gray-50 text-secondary hover:text-primary hover:shadow-md hover:transform hover:scale-[1.02]"
                   }`}
               >
                 {/* Active indicator */}
@@ -96,7 +96,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen }) {
                   }`}>
                   <Icon className={`w-5 h-5 transition-all duration-300 ${isActive
                     ? "text-white"
-                    : "text-[#5C3F43] group-hover:text-primary"
+                    : "text-secondary group-hover:text-primary"
                     }`} />
                 </div>
 
@@ -120,7 +120,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen }) {
 
         {/* Premium Banner Section */}
         <div className="p-4 flex-shrink-0">
-          <div className="bg-gradient-to-br from-secondary to-primary rounded-2xl p-4 text-white shadow-xl">
+          <div className="bg-primary rounded-2xl p-4 text-white shadow-xl">
             <div className="flex items-center space-x-2 mb-2">
               <Crown className="w-5 h-5 text-yellow-200" />
               <span className="font-bold text-sm">Premium Features</span>
@@ -135,8 +135,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen }) {
         </div>
 
         {/* Decorative Elements */}
-        <div className="absolute top-32 -right-8 w-16 h-16 bg-gradient-to-br from-rose-200 to-amber-200 rounded-full blur-xl opacity-30"></div>
-        <div className="absolute bottom-32 -left-4 w-12 h-12 bg-gradient-to-br from-amber-200 to-rose-200 rounded-full blur-lg opacity-40"></div>
+        {/* Removed decorative elements for cleaner UI */}
       </aside>
     </>
   );

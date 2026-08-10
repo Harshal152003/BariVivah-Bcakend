@@ -25,7 +25,7 @@ function getUserIdFromRequest(request) {
 }
 
 export async function GET(request) {
-  await connectDB();
+  
 
   const userId = getUserIdFromRequest(request);
   if (!userId) {
@@ -40,6 +40,7 @@ export async function GET(request) {
   }
 
   try {
+    await connectDB();
     // Check if there is an existing unlock record
     const unlockRecord = await ContactUnlock.findOne({ userId, unlockedUserId: targetUserId });
     

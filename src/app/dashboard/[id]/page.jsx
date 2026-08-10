@@ -44,12 +44,12 @@ export default function MatrimonialDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50/50 via-white to-amber-50/30 p-6">
+    <div className="min-h-screen bg-[#FFFFFF] p-6">
       <div className="max-w-7xl mx-auto space-y-6">
 
         {/* Welcome Section */}
         <div className={`transform transition-all duration-1000 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
-          <div className="bg-gradient-to-r from-secondary to-primary rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+          <div className="bg-primary rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full blur-xl"></div>
             <div className="relative z-10">
@@ -82,7 +82,7 @@ export default function MatrimonialDashboard() {
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div
-                  className="bg-gradient-to-r from-secondary to-primary h-2 rounded-full transition-all duration-1000"
+                  className="bg-primary h-2 rounded-full transition-all duration-1000"
                   style={{ width: `${profileCompletion}%` }}
                 ></div>
               </div>
@@ -123,7 +123,7 @@ export default function MatrimonialDashboard() {
           </div>
 
           {/* Subscription Status */}
-          <div className="bg-gradient-to-br from-primary to-secondary rounded-xl p-6 shadow-lg text-white">
+          <div className="bg-primary rounded-xl p-6 shadow-lg text-white">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold">Premium Plan</h3>
               <Crown className="w-5 h-5 text-yellow-200" />
@@ -145,7 +145,7 @@ export default function MatrimonialDashboard() {
           <div className="lg:col-span-1 bg-white rounded-xl p-6 shadow-lg border border-primary/20 flex items-center justify-center">
             <div className="text-center">
               <div className="relative inline-block mb-4">
-                <div className="w-24 h-24 bg-gradient-to-br from-secondary/20 to-primary/20 rounded-full flex items-center justify-center mx-auto">
+                <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center mx-auto">
                   <User className="w-12 h-12 text-primary" />
                 </div>
                 <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
@@ -167,7 +167,7 @@ export default function MatrimonialDashboard() {
                 <Award className="w-4 h-4 text-green-500 mr-1" />
                 <span className="text-sm text-green-600 font-medium">Verified Profile</span>
               </div>
-              <button className="w-full bg-gradient-to-r from-secondary to-primary text-white py-2 rounded-lg font-medium hover:from-secondary/90 hover:to-primary/90 transition-all duration-300 shadow-md">
+              <button className="w-full bg-primary text-white py-2 rounded-lg font-medium hover:from-secondary/90 hover:to-primary/90 transition-all duration-300 shadow-md">
                 Edit Profile
               </button>
             </div>
@@ -186,7 +186,7 @@ export default function MatrimonialDashboard() {
               {quickMatches.map((match) => (
                 <div key={match.id} className="border border-gray-200 rounded-lg p-4 hover:border-primary/50 hover:shadow-md transition-all duration-300">
                   <div className="flex items-center justify-between mb-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-secondary/10 to-primary/10 rounded-full flex items-center justify-center">
+                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
                       <User className="w-6 h-6 text-primary" />
                     </div>
                     <div className="flex items-center">
@@ -298,7 +298,7 @@ export default function MatrimonialDashboard() {
 
         {/* Quick Actions */}
         <div className={`transform transition-all duration-1000 delay-500 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
-          <div className="bg-gradient-to-r from-secondary to-primary rounded-xl p-6 text-white shadow-xl">
+          <div className="bg-primary rounded-xl p-6 text-white shadow-xl">
             <div className="flex flex-col md:flex-row items-center justify-between">
               <div className="mb-4 md:mb-0">
                 <h3 className="font-serif font-bold text-xl mb-2">Ready to find your perfect match?</h3>

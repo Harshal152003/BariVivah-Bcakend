@@ -25,7 +25,7 @@ function getUserIdFromRequest(request) {
 }
 
 export async function GET(request) {
-  await connectDB();
+  
 
   const userId = getUserIdFromRequest(request);
   if (!userId) {
@@ -33,6 +33,7 @@ export async function GET(request) {
   }
 
   try {
+    await connectDB();
     // Find all unlocked contacts for the current user
     // Populate details of the unlocked user profiles
     const unlocks = await ContactUnlock.find({ userId })

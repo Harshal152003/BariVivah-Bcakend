@@ -151,7 +151,7 @@ export default function SuccessStories() {
                     <div className="bg-white rounded-2xl shadow-xl overflow-hidden h-full transform hover:-translate-y-1 transition-all duration-300">
                       <div className="relative">
                         {/* Decorative top border */}
-                        <div className="h-2 bg-gradient-to-r from-secondary to-primary"></div>
+                        <div className="h-2 bg-primary"></div>
 
                         {/* Quote icon */}
                         <div className="absolute -bottom-6 right-6 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shadow-md">
@@ -197,7 +197,7 @@ export default function SuccessStories() {
           {/* CTA Section */}
           <div className="mt-16 text-center">
             <h3 className="text-xl font-semibold text-gray-800 mb-4">Ready to write your own success story?</h3>
-            <button className="px-8 py-3 bg-gradient-to-r from-secondary to-primary text-white rounded-full hover:shadow-lg hover:scale-105 transition-all duration-300">
+            <button className="px-8 py-3 bg-primary text-white rounded-full hover:shadow-lg hover:scale-105 transition-all duration-300">
               <span className="font-medium">Start Your Journey Today</span>
             </button>
           </div>

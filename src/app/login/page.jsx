@@ -254,6 +254,13 @@ export default function MatrimonialLogin() {
         })
       });
 
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        setError('Server returned an invalid response. Did you restart the server after adding the .env file?');
+        setIsLoading(false);
+        return;
+      }
+
       const data = await response.json();
 
       if (response.ok && data.success) {
@@ -629,14 +636,8 @@ export default function MatrimonialLogin() {
     : [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-secondary/5 via-white to-primary/5 flex items-center justify-center px-4 py-8 sm:px-6 relative overflow-hidden select-none">
-      {/* Background decorations */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-10 w-40 h-40 rounded-full bg-primary/10 blur-3xl opacity-30 animate-pulse"></div>
-        <div className="absolute bottom-10 right-10 w-56 h-56 rounded-full bg-secondary/10 blur-3xl opacity-40 animate-pulse"></div>
-      </div>
-
-      <div className={`relative w-full max-w-lg transition-all duration-700 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
+    <div className="min-h-screen bg-[#FFFFFF] flex items-center justify-center px-4 py-4 sm:px-6 relative overflow-hidden select-none">
+      <div className={`relative w-full max-w-4xl transition-all duration-700 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
 
         {/* Registration Progress Indicator */}
         {activeTab === 'signup' && currentStep !== 5 && (
@@ -655,41 +656,63 @@ export default function MatrimonialLogin() {
         )}
 
         {/* Main Card */}
-        <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border border-white/60 overflow-hidden">
+        <div className="bg-[#F8F8F8] rounded-3xl shadow-2xl border border-gray-100 overflow-hidden flex flex-col md:flex-row max-h-[90vh]">
+          
+          {/* Left Column - Form Area */}
+          <div className="w-full md:w-1/2 p-4 sm:p-6 lg:px-8 lg:py-6 flex flex-col justify-center relative z-10 overflow-y-auto">
 
           {/* Header Block */}
           {currentStep !== 5 && (
-            <div className="text-center px-8 pt-8 pb-4">
-              <div className="flex justify-center mb-4">
+            <div className="text-left px-4 sm:px-8 pt-4 pb-2">
+              <div className="mb-4">
                 <Image
-                  src="/logo.png"
-                  width={200}
-                  height={60}
-                  className="h-12 w-auto object-contain"
+                  src="/new-logo.png"
+                  width={240}
+                  height={80}
+                  className="h-20 w-auto object-contain"
                   alt="BariVivah Logo"
                   priority
                 />
               </div>
-              <h1 className="text-xl font-bold text-gray-800 tracking-tight">
-                {activeTab === 'login' ? 'Welcome Back' : (
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#2A295C] tracking-tight">
+                {activeTab === 'login' ? 'Welcome' : (
                   currentStep === 8 ? 'Family Profile' :
                     currentStep === 9 ? 'Partner Preferences' : 'Create Account'
                 )}
               </h1>
-              <p className="text-xs text-gray-500 mt-1">
-                {activeTab === 'login' ? 'Sign in to access matches' : 'Register to find your perfect match'}
-              </p>
+              {activeTab === 'login' && (
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-primary tracking-tight mt-1 mb-4">
+                  To barivivah.in.
+                </h2>
+              )}
+              {activeTab !== 'login' && (
+                <div className="mt-1 mb-4">
+                  <p className="text-sm text-gray-500">
+                    Register to find your perfect match
+                  </p>
+                  <p className="text-xs font-semibold text-gray-400 mt-2">
+                    Already have an account?{' '}
+                    <button 
+                      type="button" 
+                      onClick={() => { setActiveTab('login'); setError(''); }} 
+                      className="text-primary hover:opacity-80 transition-colors"
+                    >
+                      Sign In
+                    </button>
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
-          {/* Switch Tab (Only Step 1 to 4) */}
+          {/* Switch Tab (Only Step 1 to 4) - Hidden in redesign, now handled via footer links */}
           {activeTab === 'signup' && currentStep > 4 ? null : (
-            currentStep === 1 && (
+            currentStep === 1 && activeTab === 'signup' && (
               <div className="flex border-b border-gray-100/80 px-8">
                 <button
                   onClick={() => { setActiveTab('login'); setError(''); }}
                   className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === 'login'
-                    ? 'border-primary text-primary'
+                    ? 'border-teal-500 text-teal-600'
                     : 'border-transparent text-gray-400 hover:text-gray-600'
                     }`}
                 >
@@ -698,7 +721,7 @@ export default function MatrimonialLogin() {
                 <button
                   onClick={() => { setActiveTab('signup'); setError(''); }}
                   className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === 'signup'
-                    ? 'border-primary text-primary'
+                    ? 'border-teal-500 text-teal-600'
                     : 'border-transparent text-gray-400 hover:text-gray-600'
                     }`}
                 >
@@ -709,18 +732,17 @@ export default function MatrimonialLogin() {
           )}
 
           {/* Form Content */}
-          <div className="px-8 py-6">
+          <div className="px-4 sm:px-8 py-2">
 
             {activeTab === 'login' ? (
               /* LOGIN TAB */
-              <form onSubmit={handleLoginSubmit} className="space-y-4">
+              <form onSubmit={handleLoginSubmit} className="space-y-4 px-0">
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase mb-2 flex items-center">
-                    <Phone size={14} className="mr-2 text-primary" />
+                  <label className="block text-xs font-bold text-gray-500 mb-1.5">
                     Mobile Number
                   </label>
                   <div className="flex space-x-2">
-                    <span className="px-3 py-3 border border-gray-200 bg-gray-50 rounded-xl text-sm flex items-center justify-center font-bold text-gray-500">
+                    <span className="px-3 py-2.5 border border-gray-200 bg-gray-50 rounded-xl text-sm flex items-center justify-center font-bold text-gray-500 shadow-sm">
                       +91
                     </span>
                     <input
@@ -728,7 +750,7 @@ export default function MatrimonialLogin() {
                       value={loginPhone}
                       onChange={(e) => setLoginPhone(e.target.value)}
                       placeholder="98765 43210"
-                      className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm font-medium"
+                      className="flex-1 px-4 py-2.5 border border-gray-200 bg-white rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm font-medium shadow-sm"
                       maxLength={10}
                       required
                     />
@@ -736,8 +758,7 @@ export default function MatrimonialLogin() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase mb-2 flex items-center">
-                    <Lock size={14} className="mr-2 text-primary" />
+                  <label className="block text-xs font-bold text-gray-500 mb-1.5">
                     Password
                   </label>
                   <div className="relative">
@@ -746,21 +767,33 @@ export default function MatrimonialLogin() {
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                       placeholder="Enter your password"
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm font-medium pr-10"
+                      className="w-full px-4 py-2.5 border border-gray-200 bg-white rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm font-medium pr-10 shadow-sm"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowLoginPassword(!showLoginPassword)}
-                      className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600 focus:outline-none"
+                      className="absolute right-3 top-3 text-gray-400 hover:text-primary focus:outline-none"
                     >
                       {showLoginPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
                 </div>
 
+                <div className="flex items-center justify-between mt-1 mb-4">
+                  <label className="flex items-center cursor-pointer group">
+                    <div className="w-4 h-4 border-2 border-gray-200 rounded flex items-center justify-center bg-white group-hover:border-primary transition-colors">
+                      {/* Checkbox styling */}
+                    </div>
+                    <span className="ml-2 text-xs text-gray-400 font-semibold group-hover:text-gray-600 transition-colors">Remember Me</span>
+                  </label>
+                  <a href="#" className="text-xs font-semibold text-primary hover:opacity-80 transition-colors">
+                    Forget Password
+                  </a>
+                </div>
+
                 {error && (
-                  <div className="text-red-500 text-xs font-semibold bg-red-50 p-3 rounded-xl border border-red-100 text-center">
+                  <div className="text-red-500 text-xs font-semibold bg-red-50 p-2 rounded-xl border border-red-100 text-center animate-shake">
                     {error}
                   </div>
                 )}
@@ -768,17 +801,27 @@ export default function MatrimonialLogin() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3.5 bg-gradient-to-r from-secondary to-primary hover:from-secondary/95 hover:to-primary/95 text-white rounded-xl font-bold text-sm tracking-wide shadow-md hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center group"
+                  className="w-full py-3 bg-primary hover:bg-primary/90 text-white rounded-xl font-bold text-sm tracking-wide shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all disabled:opacity-50 flex items-center justify-center mt-1"
                 >
                   {isLoading ? (
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                   ) : (
-                    <>
-                      <span>Login to Profile</span>
-                      <ArrowRight size={16} className="ml-2 transform group-hover:translate-x-0.5 transition-transform" />
-                    </>
+                    <span>Sign In</span>
                   )}
                 </button>
+                
+                <div className="text-center mt-4 pt-2">
+                  <p className="text-xs font-semibold text-gray-400">
+                    Dont have account?{' '}
+                    <button 
+                      type="button" 
+                      onClick={() => { setActiveTab('signup'); setError(''); }} 
+                      className="text-primary hover:opacity-80 transition-colors"
+                    >
+                      Sign Up
+                    </button>
+                  </p>
+                </div>
               </form>
             ) : (
               /* SIGNUP TAB (9-STEP WIZARD) */
@@ -1767,6 +1810,20 @@ export default function MatrimonialLogin() {
               </div>
             )}
           </div>
+          </div>
+          {/* End Left Column */}
+
+          {/* Right Column - Image & Graphic Area (Hidden on Mobile) */}
+          <div className="hidden md:flex md:w-1/2 bg-transparent relative items-center justify-center overflow-hidden">
+            
+            {/* Main Image placeholder (Using Unsplash for now, you can replace with your own asset) */}
+            <div className="relative z-10 w-full h-full flex items-end justify-center">
+              {/* Main Image */}
+              <div className="w-full h-full bg-[url('/login-couple-3.jpeg')] bg-cover bg-no-repeat bg-[center_top]" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0% 100%)' }}></div>
+            </div>
+          </div>
+          {/* End Right Column */}
+
         </div>
 
         {/* Footnotes / Admin portals */}
