@@ -32,7 +32,7 @@ export default function AuthBanner() {
 
   return (
     <div
-      className="hidden md:flex md:w-1/2 relative overflow-hidden bg-gradient-to-br from-red-500 via-red-600 to-red-800"
+      className="hidden md:flex md:w-1/2 relative overflow-hidden bg-[#FB2467]"
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

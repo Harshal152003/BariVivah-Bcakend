@@ -4,7 +4,7 @@ import AuthBanner from "@/components/AuthBanner";
 
 export default function AdminLoginPage() {
   return (
-    <div className="min-h-screen flex">
+    <div className="h-screen flex overflow-hidden bg-[#FFFFFF]">
       {/* Right side - Banner */}
       <AuthBanner />
       

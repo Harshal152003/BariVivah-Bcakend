@@ -97,16 +97,20 @@ export async function GET(request) {
       ];
     }
 
-    // Calculate pagination
-    const totalEmployees = await Employee.countDocuments(query);
-    const totalPages = Math.ceil(totalEmployees / limit);
     const skip = (page - 1) * limit;
 
-    // Get employees with pagination
-    const employees = await Employee.find(query)
-      .skip(skip)
-      .limit(limit)
-      .sort({ createdAt: -1 });
+    // Execute count and find queries in parallel for better performance
+    // Use .lean() to return plain objects instead of heavy Mongoose documents
+    const [totalEmployees, employees] = await Promise.all([
+      Employee.countDocuments(query),
+      Employee.find(query)
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 })
+        .lean()
+    ]);
+
+    const totalPages = Math.ceil(totalEmployees / limit);
 
     return NextResponse.json({
       success: true,

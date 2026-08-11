@@ -334,7 +334,7 @@ export default function EmployeeManagement() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-rose-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#FB2467]" />
         <span className="ml-2 text-gray-600">Loading employees...</span>
       </div>
     );
@@ -366,7 +366,7 @@ export default function EmployeeManagement() {
           <div className="flex items-center space-x-3">
             <button 
               onClick={() => setShowAddModal(true)}
-              className="bg-rose-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-rose-600 transition-colors flex items-center"
+              className="bg-[#FB2467] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#FB2467] transition-colors flex items-center"
             >
               <UserPlus className="w-4 h-4 mr-2" />
               Add Employee
@@ -382,13 +382,13 @@ export default function EmployeeManagement() {
             <input
               type="text"
               placeholder="Search employees..."
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB2467] focus:border-transparent"
               value={searchTerm}
               onChange={handleSearch}
             />
           </div>
           <select 
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB2467] focus:border-transparent"
             value={statusFilter}
             onChange={handleStatusFilterChange}
           >
@@ -398,7 +398,7 @@ export default function EmployeeManagement() {
             <option>Suspended</option>
           </select>
           <select 
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB2467] focus:border-transparent"
             value={roleFilter}
             onChange={handleRoleFilterChange}
           >
@@ -429,7 +429,7 @@ export default function EmployeeManagement() {
                   <td className="py-4 px-6">
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-gradient-to-br from-rose-100 to-amber-100 rounded-full flex items-center justify-center">
-                        <Users className="w-5 h-5 text-rose-500" />
+                        <Users className="w-5 h-5 text-[#FB2467]" />
                       </div>
                       <div>
                         <p className="font-medium text-gray-900">{employee.name}</p>
@@ -521,7 +521,7 @@ export default function EmployeeManagement() {
                       onClick={() => goToPage(pageNumber)}
                       className={`px-3 py-2 rounded-lg text-sm font-medium ${
                         currentPage === pageNumber
-                          ? 'bg-rose-500 text-white'
+                          ? 'bg-[#FB2467] text-white'
                           : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
@@ -553,14 +553,14 @@ export default function EmployeeManagement() {
         <div className="fixed inset-0 bg-gray-800/70 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-2xl border border-rose-100/50 w-full max-w-4xl overflow-hidden max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-rose-50 to-amber-50 px-6 py-4 border-b border-rose-100 flex justify-between items-center sticky top-0">
+            <div className="bg-[#FFFFFF] px-6 py-4 border-b border-rose-100 flex justify-between items-center sticky top-0">
               <div>
-                <h3 className="text-xl font-bold text-rose-800">Add New Employee</h3>
-                <p className="text-sm text-rose-600/80">Create a new employee account with access permissions</p>
+                <h3 className="text-xl font-bold text-[#FB2467]">Add New Employee</h3>
+                <p className="text-sm text-[#FB2467]/80">Create a new employee account with access permissions</p>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="text-rose-400 hover:text-rose-600 transition-colors p-1 rounded-full hover:bg-rose-100/50"
+                className="text-gray-400 hover:text-[#FB2467] transition-colors p-1 rounded-full hover:bg-rose-100/50"
               >
                 <X className="h-6 w-6" />
               </button>
@@ -571,7 +571,7 @@ export default function EmployeeManagement() {
               {/* Basic Information */}
               <div>
                 <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                  <Users className="w-5 h-5 mr-2 text-rose-500" />
+                  <Users className="w-5 h-5 mr-2 text-[#FB2467]" />
                   Basic Information
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -582,7 +582,7 @@ export default function EmployeeManagement() {
                       name="name"
                       value={addFormData.name}
                       onChange={handleAddChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB2467] focus:border-transparent"
                       placeholder="Enter full name"
                       required
                     />
@@ -594,7 +594,7 @@ export default function EmployeeManagement() {
                       name="username"
                       value={addFormData.username}
                       onChange={handleAddChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB2467] focus:border-transparent"
                       placeholder="Enter username"
                       required
                     />
@@ -606,7 +606,7 @@ export default function EmployeeManagement() {
                       name="email"
                       value={addFormData.email}
                       onChange={handleAddChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB2467] focus:border-transparent"
                       placeholder="Enter email address"
                       required
                     />
@@ -618,7 +618,7 @@ export default function EmployeeManagement() {
                       name="phone"
                       value={addFormData.phone}
                       onChange={handleAddChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB2467] focus:border-transparent"
                       placeholder="Enter phone number"
                     />
                   </div>
@@ -628,7 +628,7 @@ export default function EmployeeManagement() {
                       name="role"
                       value={addFormData.role}
                       onChange={handleAddChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB2467] focus:border-transparent"
                     >
                       <option value="Employee">Employee</option>
                       {/* <option value="Manager">Manager</option>
@@ -641,7 +641,7 @@ export default function EmployeeManagement() {
                       name="status"
                       value={addFormData.status}
                       onChange={handleAddChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB2467] focus:border-transparent"
                     >
                       <option value="Active">Active</option>
                       <option value="Inactive">Inactive</option>
@@ -653,7 +653,7 @@ export default function EmployeeManagement() {
               {/* Password Section */}
               <div>
                 <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                  <Key className="w-5 h-5 mr-2 text-rose-500" />
+                  <Key className="w-5 h-5 mr-2 text-[#FB2467]" />
                   Password Information
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -664,7 +664,7 @@ export default function EmployeeManagement() {
                       name="password"
                       value={addFormData.password}
                       onChange={handleAddChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB2467] focus:border-transparent"
                       placeholder="Enter password"
                       required
                     />
@@ -676,7 +676,7 @@ export default function EmployeeManagement() {
                       name="confirmPassword"
                       value={addFormData.confirmPassword}
                       onChange={handleAddChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB2467] focus:border-transparent"
                       placeholder="Confirm password"
                       required
                     />
@@ -687,7 +687,7 @@ export default function EmployeeManagement() {
               {/* Permissions Section */}
               <div>
                 <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                  <Shield className="w-5 h-5 mr-2 text-rose-500" />
+                  <Shield className="w-5 h-5 mr-2 text-[#FB2467]" />
                   Access Permissions
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -701,7 +701,7 @@ export default function EmployeeManagement() {
                           name={`permissions.${section.id}`}
                           checked={addFormData.permissions[section.id]}
                           onChange={handleAddChange}
-                          className="w-4 h-4 text-rose-600 bg-gray-100 border-gray-300 rounded focus:ring-rose-500 focus:ring-2"
+                          className="w-4 h-4 text-[#FB2467] bg-gray-100 border-gray-300 rounded focus:ring-[#FB2467] focus:ring-2"
                         />
                         <label htmlFor={`add-${section.id}`} className="flex items-center text-sm font-medium text-gray-700 cursor-pointer">
                           <IconComponent className="w-4 h-4 mr-2 text-gray-500" />
@@ -718,13 +718,13 @@ export default function EmployeeManagement() {
             <div className="bg-gray-50 px-6 py-3 border-t border-rose-100 flex justify-end space-x-3 sticky bottom-0">
               <button
                 onClick={() => setShowAddModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FB2467]"
               >
                 Cancel
               </button>
               <button
                 onClick={handleAddEmployee}
-                className="px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-lg hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
+                className="px-4 py-2 text-sm font-medium text-white bg-[#FB2467] rounded-lg hover:bg-[#FB2467]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FB2467]"
               >
                 Create Employee
               </button>
@@ -738,14 +738,14 @@ export default function EmployeeManagement() {
         <div className="fixed inset-0 bg-gray-800/70 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-2xl border border-rose-100/50 w-full max-w-4xl overflow-hidden max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-rose-50 to-amber-50 px-6 py-4 border-b border-rose-100 flex justify-between items-center sticky top-0">
+            <div className="bg-[#FFFFFF] px-6 py-4 border-b border-rose-100 flex justify-between items-center sticky top-0">
               <div>
-                <h3 className="text-xl font-bold text-rose-800">Employee Profile</h3>
-                <p className="text-sm text-rose-600/80">Detailed information about {selectedEmployee.name}</p>
+                <h3 className="text-xl font-bold text-[#FB2467]">Employee Profile</h3>
+                <p className="text-sm text-[#FB2467]/80">Detailed information about {selectedEmployee.name}</p>
               </div>
               <button
                 onClick={() => setSelectedEmployee(null)}
-                className="text-rose-400 hover:text-rose-600 transition-colors p-1 rounded-full hover:bg-rose-100/50"
+                className="text-gray-400 hover:text-[#FB2467] transition-colors p-1 rounded-full hover:bg-rose-100/50"
               >
                 <X className="h-6 w-6" />
               </button>
@@ -757,7 +757,7 @@ export default function EmployeeManagement() {
               <div className="space-y-4">
                 <div className="flex items-center space-x-4">
                   <div className="w-20 h-20 bg-gradient-to-br from-rose-200 to-amber-200 rounded-full flex items-center justify-center shadow-md">
-                    <Users className="w-8 h-8 text-rose-600" />
+                    <Users className="w-8 h-8 text-[#FB2467]" />
                   </div>
                   <div>
                     <h4 className="text-lg font-semibold text-gray-900">{selectedEmployee.name}</h4>
@@ -780,7 +780,7 @@ export default function EmployeeManagement() {
                 {/* Contact Information */}
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h5 className="font-semibold text-gray-900 mb-3 flex items-center">
-                    <Mail className="w-4 h-4 mr-2 text-rose-500" />
+                    <Mail className="w-4 h-4 mr-2 text-[#FB2467]" />
                     Contact Information
                   </h5>
                   <div className="space-y-2">
@@ -802,7 +802,7 @@ export default function EmployeeManagement() {
                 {/* Employment Details */}
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h5 className="font-semibold text-gray-900 mb-3 flex items-center">
-                    <Calendar className="w-4 h-4 mr-2 text-rose-500" />
+                    <Calendar className="w-4 h-4 mr-2 text-[#FB2467]" />
                     Employment Details
                   </h5>
                   <div className="space-y-2">
@@ -844,7 +844,7 @@ export default function EmployeeManagement() {
               <div className="space-y-4">
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h5 className="font-semibold text-gray-900 mb-3 flex items-center">
-                    <Shield className="w-4 h-4 mr-2 text-rose-500" />
+                    <Shield className="w-4 h-4 mr-2 text-[#FB2467]" />
                     Access Permissions
                   </h5>
                   <div className="space-y-3">
@@ -895,13 +895,13 @@ export default function EmployeeManagement() {
               <div className="flex space-x-3">
                 <button
                   onClick={() => setSelectedEmployee(null)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FB2467]"
                 >
                   Close
                 </button>
                 <button
                   onClick={() => handleEditEmployee(selectedEmployee)}
-                  className="px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-lg hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
+                  className="px-4 py-2 text-sm font-medium text-white bg-[#FB2467] rounded-lg hover:bg-[#FB2467]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FB2467]"
                 >
                   Edit Employee
                 </button>
@@ -916,14 +916,14 @@ export default function EmployeeManagement() {
         <div className="fixed inset-0 bg-gray-800/70 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-2xl border border-rose-100/50 w-full max-w-4xl overflow-hidden max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-rose-50 to-amber-50 px-6 py-4 border-b border-rose-100 flex justify-between items-center sticky top-0">
+            <div className="bg-[#FFFFFF] px-6 py-4 border-b border-rose-100 flex justify-between items-center sticky top-0">
               <div>
-                <h3 className="text-xl font-bold text-rose-800">Edit Employee</h3>
-                <p className="text-sm text-rose-600/80">Update employee information and permissions</p>
+                <h3 className="text-xl font-bold text-[#FB2467]">Edit Employee</h3>
+                <p className="text-sm text-[#FB2467]/80">Update employee information and permissions</p>
                               </div>
               <button
                 onClick={() => setEditingEmployee(null)}
-                className="text-rose-400 hover:text-rose-600 transition-colors p-1 rounded-full hover:bg-rose-100/50"
+                className="text-gray-400 hover:text-[#FB2467] transition-colors p-1 rounded-full hover:bg-rose-100/50"
               >
                 <X className="h-6 w-6" />
               </button>
@@ -934,7 +934,7 @@ export default function EmployeeManagement() {
               {/* Basic Information */}
               <div>
                 <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                  <Users className="w-5 h-5 mr-2 text-rose-500" />
+                  <Users className="w-5 h-5 mr-2 text-[#FB2467]" />
                   Basic Information
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -945,7 +945,7 @@ export default function EmployeeManagement() {
                       name="name"
                       value={editFormData.name}
                       onChange={handleEditChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB2467] focus:border-transparent"
                     />
                   </div>
                   <div>
@@ -955,7 +955,7 @@ export default function EmployeeManagement() {
                       name="username"
                       value={editFormData.username}
                       onChange={handleEditChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB2467] focus:border-transparent"
                     />
                   </div>
                   <div>
@@ -965,7 +965,7 @@ export default function EmployeeManagement() {
                       name="email"
                       value={editFormData.email}
                       onChange={handleEditChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB2467] focus:border-transparent"
                     />
                   </div>
                   <div>
@@ -975,7 +975,7 @@ export default function EmployeeManagement() {
                       name="phone"
                       value={editFormData.phone}
                       onChange={handleEditChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB2467] focus:border-transparent"
                     />
                   </div>
                   <div>
@@ -984,7 +984,7 @@ export default function EmployeeManagement() {
                       name="role"
                       value={editFormData.role}
                       onChange={handleEditChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB2467] focus:border-transparent"
                     >
                       <option value="Employee">Employee</option>
                       <option value="Manager">Manager</option>
@@ -997,7 +997,7 @@ export default function EmployeeManagement() {
                       name="status"
                       value={editFormData.status}
                       onChange={handleEditChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB2467] focus:border-transparent"
                     >
                       <option value="Active">Active</option>
                       <option value="Inactive">Inactive</option>
@@ -1010,7 +1010,7 @@ export default function EmployeeManagement() {
               {/* Permissions Section */}
               <div>
                 <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                  <Shield className="w-5 h-5 mr-2 text-rose-500" />
+                  <Shield className="w-5 h-5 mr-2 text-[#FB2467]" />
                   Access Permissions
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1024,7 +1024,7 @@ export default function EmployeeManagement() {
                           name={`permissions.${section.id}`}
                           checked={editFormData.permissions[section.id]}
                           onChange={handleEditChange}
-                          className="w-4 h-4 text-rose-600 bg-gray-100 border-gray-300 rounded focus:ring-rose-500 focus:ring-2"
+                          className="w-4 h-4 text-[#FB2467] bg-gray-100 border-gray-300 rounded focus:ring-[#FB2467] focus:ring-2"
                         />
                         <label htmlFor={`edit-${section.id}`} className="flex items-center text-sm font-medium text-gray-700 cursor-pointer">
                           <IconComponent className="w-4 h-4 mr-2 text-gray-500" />
@@ -1041,13 +1041,13 @@ export default function EmployeeManagement() {
             <div className="bg-gray-50 px-6 py-3 border-t border-rose-100 flex justify-end space-x-3 sticky bottom-0">
               <button
                 onClick={() => setEditingEmployee(null)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FB2467]"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveEdit}
-                className="px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-lg hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
+                className="px-4 py-2 text-sm font-medium text-white bg-[#FB2467] rounded-lg hover:bg-[#FB2467]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FB2467]"
               >
                 Save Changes
               </button>

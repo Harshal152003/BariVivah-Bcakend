@@ -41,11 +41,11 @@ export default function EmployeeLoginForm() {
   }
 
   return (
-    <div className="min-h-screen  bg-gradient-to-br from-secondary/5 via-white to-primary/5 flex items-center justify-center p-4">
-      <div className="w-full max-w-lg mx-auto p-8 bg-white rounded-2xl border border-primary/20 shadow-xl shadow-primary/10 transition-all duration-300 hover:shadow-primary/20">
+    <div className="w-full bg-[#FFFFFF] flex items-center justify-center">
+      <div className="w-full max-w-lg mx-auto p-8 bg-[#F8F8F8] rounded-2xl border border-primary/20 shadow-none transition-all duration-300">
         {/* Header with crown icon matching admin panel */}
         <div className="text-center mb-8">
-          <div className="w-22 h-20 bg-gradient-to-br from-secondary to-primary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <div className="w-22 h-20 bg-[#FB2467] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
             <Crown className="h-10 w-10 text-white" />
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Admin Portal</h2>
@@ -78,7 +78,7 @@ export default function EmployeeLoginForm() {
               </button>
             </div>
             <div
-              className={`absolute top-1 bottom-1 w-[calc(50%-0.25rem)] bg-gradient-to-r from-secondary to-primary rounded-lg transition-all duration-300 ${role === 'employee' ? 'left-1' : 'left-[calc(50%+0.25rem)]'
+              className={`absolute top-1 bottom-1 w-[calc(50%-0.25rem)] bg-[#FB2467] rounded-lg transition-all duration-300 ${role === 'employee' ? 'left-1' : 'left-[calc(50%+0.25rem)]'
                 }`}
             />
           </div>
@@ -134,7 +134,7 @@ export default function EmployeeLoginForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full group relative flex justify-center py-3 px-4 border border-transparent rounded-xl bg-gradient-to-r from-secondary to-primary text-white font-medium hover:shadow-lg hover:shadow-primary/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-300 overflow-hidden"
+            className="w-full group relative flex justify-center py-3 px-4 border border-transparent rounded-xl bg-[#FB2467] text-white font-medium hover:bg-[#FB2467]/90 hover:shadow-lg hover:shadow-primary/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-300 overflow-hidden"
           >
             <span className={`relative z-10 flex items-center gap-2 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
               Sign In <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -144,7 +144,7 @@ export default function EmployeeLoginForm() {
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
               </div>
             )}
-            <span className="absolute inset-0 bg-gradient-to-r from-primary to-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <span className="absolute inset-0 bg-[#FB2467] opacity-0 transition-opacity duration-300" />
           </button>
         </form>
 
