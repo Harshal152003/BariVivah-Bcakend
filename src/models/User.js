@@ -242,8 +242,6 @@ const UserSchema = new mongoose.Schema({
 // --- HIGH PERFORMANCE DATABASE INDEXES (Scale to 10,000+ Users) ---
 UserSchema.index({ gender: 1, isVerified: 1, createdAt: -1 });
 UserSchema.index({ caste: 1, currentCity: 1, isVerified: 1 });
-UserSchema.index({ phone: 1 });
-UserSchema.index({ email: 1 });
 UserSchema.index({ 'location.latitude': 1, 'location.longitude': 1 });
 
 delete mongoose.models.User; // Remove existing model if it exists

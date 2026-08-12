@@ -38,17 +38,28 @@ export async function GET(req) {
     }
 
     // Find all interests where (senderId === userId OR receiverId === userId) AND status === 'accepted'
-    const matches = await Interest.find({
+    const rawMatches = await Interest.find({
       $or: [
         { senderId: userId },
         { receiverId: userId }
       ],
       status: 'accepted'
+    }).sort({ createdAt: -1 });
+
+    // Deduplicate by partner User ID so each matched partner appears EXACTLY ONCE
+    const uniqueMatchesMap = new Map();
+    rawMatches.forEach((m) => {
+      const partnerId = m.senderId.toString() === userId ? m.receiverId.toString() : m.senderId.toString();
+      if (!uniqueMatchesMap.has(partnerId)) {
+        uniqueMatchesMap.set(partnerId, m);
+      }
     });
 
-    // Populate the other user's details for each match
+    const uniqueMatches = Array.from(uniqueMatchesMap.values());
+
+    // Populate the other user's details for each unique match
     const populatedMatches = await Promise.all(
-      matches.map(async (match) => {
+      uniqueMatches.map(async (match) => {
         const otherUserId = match.senderId.toString() === userId ? match.receiverId : match.senderId;
         const otherUser = await User.findById(otherUserId).select('-password');
         return {

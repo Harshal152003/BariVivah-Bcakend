@@ -117,6 +117,7 @@ export async function POST(request) {
       success: true,
       unlocked: true,
       contactNumber: targetUser.phone || 'N/A',
+      email: targetUser.email || 'N/A',
       contactsUsed: updatedUser.subscription.contactsUsed,
       contactUnlockLimit: updatedUser.subscription.contactUnlockLimit
     }, { status: 200, headers: corsHeaders });
