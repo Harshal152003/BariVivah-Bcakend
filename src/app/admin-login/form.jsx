@@ -45,9 +45,11 @@ export default function EmployeeLoginForm() {
       <div className="w-full max-w-lg mx-auto p-8 bg-[#F8F8F8] rounded-2xl border border-primary/20 shadow-none transition-all duration-300">
         {/* Header with crown icon matching admin panel */}
         <div className="text-center mb-8">
-          <div className="w-22 h-20 bg-[#FB2467] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <Crown className="h-10 w-10 text-white" />
-          </div>
+          <img 
+            src="/admin-logo.png" 
+            alt="Admin Logo" 
+            className="h-24 w-auto mx-auto mb-4 object-contain"
+          />
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Admin Portal</h2>
           <p className="text-gray-500">Sign in to access your dashboard</p>
         </div>

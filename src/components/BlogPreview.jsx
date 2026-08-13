@@ -7,7 +7,7 @@ const featuredPost = {
   title: "The Changing Face of Arranged Marriages: Tradition Meets Technology",
   category: "Relationship Trends",
   excerpt: "Discover how modern matchmaking apps are reshaping the age-old tradition of arranged marriages, giving you more control while honoring family values.",
-  image: "/blogImages/blog1.png",
+  image: "/wedding_guide.png",
   readTime: "8 min read",
   date: "June 15, 2024",
   author: "Sonia Kapoor"
@@ -19,7 +19,7 @@ const recentPosts = [
     title: "10 Essential Questions for Your First Meeting",
     category: "Dating Advice",
     readTime: "5 min read",
-    image: "/blogImages/blog2.png",
+    image: "/tradition_modernity.png",
     date: "June 10, 2024"
   },
   {
@@ -27,7 +27,7 @@ const recentPosts = [
     title: "Understanding Kundali Matching in 2024",
     category: "Astrology",
     readTime: "6 min read",
-    image: "/blogImages/blog3.png",
+    image: "/at.png",
     date: "June 05, 2024"
   },
   {
@@ -35,7 +35,7 @@ const recentPosts = [
     title: "How to Plan a Budget Wedding looks Regal",
     category: "Wedding Planning",
     readTime: "4 min read",
-    image: "/blogImages/blog4.png",
+    image: "/wp.png",
     date: "May 28, 2024"
   }
 ];
@@ -64,19 +64,17 @@ export default function BlogPreview() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
 
           {/* Main Featured Article (Cleaner: Text below image) */}
           <div className={`lg:col-span-7 group cursor-pointer transition-all duration-700 delay-200 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-            <div className="relative h-[400px] md:h-[480px] rounded-[2rem] overflow-hidden mb-8">
+            <div className="relative h-[320px] md:h-[380px] rounded-[2rem] overflow-hidden mb-8">
               <img
                 src={featuredPost.image}
                 alt={featuredPost.title}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
-              <span className="absolute top-6 left-6 bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-bold text-gray-900 uppercase tracking-wider">
-                Featured
-              </span>
+
             </div>
 
             <div className="pr-4">

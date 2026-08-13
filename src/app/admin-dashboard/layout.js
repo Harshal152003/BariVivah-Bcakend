@@ -83,8 +83,8 @@ export default function AdminLayout({ children }) {
         {/* Mobile Header */}
         <div className="lg:hidden flex items-center justify-between p-4 bg-white border-b border-gray-200">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-[#FB2467] rounded-lg flex items-center justify-center">
-              <Crown className="w-4 h-4 text-white" />
+            <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center">
+              <img src="/admin_logo.png" alt="Admin Logo" className="w-full h-full object-contain" />
             </div>
             <h2 className="font-bold text-gray-900">Admin Panel</h2>
           </div>
@@ -104,8 +104,8 @@ export default function AdminLayout({ children }) {
                 <div className="p-6 border-b border-gray-200">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-[#FB2467] rounded-lg flex items-center justify-center">
-                        <Crown className="w-6 h-6 text-white" />
+                      <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center">
+                        <img src="/admin_logo.png" alt="Admin Logo" className="w-full h-full object-contain" />
                       </div>
                       <div>
                         <h2 className="font-bold text-gray-900">Admin Panel</h2>
@@ -166,8 +166,8 @@ export default function AdminLayout({ children }) {
           <div className="hidden lg:flex flex-col w-64 bg-white shadow-xl border-r border-gray-200 h-full">
             <div className="p-4 pl-7 border-b border-gray-200">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-[#FB2467] rounded-lg flex items-center justify-center">
-                  <Crown className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center">
+                  <img src="/admin_logo.png" alt="Admin Logo" className="w-full h-full object-contain" />
                 </div>
                 <div>
                   <h2 className="font-bold text-gray-900">Admin Panel</h2>

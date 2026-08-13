@@ -37,7 +37,7 @@ export default function AppDownloadSection() {
 
             <h2 className="text-4xl md:text-[42px] font-bold text-[#FFFFFF] mb-6 leading-[1.2] tracking-tight">
               Find Your Perfect Match <br/>
-              <span className="text-[#FFFFFF]">Anytime, Anywhere</span>
+              <span className="text-yellow-400">Anytime, Anywhere</span>
             </h2>
 
             <p className="text-white/90 text-[17px] mb-10 leading-relaxed max-w-[460px]">
@@ -67,7 +67,7 @@ export default function AppDownloadSection() {
             </div>
 
             {/* App rating */}
-            <div className="flex items-center mb-10">
+            <div className="flex items-center mb-2">
               <div className="flex mr-3">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Star
@@ -84,45 +84,24 @@ export default function AppDownloadSection() {
             {/* Download buttons & QR Code */}
             <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-center sm:items-stretch">
               {/* App Store Button */}
-              <button className="px-5 py-2.5 bg-[#FFFFFF] rounded-[14px] hover:bg-gray-50 transition-all duration-300 shadow-lg flex items-center justify-center group min-w-[170px]">
-                <div className="flex items-center">
-                  <div className="mr-3">
-                    <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" className="text-[#FB2467]">
-                      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
-                    </svg>
-                  </div>
-                  <div className="text-left">
-                    <div className="text-[10px] leading-tight text-[#FB2467] font-medium">Download on the</div>
-                    <div className="text-[15px] leading-tight font-bold text-[#FB2467]">App Store</div>
-                  </div>
-                </div>
+              <button className="hover:opacity-80 transition-opacity duration-300 flex items-center justify-center bg-transparent p-0 border-none shadow-none">
+                <img
+                  src="/app_store_badge.svg"
+                  alt="Download on the App Store"
+                  className="w-[130px] h-auto object-contain"
+                />
               </button>
 
               {/* Google Play Button */}
-              <button className="px-5 py-2.5 bg-[#FFFFFF] rounded-[14px] hover:bg-gray-50 transition-all duration-300 shadow-lg flex items-center justify-center group min-w-[170px]">
-                <div className="flex items-center">
-                  <div className="mr-3">
-                    <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" className="text-[#FB2467]">
-                      <path d="M3 20.5v-17c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v17c0 .83-.67 1.5-1.5 1.5S3 21.33 3 20.5zM16.5 12L8.92 19.6c-.7.7-1.84.7-2.54 0-.7-.7-.7-1.84 0-2.54L11.98 12 6.38 6.4c-.7-.7-.7-1.84 0-2.54.7-.7 1.84-.7 2.54 0L16.5 12z" />
-                    </svg>
-                  </div>
-                  <div className="text-left">
-                    <div className="text-[10px] leading-tight text-[#FB2467] font-medium">GET IT ON</div>
-                    <div className="text-[15px] leading-tight font-bold text-[#FB2467]">Google Play</div>
-                  </div>
-                </div>
+              <button className="hover:opacity-80 transition-opacity duration-300 flex items-center justify-center bg-transparent p-0 border-none shadow-none">
+                <img
+                  src="/google_play_badge.svg"
+                  alt="Get it on Google Play"
+                  className="w-[130px] h-auto object-contain"
+                />
               </button>
 
-              {/* QR Code */}
-              <div className="w-[52px] h-[52px] bg-white p-1.5 rounded-[12px] shadow-lg flex-shrink-0">
-                <Image
-                  width={120}
-                  height={120}
-                  src="/qr.png"
-                  alt="QR Code"
-                  className="w-full h-full object-cover"
-                />
-              </div>
+
             </div>
           </div>
 

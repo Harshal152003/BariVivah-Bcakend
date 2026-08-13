@@ -1,7 +1,7 @@
 // app/admin-dashboard/page.jsx
 "use client"
 import { useState, useEffect } from 'react';
-import { Users, Crown, DollarSign, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Users, Crown, IndianRupee, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function AdminDashboard() {
   const [data, setData] = useState(null);
@@ -85,7 +85,7 @@ export default function AdminDashboard() {
     title: 'Revenue (₹)', 
     value: data?.stats?.revenue.toLocaleString(), 
     change: data?.stats?.changes?.revenue, 
-    icon: DollarSign, 
+    icon: IndianRupee, 
     bgColor: 'bg-[#F3E5F5]',
     textColor: 'text-[#7B1FA2]',
     iconColor: 'bg-[#7B1FA2]'

@@ -50,7 +50,7 @@ export default function MatrimonialNavbar() {
           <Link href="/login" className="px-6 py-2 text-sm text-[#5C3F43] bg-transparent border border-gray-200 rounded-full hover:bg-gray-50 transition-colors duration-300">
             Login
           </Link>
-          <Link href="/register" className="px-6 py-2 text-sm bg-primary text-white rounded-full hover:bg-primary/90 transition-colors duration-300">
+          <Link href="/login?tab=signup" className="px-6 py-2 text-sm bg-primary text-white rounded-full hover:bg-primary/90 transition-colors duration-300">
             Register
           </Link>
         </div>
@@ -82,7 +82,7 @@ export default function MatrimonialNavbar() {
               <Link href="/login" className="w-full py-2 text-center text-[#5C3F43] border border-gray-200 rounded-full hover:bg-gray-50 transition-colors duration-200">
                 Login
               </Link>
-              <Link href="/register" className="w-full py-2 text-center bg-primary text-white rounded-full hover:bg-primary/90 transition-colors duration-200">
+              <Link href="/login?tab=signup" className="w-full py-2 text-center bg-primary text-white rounded-full hover:bg-primary/90 transition-colors duration-200">
                 Register
               </Link>
             </div>

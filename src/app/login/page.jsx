@@ -102,6 +102,15 @@ export default function MatrimonialLogin() {
   const [currentStep, setCurrentStep] = useState(1); // 1 to 9 for register wizard
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('tab') === 'signup') {
+        setActiveTab('signup');
+      }
+    }
+  }, []);
   const [isLoaded, setIsLoaded] = useState(false);
   const { login, user, refreshUser } = useSession();
 
@@ -636,20 +645,22 @@ export default function MatrimonialLogin() {
     : [];
 
   return (
-    <div className="min-h-screen bg-[#FFFFFF] flex items-center justify-center px-4 py-4 sm:px-6 relative overflow-hidden select-none">
-      <div className={`relative w-full max-w-4xl transition-all duration-700 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
+    <div className="min-h-screen bg-[#FFFFFF] flex items-center justify-center px-4 py-12 sm:px-6 relative overflow-hidden select-none">
+      <div className={`relative w-full max-w-4xl transition-all duration-700 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'} mt-8`}>
 
         {/* Registration Progress Indicator */}
         {activeTab === 'signup' && currentStep !== 5 && (
           <div className="mb-6 bg-white/70 backdrop-blur-md rounded-2xl p-4 border border-white/50 shadow-sm">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-xs font-bold text-primary tracking-wider uppercase">Onboarding Wizard</span>
+              <span className="text-xs font-bold tracking-wider uppercase" style={{ color: '#FB2467' }}>Onboarding Wizard</span>
               <span className="text-xs font-bold text-gray-500">Step {currentStep} of 9</span>
             </div>
             <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
               <div
-                className="bg-gradient-to-r from-secondary to-primary h-2 rounded-full transition-all duration-500"
-                style={{ width: `${(currentStep / 9) * 100}%` }}
+                className="h-2 rounded-full transition-all duration-500 bg-[#FB2467]"
+                style={{ 
+                  width: `${(currentStep / 9) * 100}%`
+                }}
               />
             </div>
           </div>
@@ -659,7 +670,7 @@ export default function MatrimonialLogin() {
         <div className="bg-[#F8F8F8] rounded-3xl shadow-2xl border border-gray-100 overflow-hidden flex flex-col md:flex-row max-h-[90vh]">
           
           {/* Left Column - Form Area */}
-          <div className="w-full md:w-1/2 p-4 sm:p-6 lg:px-8 lg:py-6 flex flex-col justify-center relative z-10 overflow-y-auto">
+          <div className="w-full md:w-1/2 p-4 sm:p-6 lg:px-8 lg:py-10 flex flex-col relative z-10 overflow-y-auto no-scrollbar">
 
           {/* Header Block */}
           {currentStep !== 5 && (
@@ -681,7 +692,7 @@ export default function MatrimonialLogin() {
                 )}
               </h1>
               {activeTab === 'login' && (
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-primary tracking-tight mt-1 mb-4">
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-[#FB2467] tracking-tight mt-1 mb-4">
                   To barivivah.in.
                 </h2>
               )}
@@ -695,7 +706,7 @@ export default function MatrimonialLogin() {
                     <button 
                       type="button" 
                       onClick={() => { setActiveTab('login'); setError(''); }} 
-                      className="text-primary hover:opacity-80 transition-colors"
+                      className="text-[#FB2467] hover:opacity-80 transition-colors"
                     >
                       Sign In
                     </button>
@@ -750,7 +761,7 @@ export default function MatrimonialLogin() {
                       value={loginPhone}
                       onChange={(e) => setLoginPhone(e.target.value)}
                       placeholder="98765 43210"
-                      className="flex-1 px-4 py-2.5 border border-gray-200 bg-white rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm font-medium shadow-sm"
+                      className="flex-1 px-4 py-2.5 border border-gray-200 bg-white rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none transition-all text-sm font-medium shadow-sm"
                       maxLength={10}
                       required
                     />
@@ -767,13 +778,13 @@ export default function MatrimonialLogin() {
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                       placeholder="Enter your password"
-                      className="w-full px-4 py-2.5 border border-gray-200 bg-white rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm font-medium pr-10 shadow-sm"
+                      className="w-full px-4 py-2.5 border border-gray-200 bg-white rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none transition-all text-sm font-medium pr-10 shadow-sm"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowLoginPassword(!showLoginPassword)}
-                      className="absolute right-3 top-3 text-gray-400 hover:text-primary focus:outline-none"
+                      className="absolute right-3 top-3 text-gray-400 hover:text-[#FB2467] focus:outline-none"
                     >
                       {showLoginPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
@@ -782,12 +793,12 @@ export default function MatrimonialLogin() {
 
                 <div className="flex items-center justify-between mt-1 mb-4">
                   <label className="flex items-center cursor-pointer group">
-                    <div className="w-4 h-4 border-2 border-gray-200 rounded flex items-center justify-center bg-white group-hover:border-primary transition-colors">
+                    <div className="w-4 h-4 border-2 border-gray-200 rounded flex items-center justify-center bg-white group-hover:border-[#FB2467] transition-colors">
                       {/* Checkbox styling */}
                     </div>
                     <span className="ml-2 text-xs text-gray-400 font-semibold group-hover:text-gray-600 transition-colors">Remember Me</span>
                   </label>
-                  <a href="#" className="text-xs font-semibold text-primary hover:opacity-80 transition-colors">
+                  <a href="#" className="text-xs font-semibold text-[#FB2467] hover:opacity-80 transition-colors">
                     Forget Password
                   </a>
                 </div>
@@ -801,7 +812,7 @@ export default function MatrimonialLogin() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3 bg-primary hover:bg-primary/90 text-white rounded-xl font-bold text-sm tracking-wide shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all disabled:opacity-50 flex items-center justify-center mt-1"
+                  className="w-full py-3 bg-[#FB2467] hover:bg-[#FB2467]/90 text-white rounded-xl font-bold text-sm tracking-wide shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all disabled:opacity-50 flex items-center justify-center mt-1"
                 >
                   {isLoading ? (
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -816,7 +827,7 @@ export default function MatrimonialLogin() {
                     <button 
                       type="button" 
                       onClick={() => { setActiveTab('signup'); setError(''); }} 
-                      className="text-primary hover:opacity-80 transition-colors"
+                      className="text-[#FB2467] hover:opacity-80 transition-colors"
                     >
                       Sign Up
                     </button>
@@ -848,11 +859,11 @@ export default function MatrimonialLogin() {
                               type="button"
                               onClick={() => setCreatedFor(rel.val)}
                               className={`py-3 px-4 text-xs font-semibold rounded-xl border transition-all flex items-center space-x-2 ${isActive
-                                ? 'border-primary bg-primary/5 text-primary shadow-sm'
+                                ? 'border-[#FB2467] bg-[#FB2467]/5 text-[#FB2467] shadow-sm'
                                 : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
                                 }`}
                             >
-                              <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${isActive ? 'border-primary bg-primary' : 'border-gray-300'}`}>
+                              <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${isActive ? 'border-[#FB2467] bg-[#FB2467]' : 'border-gray-300'}`}>
                                 {isActive && <Check size={10} className="text-white" strokeWidth={3} />}
                               </div>
                               <span>{rel.label}</span>
@@ -898,7 +909,7 @@ export default function MatrimonialLogin() {
                     <button
                       type="button"
                       onClick={() => setCurrentStep(2)}
-                      className="w-full py-3.5 bg-gradient-to-r from-secondary to-primary hover:opacity-95 text-white rounded-xl font-bold text-sm tracking-wide shadow-md transition-all flex items-center justify-center"
+                      className="w-full py-3.5 bg-[#FB2467] hover:opacity-95 text-white rounded-xl font-bold text-sm tracking-wide shadow-md transition-all flex items-center justify-center"
                     >
                       Continue
                     </button>
@@ -915,7 +926,7 @@ export default function MatrimonialLogin() {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Enter full name of candidate"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm font-medium"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none transition-all text-sm font-medium"
                       />
                     </div>
 
@@ -930,7 +941,7 @@ export default function MatrimonialLogin() {
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           placeholder="98765 43210"
-                          className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm font-medium"
+                          className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none transition-all text-sm font-medium"
                           maxLength={10}
                         />
                       </div>
@@ -943,7 +954,7 @@ export default function MatrimonialLogin() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="candidate@example.com"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm font-medium"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none transition-all text-sm font-medium"
                       />
                     </div>
 
@@ -953,7 +964,7 @@ export default function MatrimonialLogin() {
                         type="date"
                         value={dob}
                         onChange={(e) => setDob(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm font-medium bg-white"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none transition-all text-sm font-medium bg-white"
                       />
                     </div>
 
@@ -965,7 +976,7 @@ export default function MatrimonialLogin() {
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="At least 6 characters"
-                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm font-medium pr-10"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none transition-all text-sm font-medium pr-10"
                         />
                         <button
                           type="button"
@@ -988,7 +999,7 @@ export default function MatrimonialLogin() {
                       <button
                         type="button"
                         onClick={validateStep2}
-                        className="flex-1 py-3 bg-gradient-to-r from-secondary to-primary hover:opacity-95 text-white rounded-xl font-bold text-sm shadow-md transition-all"
+                        className="flex-1 py-3 bg-[#FB2467] hover:opacity-95 text-white rounded-xl font-bold text-sm shadow-md transition-all"
                       >
                         Continue
                       </button>
@@ -998,14 +1009,14 @@ export default function MatrimonialLogin() {
 
                 {/* STEP 3: Profile Attributes */}
                 {currentStep === 3 && (
-                  <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+                  <div className="space-y-4 max-h-[60vh] overflow-y-auto no-scrollbar pr-1">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs font-bold text-gray-700 uppercase mb-2">Height</label>
                         <select
                           value={heightVal}
                           onChange={(e) => setHeightVal(e.target.value)}
-                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm bg-white"
+                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm bg-white"
                         >
                           {heightList.map((h) => <option key={h} value={h}>{h}</option>)}
                         </select>
@@ -1016,7 +1027,7 @@ export default function MatrimonialLogin() {
                         <select
                           value={maritalStatus}
                           onChange={(e) => setMaritalStatus(e.target.value)}
-                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm bg-white"
+                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm bg-white"
                         >
                           <option value="Never Married">Never Married</option>
                           <option value="Divorced">Divorced</option>
@@ -1033,7 +1044,7 @@ export default function MatrimonialLogin() {
                           type="date"
                           value={divorceDate}
                           onChange={(e) => setDivorceDate(e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm bg-white"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm bg-white"
                         />
                       </div>
                     )}
@@ -1052,13 +1063,13 @@ export default function MatrimonialLogin() {
                       </div>
 
                       {showStateDropdown && (
-                        <div className="absolute z-50 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto p-2 space-y-2">
+                        <div className="absolute z-50 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto no-scrollbar p-2 space-y-2">
                           <input
                             type="text"
                             placeholder="Type to filter..."
                             value={stateSearchQuery}
                             onChange={(e) => setStateSearchQuery(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-xs outline-none focus:border-primary"
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-xs outline-none focus:border-[#FB2467]"
                           />
                           {filteredStates.map((s) => (
                             <div
@@ -1099,13 +1110,13 @@ export default function MatrimonialLogin() {
                       </div>
 
                       {showCityDropdown && state && (
-                        <div className="absolute z-50 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto p-2 space-y-2">
+                        <div className="absolute z-50 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto no-scrollbar p-2 space-y-2">
                           <input
                             type="text"
                             placeholder="Type to filter..."
                             value={citySearchQuery}
                             onChange={(e) => setCitySearchQuery(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-xs outline-none focus:border-primary"
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-xs outline-none focus:border-[#FB2467]"
                           />
                           {filteredCities.map((c) => (
                             <div
@@ -1130,7 +1141,7 @@ export default function MatrimonialLogin() {
                         <select
                           value={religion}
                           onChange={(e) => setReligion(e.target.value)}
-                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm bg-white"
+                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm bg-white"
                         >
                           <option value="Hindu">Hindu</option>
                           <option value="Buddhist">Buddhist</option>
@@ -1144,7 +1155,7 @@ export default function MatrimonialLogin() {
                         <select
                           value={caste}
                           onChange={(e) => setCaste(e.target.value)}
-                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm bg-white"
+                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm bg-white"
                         >
                           <option value="Bari">Bari</option>
                         </select>
@@ -1159,7 +1170,7 @@ export default function MatrimonialLogin() {
                           value={sect}
                           onChange={(e) => setSect(e.target.value)}
                           placeholder="e.g. Swaminarayan"
-                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm font-medium"
                         />
                       </div>
 
@@ -1170,7 +1181,7 @@ export default function MatrimonialLogin() {
                           value={subcaste}
                           onChange={(e) => setSubcaste(e.target.value)}
                           placeholder="e.g. Koknastha"
-                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm font-medium"
                         />
                       </div>
                     </div>
@@ -1181,7 +1192,7 @@ export default function MatrimonialLogin() {
                         <select
                           value={motherTongue}
                           onChange={(e) => setMotherTongue(e.target.value)}
-                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm bg-white"
+                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm bg-white"
                         >
                           <option value="Marathi">Marathi</option>
                           <option value="Hindi">Hindi</option>
@@ -1195,7 +1206,7 @@ export default function MatrimonialLogin() {
                         <select
                           value={manglik}
                           onChange={(e) => setManglik(e.target.value)}
-                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm bg-white"
+                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm bg-white"
                         >
                           <option value="No">No</option>
                           <option value="Yes">Yes</option>
@@ -1213,7 +1224,7 @@ export default function MatrimonialLogin() {
                           value={gotra}
                           onChange={(e) => setGotra(e.target.value)}
                           placeholder="e.g. Kashyap"
-                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium"
+                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm font-medium"
                         />
                       </div>
                       <div className="col-span-1">
@@ -1222,7 +1233,7 @@ export default function MatrimonialLogin() {
                           type="time"
                           value={birthTime}
                           onChange={(e) => setBirthTime(e.target.value)}
-                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium bg-white"
+                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm font-medium bg-white"
                         />
                       </div>
                       <div className="col-span-1">
@@ -1232,7 +1243,7 @@ export default function MatrimonialLogin() {
                           value={birthPlace}
                           onChange={(e) => setBirthPlace(e.target.value)}
                           placeholder="e.g. Mumbai"
-                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium"
+                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm font-medium"
                         />
                       </div>
                     </div>
@@ -1248,7 +1259,7 @@ export default function MatrimonialLogin() {
                       <button
                         type="button"
                         onClick={validateStep3}
-                        className="flex-1 py-3 bg-gradient-to-r from-secondary to-primary hover:opacity-95 text-white rounded-xl font-bold text-sm shadow-md transition-all"
+                        className="flex-1 py-3 bg-[#FB2467] hover:opacity-95 text-white rounded-xl font-bold text-sm shadow-md transition-all"
                       >
                         Continue
                       </button>
@@ -1258,13 +1269,13 @@ export default function MatrimonialLogin() {
 
                 {/* STEP 4: Career & About */}
                 {currentStep === 4 && (
-                  <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+                  <div className="space-y-4 max-h-[60vh] overflow-y-auto no-scrollbar pr-1">
                     <div>
                       <label className="block text-xs font-bold text-gray-700 uppercase mb-2">Highest Qualification</label>
                       <select
                         value={education}
                         onChange={(e) => setEducation(e.target.value)}
-                        className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm bg-white"
+                        className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm bg-white"
                       >
                         {qualificationList.map((q) => <option key={q} value={q}>{q}</option>)}
                       </select>
@@ -1278,7 +1289,7 @@ export default function MatrimonialLogin() {
                           value={customEducation}
                           onChange={(e) => setCustomEducation(e.target.value)}
                           placeholder="e.g. BA Fine Arts"
-                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm font-medium"
                         />
                       </div>
                     )}
@@ -1289,7 +1300,7 @@ export default function MatrimonialLogin() {
                         <select
                           value={workSector}
                           onChange={(e) => setWorkSector(e.target.value)}
-                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm bg-white"
+                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm bg-white"
                         >
                           {workSectorList.map((w) => <option key={w} value={w}>{w}</option>)}
                         </select>
@@ -1300,7 +1311,7 @@ export default function MatrimonialLogin() {
                         <select
                           value={income}
                           onChange={(e) => setIncome(e.target.value)}
-                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm bg-white"
+                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm bg-white"
                         >
                           {incomeList.map((i) => <option key={i} value={i}>{i}</option>)}
                         </select>
@@ -1314,7 +1325,7 @@ export default function MatrimonialLogin() {
                         value={occupation}
                         onChange={(e) => setOccupation(e.target.value)}
                         placeholder="e.g. Senior Software Engineer"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm font-medium"
                       />
                     </div>
 
@@ -1324,7 +1335,7 @@ export default function MatrimonialLogin() {
                         value={aboutMe}
                         onChange={(e) => setAboutMe(e.target.value)}
                         placeholder="Describe the candidate's personality, hobbies, family background, etc..."
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium h-20 resize-none"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm font-medium h-20 resize-none"
                       />
                     </div>
 
@@ -1335,16 +1346,16 @@ export default function MatrimonialLogin() {
                         id="acceptTerms"
                         checked={acceptTerms}
                         onChange={(e) => setAcceptTerms(e.target.checked)}
-                        className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary accent-primary cursor-pointer"
+                        className="mt-1 h-4 w-4 rounded border-gray-300 text-[#FB2467] focus:ring-primary accent-primary cursor-pointer"
                         required
                       />
                       <label htmlFor="acceptTerms" className="text-xs text-gray-500 cursor-pointer select-none leading-relaxed">
                         I agree to the{' '}
-                        <button type="button" onClick={() => openTerms('terms')} className="text-primary hover:underline font-semibold focus:outline-none">
+                        <button type="button" onClick={() => openTerms('terms')} className="text-[#FB2467] hover:underline font-semibold focus:outline-none">
                           Terms & Conditions
                         </button>{' '}
                         and{' '}
-                        <button type="button" onClick={() => openTerms('privacy')} className="text-primary hover:underline font-semibold focus:outline-none">
+                        <button type="button" onClick={() => openTerms('privacy')} className="text-[#FB2467] hover:underline font-semibold focus:outline-none">
                           Privacy Policy
                         </button>
                       </label>
@@ -1361,7 +1372,7 @@ export default function MatrimonialLogin() {
                       <button
                         type="button"
                         onClick={validateStep4}
-                        className="flex-1 py-3 bg-gradient-to-r from-secondary to-primary hover:opacity-95 text-white rounded-xl font-bold text-sm shadow-md transition-all"
+                        className="flex-1 py-3 bg-[#FB2467] hover:opacity-95 text-white rounded-xl font-bold text-sm shadow-md transition-all"
                       >
                         Continue
                       </button>
@@ -1411,11 +1422,11 @@ export default function MatrimonialLogin() {
                         </div>
                       ) : (
                         <label className="cursor-pointer flex flex-col items-center space-y-3">
-                          <div className="p-4 bg-white border border-gray-100 rounded-full shadow-sm text-primary">
+                          <div className="p-4 bg-white border border-gray-100 rounded-full shadow-sm text-[#FB2467]">
                             <Camera size={26} />
                           </div>
                           <div className="text-center">
-                            <span className="text-xs font-bold text-primary block hover:underline">Choose Photo</span>
+                            <span className="text-xs font-bold text-[#FB2467] block hover:underline">Choose Photo</span>
                             <span className="text-[10px] text-gray-400 block mt-1">PNG, JPG up to 5MB</span>
                           </div>
                           <input
@@ -1429,7 +1440,7 @@ export default function MatrimonialLogin() {
 
                       {uploadingPhoto && (
                         <div className="absolute inset-0 bg-white/80 backdrop-blur-[1px] flex flex-col items-center justify-center space-y-2 rounded-2xl">
-                          <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+                          <div className="w-6 h-6 border-2 border-[#FB2467]/30 border-t-primary rounded-full animate-spin"></div>
                           <span className="text-xs font-medium text-gray-500">Uploading to cloud...</span>
                         </div>
                       )}
@@ -1446,7 +1457,7 @@ export default function MatrimonialLogin() {
                       <button
                         type="button"
                         onClick={() => setCurrentStep(7)}
-                        className="flex-1 py-3 bg-gradient-to-r from-secondary to-primary hover:opacity-95 text-white rounded-xl font-bold text-sm shadow-md transition-all"
+                        className="flex-1 py-3 bg-[#FB2467] hover:opacity-95 text-white rounded-xl font-bold text-sm shadow-md transition-all"
                       >
                         {photoUri ? 'Next' : 'Skip & Continue'}
                       </button>
@@ -1480,7 +1491,7 @@ export default function MatrimonialLogin() {
                             value={digit}
                             onChange={(e) => handleOTPInput(index, e.target.value)}
                             onKeyDown={(e) => handleOTPKeyDown(index, e)}
-                            className="w-10 h-11 text-center text-lg font-bold border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                            className="w-10 h-11 text-center text-lg font-bold border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none transition-all"
                             maxLength={1}
                           />
                         ))}
@@ -1507,7 +1518,7 @@ export default function MatrimonialLogin() {
                       type="button"
                       onClick={handleVerifyRegisterOTP}
                       disabled={isLoading}
-                      className="w-full py-3.5 bg-gradient-to-r from-secondary to-primary hover:opacity-95 text-white rounded-xl font-bold text-sm tracking-wide shadow-md transition-all flex items-center justify-center"
+                      className="w-full py-3.5 bg-[#FB2467] hover:opacity-95 text-white rounded-xl font-bold text-sm tracking-wide shadow-md transition-all flex items-center justify-center"
                     >
                       {isLoading ? (
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -1521,7 +1532,7 @@ export default function MatrimonialLogin() {
                         type="button"
                         onClick={handleSendRegisterOTP}
                         disabled={resendTimer > 0}
-                        className="text-primary hover:text-primary/90 text-xs font-semibold disabled:text-gray-400 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                        className="text-[#FB2467] hover:text-[#FB2467]/90 text-xs font-semibold disabled:text-gray-400 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
                       >
                         <RotateCcw size={14} className="mr-1.5" />
                         {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'}
@@ -1532,7 +1543,7 @@ export default function MatrimonialLogin() {
 
                 {/* STEP 8: Family Details */}
                 {currentStep === 8 && (
-                  <form onSubmit={handleFamilyDetailsSubmit} className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+                  <form onSubmit={handleFamilyDetailsSubmit} className="space-y-4 max-h-[60vh] overflow-y-auto no-scrollbar pr-1">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs font-bold text-gray-700 uppercase mb-2">Father's Occupation</label>
@@ -1541,7 +1552,7 @@ export default function MatrimonialLogin() {
                           value={fatherOccupation}
                           onChange={(e) => setFatherOccupation(e.target.value)}
                           placeholder="e.g. Business/Government"
-                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm font-medium"
                         />
                       </div>
 
@@ -1552,7 +1563,7 @@ export default function MatrimonialLogin() {
                           value={motherOccupation}
                           onChange={(e) => setMotherOccupation(e.target.value)}
                           placeholder="e.g. Homemaker"
-                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm font-medium"
                         />
                       </div>
                     </div>
@@ -1565,7 +1576,7 @@ export default function MatrimonialLogin() {
                           min="0"
                           value={brothers}
                           onChange={(e) => setBrothers(e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm font-medium"
                         />
                       </div>
 
@@ -1576,7 +1587,7 @@ export default function MatrimonialLogin() {
                           min="0"
                           value={marriedBrothers}
                           onChange={(e) => setMarriedBrothers(e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm font-medium"
                         />
                       </div>
                     </div>
@@ -1589,7 +1600,7 @@ export default function MatrimonialLogin() {
                           min="0"
                           value={sisters}
                           onChange={(e) => setSisters(e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm font-medium"
                         />
                       </div>
 
@@ -1600,7 +1611,7 @@ export default function MatrimonialLogin() {
                           min="0"
                           value={marriedSisters}
                           onChange={(e) => setMarriedSisters(e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm font-medium"
                         />
                       </div>
                     </div>
@@ -1612,7 +1623,7 @@ export default function MatrimonialLogin() {
                         value={mamaSurname}
                         onChange={(e) => setMamaSurname(e.target.value)}
                         placeholder="Enter maternal uncle's surname"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm font-medium"
                       />
                     </div>
 
@@ -1622,7 +1633,7 @@ export default function MatrimonialLogin() {
                         <select
                           value={familyType}
                           onChange={(e) => setFamilyType(e.target.value)}
-                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm bg-white"
+                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm bg-white"
                         >
                           {familyTypeList.map((t) => <option key={t} value={t}>{t}</option>)}
                         </select>
@@ -1633,7 +1644,7 @@ export default function MatrimonialLogin() {
                         <select
                           value={familyValues}
                           onChange={(e) => setFamilyValues(e.target.value)}
-                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm bg-white"
+                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm bg-white"
                         >
                           {familyValuesList.map((v) => <option key={v} value={v}>{v}</option>)}
                         </select>
@@ -1647,7 +1658,7 @@ export default function MatrimonialLogin() {
                         value={familyNativePlace}
                         onChange={(e) => setFamilyNativePlace(e.target.value)}
                         placeholder="e.g. Pune, Maharashtra"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm font-medium"
                       />
                     </div>
 
@@ -1662,7 +1673,7 @@ export default function MatrimonialLogin() {
                       <button
                         type="submit"
                         disabled={isLoading}
-                        className="flex-1 py-3 bg-gradient-to-r from-secondary to-primary hover:opacity-95 text-white rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center"
+                        className="flex-1 py-3 bg-[#FB2467] hover:opacity-95 text-white rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center"
                       >
                         {isLoading ? (
                           <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -1676,7 +1687,7 @@ export default function MatrimonialLogin() {
 
                 {/* STEP 9: Partner Preferences */}
                 {currentStep === 9 && (
-                  <form onSubmit={handlePreferencesSubmit} className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+                  <form onSubmit={handlePreferencesSubmit} className="space-y-4 max-h-[60vh] overflow-y-auto no-scrollbar pr-1">
                     <h3 className="text-sm font-bold text-gray-800 border-b pb-2 mb-2">Partner Preferences</h3>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -1687,7 +1698,7 @@ export default function MatrimonialLogin() {
                           min="18"
                           value={partnerAgeMin}
                           onChange={(e) => setPartnerAgeMin(e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm font-medium"
                         />
                       </div>
 
@@ -1698,7 +1709,7 @@ export default function MatrimonialLogin() {
                           min="18"
                           value={partnerAgeMax}
                           onChange={(e) => setPartnerAgeMax(e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-medium"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm font-medium"
                         />
                       </div>
                     </div>
@@ -1709,7 +1720,7 @@ export default function MatrimonialLogin() {
                         <select
                           value={partnerHeightMin}
                           onChange={(e) => setPartnerHeightMin(e.target.value)}
-                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm bg-white"
+                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm bg-white"
                         >
                           {heightList.map((h) => <option key={h} value={h}>{h}</option>)}
                         </select>
@@ -1720,7 +1731,7 @@ export default function MatrimonialLogin() {
                         <select
                           value={partnerHeightMax}
                           onChange={(e) => setPartnerHeightMax(e.target.value)}
-                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm bg-white"
+                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm bg-white"
                         >
                           {heightList.map((h) => <option key={h} value={h}>{h}</option>)}
                         </select>
@@ -1733,7 +1744,7 @@ export default function MatrimonialLogin() {
                         <select
                           value={partnerReligion}
                           onChange={(e) => setPartnerReligion(e.target.value)}
-                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm bg-white"
+                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm bg-white"
                         >
                           <option value="Hindu">Hindu</option>
                           <option value="Buddhist">Buddhist</option>
@@ -1747,7 +1758,7 @@ export default function MatrimonialLogin() {
                         <select
                           value={partnerCaste}
                           onChange={(e) => setPartnerCaste(e.target.value)}
-                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm bg-white"
+                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm bg-white"
                         >
                           <option value="Bari">Bari</option>
                         </select>
@@ -1760,7 +1771,7 @@ export default function MatrimonialLogin() {
                         <select
                           value={partnerMotherTongue}
                           onChange={(e) => setPartnerMotherTongue(e.target.value)}
-                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm bg-white"
+                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm bg-white"
                         >
                           <option value="Marathi">Marathi</option>
                           <option value="Hindi">Hindi</option>
@@ -1774,7 +1785,7 @@ export default function MatrimonialLogin() {
                         <select
                           value={partnerManglik}
                           onChange={(e) => setPartnerManglik(e.target.value)}
-                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm bg-white"
+                          className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-[#FB2467] outline-none text-sm bg-white"
                         >
                           <option value="No">No</option>
                           <option value="Yes">Yes</option>
@@ -1795,7 +1806,7 @@ export default function MatrimonialLogin() {
                       <button
                         type="submit"
                         disabled={isLoading}
-                        className="flex-1 py-3 bg-gradient-to-r from-secondary to-primary hover:opacity-95 text-white rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center"
+                        className="flex-1 py-3 bg-[#FB2467] hover:opacity-95 text-white rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center"
                       >
                         {isLoading ? (
                           <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -1842,7 +1853,7 @@ export default function MatrimonialLogin() {
             <div className="pt-2 border-t border-gray-200/50">
               <a
                 href="/admin-login"
-                className="text-xs text-primary hover:underline font-bold transition-all"
+                className="text-xs text-[#FB2467] hover:underline font-bold transition-all"
               >
                 Are you an Admin or Employee? Access Portal
               </a>
@@ -1866,7 +1877,7 @@ export default function MatrimonialLogin() {
                 <X size={18} className="text-gray-500" />
               </button>
             </div>
-            <div className="p-6 overflow-y-auto space-y-4 text-xs text-gray-600 leading-relaxed max-h-[50vh] text-left">
+            <div className="p-6 overflow-y-auto no-scrollbar space-y-4 text-xs text-gray-600 leading-relaxed max-h-[50vh] text-left">
               {termsModalType === 'terms' ? (
                 <>
                   <h4 className="font-bold text-gray-900">1. Minimum Eligibility Criteria</h4>
@@ -1921,7 +1932,7 @@ export default function MatrimonialLogin() {
             <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-end">
               <button
                 onClick={() => setTermsModalVisible(false)}
-                className="px-5 py-2 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary/95 transition-colors focus:outline-none"
+                className="px-5 py-2 bg-[#FB2467] text-white text-xs font-bold rounded-xl hover:bg-[#FB2467]/95 transition-colors focus:outline-none"
               >
                 Close
               </button>
