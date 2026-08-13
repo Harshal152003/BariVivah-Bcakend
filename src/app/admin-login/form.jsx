@@ -42,7 +42,7 @@ export default function EmployeeLoginForm() {
 
   return (
     <div className="w-full bg-[#FFFFFF] flex items-center justify-center">
-      <div className="w-full max-w-lg mx-auto p-8 bg-[#F8F8F8] rounded-2xl border border-primary/20 shadow-none transition-all duration-300">
+      <div className="w-full max-w-lg mx-auto p-8 bg-white rounded-3xl border border-primary/20 shadow-xl shadow-gray-200/50 transition-all duration-300">
         {/* Header with crown icon matching admin panel */}
         <div className="text-center mb-8">
           <img 
