@@ -26,15 +26,13 @@ export async function PATCH(req) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Option A upgrade flow: preserve usage if current subscription is active
-    let contactsUsed = 0;
-    const isCurrentlySubscribed = user.subscription && user.subscription.isSubscribed && new Date() < new Date(user.subscription.expiresAt);
-    if (isCurrentlySubscribed) {
-      contactsUsed = user.subscription.contactsUsed || 0;
-    }
+    // Industry standard subscription purchase/renewal logic:
+    // When a user purchases a new plan or renews, reset contactsUsed to 0
+    // so they receive the full fresh contact unlock quota of the new plan.
+    const contactsUsed = 0;
 
     // Calculate expiry date based on plan duration
-    const expiresAt = new Date(Date.now() + plan.durationInDays * 24 * 60 * 60 * 1000);
+    const expiresAt = new Date(Date.now() + (plan.durationInDays || 30) * 24 * 60 * 60 * 1000);
 
     // Update user's subscription with snapshots
     user.subscription = {
@@ -53,7 +51,7 @@ export async function PATCH(req) {
     };
 
     const updatedUser = await user.save();
-    return NextResponse.json({ message: "Subscription updated", user: updatedUser }, { status: 200 });
+    return NextResponse.json({ message: "Subscription updated successfully", user: updatedUser }, { status: 200 });
   } catch (err) {
     console.error("Subscription update error:", err);
     return NextResponse.json({ error: "Something went wrong", details: err.message }, { status: 500 });

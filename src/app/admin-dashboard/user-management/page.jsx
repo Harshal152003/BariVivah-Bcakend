@@ -45,7 +45,7 @@ const fetchUsers = async (page = 1) => {
   try {
     setLoading(true);
     // Remove pagination parameters to get all users
-    const response = await fetch(`/api/users/fetchAllUsers`);
+    const response = await fetch(`/api/users/fetchAllUsers?limit=all`);
     
     if (!response.ok) {
       throw new Error('Failed to fetch users');
@@ -66,7 +66,10 @@ const fetchUsers = async (page = 1) => {
         joined: new Date(user.createdAt).toLocaleDateString('en-US'),
         age: user.dob ? Math.floor((new Date() - new Date(user.dob)) / (365.25 * 24 * 60 * 60 * 1000)) : 'N/A',
         dob: user.dob ? new Date(user.dob).toLocaleDateString('en-US') : 'N/A',
-        address: user.currentCity || 'N/A',
+        address: user.location?.currentCity
+          ? `${user.location.currentCity}${user.location.state ? `, ${user.location.state}` : ''}`
+          : (user.currentCity || 'N/A'),
+        gpsVerified: Boolean(user.location?.latitude && user.location?.longitude),
         education: user.education || 'N/A',
         familyBackground: user.occupation || 'N/A',
         height: user.height || 'N/A',
@@ -355,6 +358,14 @@ const fetchUsers = async (page = 1) => {
                       </div>
                       <div>
                         <p className="font-medium text-gray-900">{user.name}</p>
+                        <p className="text-xs text-gray-500 flex items-center gap-1">
+                          <span>📍 {user.address}</span>
+                          {user.gpsVerified && (
+                            <span className="ml-1 text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-bold">
+                              GPS Verified
+                            </span>
+                          )}
+                        </p>
                       </div>
                     </div>
                   </td>

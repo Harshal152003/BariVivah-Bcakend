@@ -52,7 +52,8 @@ export async function GET(request) {
       }
       return NextResponse.json({
         unlocked: true,
-        contactNumber: targetUser.phone || 'N/A'
+        contactNumber: targetUser.phone || 'N/A',
+        email: targetUser.email || 'N/A'
       }, { status: 200, headers: corsHeaders });
     }
 

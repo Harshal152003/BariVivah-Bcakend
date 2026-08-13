@@ -279,51 +279,45 @@ export default function MatchesPage() {
       if (pageNum === 1) setIsLoading(true);
       else setLoadingMore(true);
 
-      const currentUserRes = await fetch('/api/users/me');
-      const currentUserData = await currentUserRes.json();
-      setCurrentUser(currentUserData);
-      const sentReceiverIds = await fetchSentInterests(currentUserData._id);
+      let currentUserData = currentUser;
+      if (!currentUserData) {
+        const currentUserRes = await fetch('/api/users/me');
+        currentUserData = await currentUserRes.json();
+        setCurrentUser(currentUserData);
+      }
 
-      const res = await fetch(`/api/users/fetchAllUsers?limit=20&page=${pageNum}`);
+      const sentReceiverIds = currentUserData?._id ? await fetchSentInterests(currentUserData._id) : [];
+
+      const userIdParam = currentUserData?._id ? `&userId=${currentUserData._id}` : '';
+      const res = await fetch(`/api/users/matches?limit=20&page=${pageNum}${userIdParam}`);
       const data = await res.json();
 
       if (data.success) {
-        const enriched = data.data
-          .filter(matchUser =>
-            matchUser._id !== currentUserData.id &&
-            matchUser.gender !== currentUserData.gender &&
-            matchUser.dob && matchUser.height && matchUser.currentCity &&
-            matchUser.education && matchUser.income && matchUser.maritalStatus && matchUser.caste
-          )
-          .map(matchUser => {
-            const compatibility = calculateCompatibility(currentUserData, {
-              ...matchUser,
-              age: calculateAge(matchUser.dob)
-            });
+        const enriched = data.data.map(matchUser => {
+          const compatibilityScore = matchUser.compatibility ?? matchUser.matchPercentage ?? 75;
 
-            return {
-              ...matchUser,
-              age: calculateAge(matchUser.dob),
-              profilePhoto: matchUser.profilePhoto || 'https://via.placeholder.com/200x250?text=Profile',
-              hasPhoto: !!matchUser.profilePhoto,
-              isBlurred: !hasSubscription,
-              matchType: 'all',
-              mutualMatch: false,
-              interestSent: sentReceiverIds.includes(matchUser._id),
-              shortlisted: false,
-              compatibility,
-              bio: matchUser.bio || 'Looking for a compatible life partner.',
-              isNew: Math.random() > 0.7,
-              lastActive: ['Recently', 'Today', '1 day ago', '2 days ago'][Math.floor(Math.random() * 4)]
-            };
-          });
+          return {
+            ...matchUser,
+            age: matchUser.age || calculateAge(matchUser.dob),
+            profilePhoto: matchUser.profilePhoto || 'https://via.placeholder.com/200x250?text=Profile',
+            hasPhoto: !!matchUser.profilePhoto,
+            isBlurred: !hasSubscription,
+            matchType: 'all',
+            mutualMatch: false,
+            interestSent: sentReceiverIds.includes(matchUser._id),
+            shortlisted: false,
+            compatibility: compatibilityScore,
+            bio: matchUser.bio || 'Looking for a compatible life partner.',
+            isNew: false,
+            lastActive: 'Recently'
+          };
+        });
 
         if (pageNum === 1) {
           setMatches(enriched);
-          setTotalPages(data.pagination.totalPages);
+          setTotalPages(data.pagination?.totalPages || 1);
         } else {
           setMatches(prev => {
-            // Avoid duplicates
             const existingIds = new Set(prev.map(m => m._id));
             const uniqueNew = enriched.filter(m => !existingIds.has(m._id));
             return [...prev, ...uniqueNew];

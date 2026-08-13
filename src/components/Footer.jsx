@@ -83,10 +83,18 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t-2 border-[#FFEBEF] pt-8 text-center">
+        <div className="border-t-2 border-[#FFEBEF] pt-8 flex flex-col md:flex-row justify-between items-center text-center">
           <p className="text-[#5C3F43] text-[15px]">
             © {new Date().getFullYear()} Bari Vivah Matrimony. All rights reserved.
           </p>
+          <div className="flex items-center space-x-2 mt-4 md:mt-0">
+            <a
+              href="/admin-login"
+              className="text-[#5C3F43] hover:text-primary transition-colors duration-200 text-[15px]"
+            >
+              Admin Login
+            </a>
+          </div>
         </div>
       </div>
     </footer>

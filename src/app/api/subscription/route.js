@@ -37,12 +37,10 @@ export async function POST(req) {
         plan = await Subscription.findOne({ name: body.name });
       }
 
-      // Option A upgrade flow: check if current subscription is active to keep contactsUsed
-      let contactsUsed = 0;
-      const isCurrentlySubscribed = user.subscription && user.subscription.isSubscribed && new Date() < new Date(user.subscription.expiresAt);
-      if (isCurrentlySubscribed) {
-        contactsUsed = user.subscription.contactsUsed || 0;
-      }
+      // Industry standard subscription purchase/renewal logic:
+      // When a user purchases a new plan or renews, reset contactsUsed to 0
+      // so they receive the full fresh contact unlock quota of the new plan.
+      const contactsUsed = 0;
 
       const duration = parseInt(body.durationInDays) || plan?.durationInDays || 30;
       const expiresAt = new Date(Date.now() + duration * 24 * 60 * 60 * 1000);

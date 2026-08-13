@@ -28,7 +28,7 @@ export default function AdminLayout({ children }) {
     { id: 'user-management', label: 'User Management', icon: Users, route: "/admin-dashboard/user-management", permissionKey: "userManagement" },
     { id: 'emp-management', label: 'Emp Management', icon: Users, route: "/admin-dashboard/emp-management", permissionKey: "empManagement" },
     { id: 'form-management', label: 'Form Management', icon: Users, route: "/admin-dashboard/form-builder", permissionKey: "formManagement" },
-    { id: 'Verification', label: 'Profile Verification', icon: CheckCircle, route: "/admin-dashboard/verification", permissionKey: "verification" },
+    { id: 'Verification', label: 'Profile Verification', icon: CheckCircle, route: "/admin-dashboard/verifications", permissionKey: "verification" },
     { id: 'Payment', label: 'Payments & Plans', icon: FaRupeeSign, route: "/admin-dashboard/payment", permissionKey: "payment" },
     { id: 'Report', label: 'Reports & Complaints', icon: Flag, route: "/admin-dashboard/report", permissionKey: "report" },
     { id: 'setting', label: 'System Settings', icon: Settings, route: "/admin-dashboard/setting", permissionKey: "setting" },

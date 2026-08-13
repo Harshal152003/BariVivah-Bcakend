@@ -38,16 +38,27 @@ export async function GET(req) {
     }
 
     // Find all interests where (senderId === userId OR receiverId === userId) AND status === 'accepted'
-    const matches = await Interest.find({
+    const rawMatches = await Interest.find({
       $or: [
         { senderId: userId },
         { receiverId: userId }
       ],
       status: 'accepted'
+    }).sort({ createdAt: -1 });
+
+    // Deduplicate by partner User ID so each matched partner appears EXACTLY ONCE
+    const uniqueMatchesMap = new Map();
+    rawMatches.forEach((m) => {
+      const partnerId = m.senderId.toString() === userId ? m.receiverId.toString() : m.senderId.toString();
+      if (!uniqueMatchesMap.has(partnerId)) {
+        uniqueMatchesMap.set(partnerId, m);
+      }
     });
 
+    const uniqueMatches = Array.from(uniqueMatchesMap.values());
+
     // Get all unique user IDs involved in these matches
-    const otherUserIds = matches.map(match => 
+    const otherUserIds = uniqueMatches.map(match => 
       match.senderId.toString() === userId ? match.receiverId : match.senderId
     );
 
@@ -63,7 +74,7 @@ export async function GET(req) {
     });
 
     // Attach the user details to each match
-    const populatedMatches = matches.map(match => {
+    const populatedMatches = uniqueMatches.map(match => {
       const otherUserId = match.senderId.toString() === userId ? match.receiverId.toString() : match.senderId.toString();
       return {
         ...(match._doc || match),

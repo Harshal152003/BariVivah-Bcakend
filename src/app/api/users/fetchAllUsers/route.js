@@ -17,9 +17,15 @@ export async function GET(request) {
 
     // Get query parameters for potential filtering
     const { searchParams } = new URL(request.url);
-    const limit = searchParams.get('limit') || 20;
-    const page = searchParams.get('page') || 1;
-    const skip = (page - 1) * limit;
+    const limitParam = searchParams.get('limit');
+    const pageParam = searchParams.get('page') || 1;
+    
+    let limit = 0; // Default to 0 (no limit, fetch all users) unless page/limit pagination is requested
+    if (limitParam && limitParam !== 'all') {
+      limit = parseInt(limitParam, 10);
+    }
+    const page = parseInt(pageParam, 10);
+    const skip = limit > 0 ? (page - 1) * limit : 0;
     
     // Basic query - you can extend this with more filters as needed
     const query = {};
@@ -33,17 +39,16 @@ export async function GET(request) {
       query.verificationStatus = searchParams.get('verificationStatus');
     }
     
-    
     if (searchParams.get('gender')) {
       query.gender = searchParams.get('gender');
     }
     
-    // Fetch users with pagination
-    const users = await User.find(query)
-      .skip(skip)
-      .limit(parseInt(limit))
-      .select('-__v') // Exclude version key
-      .lean(); // Convert to plain JavaScript objects
+    // Fetch users with query
+    let userQuery = User.find(query).select('-__v').sort({ createdAt: -1 }).lean();
+    if (skip > 0) userQuery = userQuery.skip(skip);
+    if (limit > 0) userQuery = userQuery.limit(limit);
+    
+    const users = await userQuery;
     
     // Get total count for pagination info
     const total = await User.countDocuments(query);
