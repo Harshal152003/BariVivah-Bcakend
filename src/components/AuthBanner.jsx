@@ -59,8 +59,8 @@ export default function AuthBanner() {
       </div>
 
       {/* Main Content */}
-      <div className="relative flex items-end justify-center w-full p-6 h-full pb-16">
-        <div className="text-gray-900 text-center w-full max-w-full">
+      <div className="relative flex items-end justify-center w-full p-6 h-full pb-12">
+        <div className="text-gray-900 text-center w-full max-w-2xl">
           {/* Image Container with Advanced Hover Effects */}
           <div className="mb-8 flex justify-center">
             <div className="relative group cursor-pointer">
@@ -69,10 +69,10 @@ export default function AuthBanner() {
                 <Image
                   src="/admin-login-slide-5.svg"
                   alt="Admin Login Banner"
-                  width={800}
-                  height={1100}
+                  width={750}
+                  height={1030}
                   priority
-                  className="w-full h-auto"
+                  className="w-11/12 mx-auto h-auto"
                 />
               </div>
             </div>
@@ -83,13 +83,13 @@ export default function AuthBanner() {
       </div>
 
       {/* Bottom Logo */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
+      <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2">
         <Image
           src="/admin-login-logo-bottom.svg"
           alt="BariVivah Logo"
-          width={350}
-          height={120}
-          className="h-24 w-auto object-contain opacity-90"
+          width={250}
+          height={80}
+          className="h-16 md:h-20 w-auto object-contain opacity-90"
         />
       </div>
 
