@@ -149,7 +149,7 @@ export default function UserLayout({ children }) {
               <Sparkles className="w-4 h-4 text-white" />
             </div> */}
             <span className="font-serif text-xl font-bold text-secondary">
-              Mali<span className="text-primary">Bandhan</span>
+              Bari<span className="text-primary">Viviah</span>
             </span>
           </div>
           {/* Spacer for centering logic if needed, or profile icon */}
