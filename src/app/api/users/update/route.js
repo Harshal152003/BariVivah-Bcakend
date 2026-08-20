@@ -222,11 +222,23 @@ export async function PUT(request) {
     await dbConnect();
 
     const body = await request.json();
-    const { userId, phone, ...updateData } = body;
+    const { phone, ...updateData } = body;
 
-    console.log("Received update data:", updateData);
+    let effectiveUserId = body.userId || body._id || body.id;
+    if (!effectiveUserId) {
+      const authHeader = request.headers.get('authorization');
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.substring(7);
+        try {
+          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+          effectiveUserId = decoded.userId || decoded.id || decoded._id;
+        } catch (err) {
+          console.warn('JWT verify error in /api/users/update:', err);
+        }
+      }
+    }
 
-    if (!userId) {
+    if (!effectiveUserId) {
       return NextResponse.json(
         { message: 'User ID is required' },
         { status: 400, headers: corsHeaders }
@@ -234,7 +246,7 @@ export async function PUT(request) {
     }
 
     // Fetch existing user to calculate completion
-    const existingUser = await User.findById(userId);
+    const existingUser = await User.findById(effectiveUserId);
     if (!existingUser) {
       return NextResponse.json(
         { message: 'User not found' },
@@ -285,7 +297,7 @@ export async function PUT(request) {
 
     // Update the user document
     const updatedUser = await User.findByIdAndUpdate(
-      userId,
+      effectiveUserId,
       updateData,
       { new: true, runValidators: true }
     ).select('-__v -password');

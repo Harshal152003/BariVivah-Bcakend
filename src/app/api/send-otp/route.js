@@ -60,7 +60,7 @@ import { emailService } from "@/services/email/email.service";
 
 export async function POST(req) {
   try {
-    const { phoneNumber, email } = await req.json();
+    const { phoneNumber, email, mode, isRegistration } = await req.json();
     if (!phoneNumber || phoneNumber.length !== 10) {
       return NextResponse.json(
         { success: false, message: "Invalid phone number" },
@@ -69,6 +69,30 @@ export async function POST(req) {
     }
 
     const fullPhoneNumber = `+91${phoneNumber}`;
+
+    // Connect DB & Check if email/phone is already registered for registration requests
+    await dbConnect();
+    if (mode === 'register' || isRegistration) {
+      const existingPhoneUser = await User.findOne({ phone: fullPhoneNumber });
+      if (existingPhoneUser && existingPhoneUser.name && existingPhoneUser.password) {
+        return NextResponse.json(
+          { success: false, message: "This mobile number is already registered. Please login instead." },
+          { status: 400 }
+        );
+      }
+
+      if (email && email.trim() !== "") {
+        const cleanEmail = email.toLowerCase().trim();
+        const existingEmailUser = await User.findOne({ email: cleanEmail });
+        if (existingEmailUser && existingEmailUser.name && existingEmailUser.password) {
+          return NextResponse.json(
+            { success: false, message: "This email address is already registered. Please use another email or login." },
+            { status: 400 }
+          );
+        }
+      }
+    }
+
     console.log("Generating OTP...");
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 

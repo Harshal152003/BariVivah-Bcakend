@@ -51,9 +51,21 @@ export async function GET(request) {
         user: record.unlockedUserId
       }));
 
+    const currentUser = await User.findById(userId).select('subscription');
+    const isSubscribed = currentUser?.subscription?.isSubscribed && new Date() < new Date(currentUser?.subscription?.expiresAt);
+    const limit = isSubscribed ? (currentUser?.subscription?.contactUnlockLimit || 0) : 0;
+    const used = isSubscribed ? (currentUser?.subscription?.contactsUsed ?? unlocks.length) : 0;
+    const remaining = Math.max(0, limit - used);
+
     return NextResponse.json({
       success: true,
-      contacts: contactList
+      contacts: contactList,
+      subscription: {
+        isSubscribed,
+        contactUnlockLimit: limit,
+        contactsUsed: used,
+        remainingUnlocks: remaining
+      }
     }, { status: 200, headers: corsHeaders });
 
   } catch (err) {

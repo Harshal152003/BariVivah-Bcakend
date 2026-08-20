@@ -1,59 +1,48 @@
 import { NextResponse } from 'next/server';
-import connectDB from "@/lib/dbConnect";
-import User from '@/models/User';
-import Subscription from '@/models/Subscription';
+import paymentService, { PaymentError } from '@/services/paymentService';
+import { verifyToken } from '@/lib/auth';
+
+function getUserIdFromRequest(request) {
+  let token = request.cookies.get('authToken')?.value;
+  if (!token) {
+    const authHeader = request.headers.get('authorization');
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+    }
+  }
+  if (!token) return null;
+  const decoded = verifyToken(token);
+  return decoded ? decoded.userId : null;
+}
 
 export async function PATCH(req) {
-  
+  const userId = getUserIdFromRequest(req);
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-  const { userId, planId, razorpay_payment_id } = await req.json();
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = await req.json();
 
-  if (!userId || !planId || !razorpay_payment_id) {
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+    return NextResponse.json(
+      { error: "Direct client plan modification is disabled. Valid Razorpay checkout verification tokens (razorpay_order_id, razorpay_payment_id, razorpay_signature) are required." },
+      { status: 400 }
+    );
   }
 
   try {
-    await connectDB();
-    // Find plan details from the Subscription collection
-    const plan = await Subscription.findById(planId);
-    if (!plan) {
-      return NextResponse.json({ error: "Plan not found" }, { status: 404 });
-    }
+    const verifyResult = await paymentService.verifyPayment({
+      userId,
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+    });
 
-    // Verify user exists first
-    const user = await User.findById(userId);
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Industry standard subscription purchase/renewal logic:
-    // When a user purchases a new plan or renews, reset contactsUsed to 0
-    // so they receive the full fresh contact unlock quota of the new plan.
-    const contactsUsed = 0;
-
-    // Calculate expiry date based on plan duration
-    const expiresAt = new Date(Date.now() + (plan.durationInDays || 30) * 24 * 60 * 60 * 1000);
-
-    // Update user's subscription with snapshots
-    user.subscription = {
-      plan: plan.name.trim(),
-      isSubscribed: true,
-      startDate: new Date(),
-      expiresAt: expiresAt,
-      transactionId: razorpay_payment_id,
-      subscriptionId: planId,
-      contactUnlockLimit: plan.features?.contactUnlockLimit || 0,
-      contactsUsed: contactsUsed,
-      chatEnabled: plan.features?.chatEnabled || false,
-      visitorHistory: plan.features?.visitorHistory || false,
-      profileBoosts: plan.features?.profileBoosts || 0,
-      advancedFilters: plan.features?.advancedFilters || false
-    };
-
-    const updatedUser = await user.save();
-    return NextResponse.json({ message: "Subscription updated successfully", user: updatedUser }, { status: 200 });
+    return NextResponse.json({ message: "Subscription updated successfully", user: verifyResult.subscription }, { status: 200 });
   } catch (err) {
     console.error("Subscription update error:", err);
-    return NextResponse.json({ error: "Something went wrong", details: err.message }, { status: 500 });
+    const status = err instanceof PaymentError ? err.statusCode : 500;
+    return NextResponse.json({ error: err.message || "Something went wrong" }, { status });
   }
 }
+
