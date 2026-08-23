@@ -68,6 +68,39 @@ function timingSafeCompare(a, b) {
   return crypto.timingSafeEqual(bufA, bufB);
 }
 
+// Helper: Runs operations inside a Mongoose ACID transaction if available (Replica Set / Atlas), otherwise runs directly
+async function withTransaction(fn) {
+  await connectDB();
+  const mongoose = require('mongoose');
+
+  let session = null;
+  try {
+    session = await mongoose.startSession();
+    session.startTransaction();
+    const result = await fn(session);
+    await session.commitTransaction();
+    return result;
+  } catch (err) {
+    if (session && session.inTransaction()) {
+      await session.abortTransaction();
+    }
+    // Fallback if local MongoDB is a standalone single-node instance (no replica set)
+    if (
+      err.message &&
+      (err.message.includes('Transaction numbers are only allowed') ||
+        err.message.includes('replica set') ||
+        err.message.includes('standalone'))
+    ) {
+      return await fn(null);
+    }
+    throw err;
+  } finally {
+    if (session) {
+      session.endSession();
+    }
+  }
+}
+
 class PaymentService {
   /**
    * 1. CREATE ORDER API SERVICE
@@ -82,7 +115,7 @@ class PaymentService {
 
     const user = await User.findById(userId);
     if (!user) {
-      throw new PaymentError('USER_NOT_FOUND', 'Authenticated user not found', 44);
+      throw new PaymentError('USER_NOT_FOUND', 'Authenticated user not found', 404);
     }
 
     const plan = await Subscription.findById(planId);
@@ -275,96 +308,145 @@ class PaymentService {
   async processSuccessfulPayment({ transactionId, razorpayOrderId, razorpayPaymentId, signature, paymentMethod, source }) {
     await connectDB();
 
-    let query = {};
-    if (transactionId) query.transactionId = transactionId;
-    else if (razorpayOrderId) query.razorpayOrderId = razorpayOrderId;
+    let queryFilter = {};
+    if (transactionId) queryFilter.transactionId = transactionId;
+    else if (razorpayOrderId) queryFilter.razorpayOrderId = razorpayOrderId;
     else {
       throw new PaymentError('INVALID_INPUT', 'Transaction identifier required for activation', 400);
     }
 
-    const transaction = await PaymentTransaction.findOne(query);
-    if (!transaction) {
-      throw new PaymentError('TRANSACTION_NOT_FOUND', 'Payment transaction not found for activation', 404);
-    }
-
-    // Idempotency: If already captured, do not grant entitlement again
-    if (transaction.status === PAYMENT_STATUS.CAPTURED) {
-      console.log(`⚡ [Idempotency] Transaction [${transaction.transactionId}] already CAPTURED via ${transaction.metadata?.activatedBy || 'previous request'}. Returning user status.`);
-      const user = await User.findById(transaction.userId);
-      return {
-        success: true,
-        alreadyProcessed: true,
-        transactionId: transaction.transactionId,
-        status: transaction.status,
-        subscription: user?.subscription || null,
-      };
-    }
-
-    // Validate state transition
-    validateStateTransition(transaction.status, PAYMENT_STATUS.CAPTURED);
-
-    // Fetch Plan details (from database or snapshot)
-    let plan = await Subscription.findById(transaction.planId);
-    const planName = plan?.name || transaction.planSnapshot?.name || 'Premium Plan';
-    const durationDays = plan?.durationInDays || transaction.planSnapshot?.durationInDays || 30;
-    const unlockLimit = plan?.features?.contactUnlockLimit !== undefined
-      ? plan.features.contactUnlockLimit
-      : (transaction.planSnapshot?.contactUnlockLimit || 0);
-
-    const expiresAt = new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000);
-
-    // Update User Document Entitlement Atomically
-    const updatedUser = await User.findByIdAndUpdate(
-      transaction.userId,
+    // 1. ATOMIC STATE LOCK: Only 1 concurrent thread can transition PENDING -> CAPTURED
+    const lockedTx = await PaymentTransaction.findOneAndUpdate(
+      {
+        ...queryFilter,
+        status: { $ne: PAYMENT_STATUS.CAPTURED },
+      },
       {
         $set: {
-          'subscription.plan': planName.trim(),
-          'subscription.isSubscribed': true,
-          'subscription.startDate': new Date(),
-          'subscription.expiresAt': expiresAt,
-          'subscription.transactionId': razorpayPaymentId || transaction.transactionId,
-          'subscription.subscriptionId': transaction.planId,
-          'subscription.contactUnlockLimit': unlockLimit,
-          'subscription.contactsUsed': 0, // Reset contacts on new valid subscription purchase/renewal
-          'subscription.chatEnabled': plan?.features?.chatEnabled || false,
-          'subscription.visitorHistory': plan?.features?.visitorHistory || false,
-          'subscription.profileBoosts': plan?.features?.profileBoosts || 0,
-          'subscription.advancedFilters': plan?.features?.advancedFilters || false,
+          status: PAYMENT_STATUS.CAPTURED,
+          razorpayPaymentId: razorpayPaymentId || undefined,
+          signature: signature || undefined,
+          paymentMethod: paymentMethod || undefined,
+          capturedAt: new Date(),
+          'metadata.activatedBy': source || 'UNKNOWN',
+          'metadata.activatedAt': new Date().toISOString(),
         },
       },
       { new: true }
     );
 
-    if (!updatedUser) {
-      throw new PaymentError('USER_NOT_FOUND', 'Failed to locate user for entitlement grant', 404);
+    // If lockedTx is null, either the transaction doesn't exist OR it was already CAPTURED by a concurrent thread
+    if (!lockedTx) {
+      const existingTx = await PaymentTransaction.findOne(queryFilter);
+      if (!existingTx) {
+        throw new PaymentError('TRANSACTION_NOT_FOUND', 'Payment transaction not found for activation', 404);
+      }
+
+      if (existingTx.status === PAYMENT_STATUS.CAPTURED) {
+        console.log(`⚡ [Idempotency] Transaction [${existingTx.transactionId}] already CAPTURED via ${existingTx.metadata?.activatedBy || 'previous thread'}. Returning user status.`);
+        const user = await User.findById(existingTx.userId);
+        return {
+          success: true,
+          alreadyProcessed: true,
+          transactionId: existingTx.transactionId,
+          status: existingTx.status,
+          subscription: user?.subscription || null,
+        };
+      }
     }
 
-    // Update Transaction ledger to CAPTURED
-    transaction.status = PAYMENT_STATUS.CAPTURED;
-    transaction.razorpayPaymentId = razorpayPaymentId || transaction.razorpayPaymentId;
-    transaction.signature = signature || transaction.signature;
-    transaction.paymentMethod = paymentMethod || transaction.paymentMethod;
-    transaction.capturedAt = new Date();
-    transaction.metadata = {
-      ...transaction.metadata,
-      activatedBy: source || 'UNKNOWN',
-      activatedAt: new Date().toISOString(),
-    };
+    // Execute User Entitlement update inside Mongoose ACID session if available
+    return await withTransaction(async (session) => {
+      // Fetch Plan details
+      let plan = await Subscription.findById(lockedTx.planId).session(session || null);
+      const planName = plan?.name || lockedTx.planSnapshot?.name || 'Premium Plan';
+      const durationDays = plan?.durationInDays || lockedTx.planSnapshot?.durationInDays || 30;
+      const unlockLimit = plan?.features?.contactUnlockLimit !== undefined
+        ? plan.features.contactUnlockLimit
+        : (lockedTx.planSnapshot?.contactUnlockLimit || 0);
 
-    await transaction.save();
+      // Check current user subscription to handle stacking / extending active plan days
+      const currentUser = await User.findById(lockedTx.userId).session(session || null);
+      let baseDate = new Date();
+      if (currentUser?.subscription?.isSubscribed && currentUser?.subscription?.expiresAt) {
+        const currentExp = new Date(currentUser.subscription.expiresAt).getTime();
+        if (currentExp > Date.now()) {
+          baseDate = new Date(currentExp); // Extend duration onto existing active plan expiry
+        }
+      }
 
-    console.log(`🎉 Subscription successfully activated for User [${transaction.userId}] Plan [${planName}] via ${source}`);
+      const expiresAt = new Date(baseDate.getTime() + durationDays * 24 * 60 * 60 * 1000);
 
-    return {
-      success: true,
-      transactionId: transaction.transactionId,
-      status: transaction.status,
-      subscription: updatedUser.subscription,
-    };
+      // Update User Document Entitlement Atomically
+      const updatedUser = await User.findByIdAndUpdate(
+        lockedTx.userId,
+        {
+          $set: {
+            'subscription.plan': planName.trim(),
+            'subscription.isSubscribed': true,
+            'subscription.startDate': currentUser?.subscription?.startDate || new Date(),
+            'subscription.expiresAt': expiresAt,
+            'subscription.transactionId': razorpayPaymentId || lockedTx.transactionId,
+            'subscription.subscriptionId': lockedTx.planId,
+            'subscription.contactUnlockLimit': unlockLimit,
+            'subscription.contactsUsed': 0, // Reset contact usage for the new plan cycle
+            'subscription.chatEnabled': plan?.features?.chatEnabled ?? true,
+            'subscription.visitorHistory': plan?.features?.visitorHistory ?? true,
+            'subscription.profileBoosts': plan?.features?.profileBoosts || 0,
+            'subscription.advancedFilters': plan?.features?.advancedFilters ?? true,
+          },
+        },
+        { new: true, session: session || undefined }
+      );
+
+      if (!updatedUser) {
+        throw new PaymentError('USER_NOT_FOUND', 'Failed to locate user for entitlement grant', 404);
+      }
+
+      console.log(`🎉 Subscription successfully activated for User [${lockedTx.userId}] Plan [${planName}] via ${source} (Expires: ${expiresAt.toISOString()})`);
+
+      return {
+        success: true,
+        transactionId: lockedTx.transactionId,
+        status: lockedTx.status,
+        subscription: updatedUser.subscription,
+      };
+    });
   }
 
   /**
-   * 4. WEBHOOK HANDLER & DEDUPLICATION
+   * 4. PROCESS REFUNDED PAYMENT
+   */
+  async processRefundedPayment({ razorpayOrderId, razorpayPaymentId, refundId, amount, source }) {
+    await connectDB();
+    const transaction = await PaymentTransaction.findOne({
+      $or: [{ razorpayOrderId }, { razorpayPaymentId }],
+    });
+    if (!transaction) return;
+
+    transaction.status = PAYMENT_STATUS.REFUNDED;
+    transaction.refundedAt = new Date();
+    transaction.metadata = {
+      ...transaction.metadata,
+      refundId,
+      refundAmount: amount,
+      refundedBy: source || 'UNKNOWN',
+    };
+    await transaction.save();
+
+    // Revoke user active subscription
+    await User.findByIdAndUpdate(transaction.userId, {
+      $set: {
+        'subscription.isSubscribed': false,
+        'subscription.status': 'cancelled',
+      },
+    });
+
+    console.log(`↩️ Subscription revoked & transaction marked REFUNDED for User [${transaction.userId}] via ${source}`);
+  }
+
+  /**
+   * 5. WEBHOOK HANDLER & DEDUPLICATION
    */
   async processWebhook({ rawBody, signature }) {
     await connectDB();
@@ -442,6 +524,22 @@ class PaymentService {
 
         if (razorpayOrderId) {
           await this.processFailedPayment({ razorpayOrderId, razorpayPaymentId, failureReason: reason, source: 'WEBHOOK' });
+        }
+      } else if (eventType === 'payment.refunded' || eventType === 'refund.processed') {
+        const refundEntity = event.payload?.refund?.entity || event.payload?.payment?.entity;
+        const razorpayOrderId = refundEntity?.order_id;
+        const razorpayPaymentId = refundEntity?.payment_id || refundEntity?.id;
+        const refundId = event.payload?.refund?.entity?.id;
+        const amount = refundEntity?.amount ? refundEntity.amount / 100 : 0;
+
+        if (razorpayOrderId || razorpayPaymentId) {
+          await this.processRefundedPayment({
+            razorpayOrderId,
+            razorpayPaymentId,
+            refundId,
+            amount,
+            source: `WEBHOOK:${eventType}`,
+          });
         }
       }
 

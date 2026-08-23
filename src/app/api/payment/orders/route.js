@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import paymentService, { PaymentError } from '@/services/paymentService';
+import PaymentTransaction from '@/models/PaymentTransaction';
 import { verifyToken } from '@/lib/auth';
 
 const corsHeaders = {
@@ -38,6 +39,23 @@ export async function POST(request) {
       return NextResponse.json(
         { error: 'planId is required', code: 'MISSING_PLAN_ID' },
         { status: 400, headers: corsHeaders }
+      );
+    }
+
+    // Rate Limiting Guard: Max 5 order creations per user per 15 minutes
+    const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+    const recentOrdersCount = await PaymentTransaction.countDocuments({
+      userId,
+      createdAt: { $gte: fifteenMinutesAgo },
+    });
+
+    if (recentOrdersCount >= 5) {
+      return NextResponse.json(
+        {
+          error: 'Order creation rate limit exceeded. Please wait a few minutes before trying again.',
+          code: 'RATE_LIMIT_EXCEEDED',
+        },
+        { status: 429, headers: corsHeaders }
       );
     }
 

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/dbConnect';
 import PaymentTransaction from '@/models/PaymentTransaction';
 import User from '@/models/User';
+import { createToken } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,16 +23,23 @@ export async function GET(request) {
     await connectDB();
     const transaction = await PaymentTransaction.findOne({ razorpayOrderId: orderId });
 
-    if (!transaction) {
+    if (!transaction || !transaction.userId) {
       return new Response('<h2>Error: Invalid or expired payment order</h2>', {
         status: 404,
         headers: { 'Content-Type': 'text/html' },
       });
     }
 
+    const user = await User.findById(transaction.userId);
+    const rawPhone = user?.phone || user?.phoneNumber || '';
+    const userPhone = rawPhone.replace(/\+91|\s/g, '').trim();
+    const userEmail = user?.email || '';
+    const userName = user?.name || 'BariVivah Member';
+
     const amountInPaise = Math.round(transaction.amount * 100);
     const planName = transaction.planSnapshot?.name || 'BariVivah Premium';
     const userId = transaction.userId ? transaction.userId.toString() : '';
+    const authToken = userId ? createToken(userId) : '';
 
     const htmlContent = `
 <!DOCTYPE html>
@@ -45,15 +53,15 @@ export async function GET(request) {
     * { box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background-color: #0F172A;
-      color: #FFFFFF;
+      background-color: #FFFFFF;
+      color: #0F172A;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
       margin: 0;
-      padding: 20px;
+      padding: 0;
     }
     .card {
       background: #1E293B;
@@ -167,7 +175,9 @@ export async function GET(request) {
       description: "${planName} Subscription",
       order_id: "${orderId}",
       prefill: {
-        name: "User",
+        name: "${userName}",
+        contact: "${userPhone}",
+        email: "${userEmail}"
       },
       theme: {
         color: "#E11D48"
@@ -192,7 +202,7 @@ export async function GET(request) {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': 'Bearer test'
+              'Authorization': 'Bearer ${authToken}'
             },
             body: JSON.stringify(returnPayload)
           });
