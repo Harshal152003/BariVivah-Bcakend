@@ -67,7 +67,7 @@ export default function EmployeeManagement() {
 
   // Admin sections for permissions
   const adminSections = [
-    { id: 'overview', label: 'Dashboard Overview', icon: BarChart3, route: "/admin-dashboard" },
+    // { id: 'overview', label: 'Dashboard Overview', icon: BarChart3, route: "/admin-dashboard" },
     { id: 'userManagement', label: 'User Management', icon: Users, route: "/admin-dashboard/user-management" },
     { id: 'verification', label: 'Profile Verification', icon: CheckCircle, route: "/admin-dashboard/verification" },
     { id: 'payment', label: 'Payments & Plans', icon: Shield, route: "/admin-dashboard/payment" },

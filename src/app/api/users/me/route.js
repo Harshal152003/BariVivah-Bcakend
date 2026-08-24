@@ -107,6 +107,7 @@ export async function GET(request) {
       relativeSurname: user.relativeSurname,
       parentOccupation: user.parentOccupation,
       mamaSurname: user.mamaSurname,
+      mamaContact: user.mamaContact,
 
       // Horoscope Info
       rashi: user.rashi,

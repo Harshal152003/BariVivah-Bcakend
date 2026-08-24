@@ -29,7 +29,7 @@ export default function EmployeeLoginForm() {
 
       if (res.ok) {
         login(data.user)
-        router.push('/admin-dashboard')
+        router.push('/admin-dashboard/user-management')
       } else {
         setError(data.message || 'Invalid credentials. Please try again.')
       }

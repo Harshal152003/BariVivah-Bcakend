@@ -151,6 +151,7 @@ const UserSchema = new mongoose.Schema({
   },
   parentOccupation: String,
   mamaSurname: String,
+  mamaContact: String,
 
   // Horoscope Info
   rashi: String,

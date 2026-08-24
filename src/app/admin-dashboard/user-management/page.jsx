@@ -53,10 +53,9 @@ const fetchUsers = async (page = 1) => {
     
     const data = await response.json();
     
-    if (data.success) {
+    if (data.success && Array.isArray(data.data)) {
       // Transform API data to match UI expectations
-      console.log("data = ",data.data)
-      const transformedUsers = data.data.map(user => ({
+      const transformedUsers = (data.data || []).map(user => ({
         id: user._id,
         name: user.name || 'N/A',
         email: user.phone, // Using phone as email since API doesn't have email

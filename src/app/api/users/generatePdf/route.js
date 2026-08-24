@@ -6,6 +6,10 @@ export async function POST(request) {
   try {
     const { userData } = await request.json();
 
+    if (!userData) {
+      return NextResponse.json({ success: false, message: 'userData is required' }, { status: 400 });
+    }
+
     const pdfDoc = await PDFDocument.create();
     pdfDoc.registerFontkit(fontkit);
 
@@ -13,397 +17,628 @@ export async function POST(request) {
     const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
     const italicFont = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
 
-    const page = pdfDoc.addPage([595, 842]); // A4 size
-    const { width, height } = page.getSize();
-    const margin = 40;
-    const contentWidth = width - 2 * margin;
+    let page = pdfDoc.addPage([595, 842]); // A4 size: 595 x 842 pt
+    const width = 595;
+    const height = 842;
+    const margin = 36;
+    const contentWidth = width - (2 * margin); // 523 pt
 
-    // Colors
-    const primaryRed = rgb(0.8, 0.2, 0.2);
-    const darkText = rgb(0.1, 0.1, 0.1);
-    const lightText = rgb(0.4, 0.4, 0.4);
-    const borderGray = rgb(0.85, 0.85, 0.85);
-    const accentBlue = rgb(0.2, 0.4, 0.8);
-    const lightGray = rgb(0.95, 0.95, 0.95);
+    // Color Palette
+    const primaryRed = rgb(0.88, 0.12, 0.32);     // #E11D48
+    const primaryDark = rgb(0.06, 0.09, 0.16);    // #0F172A
+    const darkText = rgb(0.12, 0.16, 0.23);       // #1E293B
+    const bodyText = rgb(0.28, 0.34, 0.43);       // #475569
+    const lightText = rgb(0.58, 0.64, 0.72);      // #94A3B8
+    const borderGray = rgb(0.88, 0.91, 0.94);     // #E2E8F0
+    const lightGray = rgb(0.97, 0.98, 0.99);      // #F8FAFC
 
-    // Load and embed company logo
-    let logoImage;
-    try {
-      // In a Next.js API route, we need to use process.cwd() and construct the path
-      const fs = require('fs');
-      const path = require('path');
-      const logoPath = path.join(process.cwd(), 'public', 'logo.png');
-      const logoBytes = fs.readFileSync(logoPath);
-      logoImage = await pdfDoc.embedPng(logoBytes);
-    } catch (error) {
-      console.warn('Logo not found, proceeding without it:', error.message);
-    }
-
-    // Load and embed user profile image if available
-    let profileImage;
-    if (userData.profilePhoto) {
-      try {
-        // Fetch the profile image
-        const response = await fetch(userData.profilePhoto);
-        if (response.ok) {
-          const imageBuffer = await response.arrayBuffer();
-
-          // Try to embed as JPEG first, then PNG if that fails
-          try {
-            profileImage = await pdfDoc.embedJpg(imageBuffer);
-          } catch (e) {
-            try {
-              profileImage = await pdfDoc.embedPng(imageBuffer);
-            } catch (pngError) {
-              console.warn('Could not embed profile image as JPEG or PNG:', pngError.message);
-            }
-          }
-        }
-      } catch (error) {
-        console.warn('Could not load profile image:', error.message);
-      }
-    }
-
+    // Helper: Sanitize & clean text for PDF Standard fonts
     const sanitizeText = (text) => {
-      if (!text) return '';
-      return text.toString().replace(/₹/g, 'Rs.').replace(/[^\x00-\x7F]/g, '');
+      if (text === null || text === undefined) return '';
+      return text.toString()
+        .replace(/₹/g, 'Rs.')
+        .replace(/[^\x00-\x7F]/g, '')
+        .trim();
     };
 
-    const drawText = (text, x, y, options = {}) => {
-      const fontSize = options.size || 11;
+    // Helper: Safe Text Drawer
+    const drawTextOnPage = (targetPage, text, x, y, options = {}) => {
+      const fontSize = options.size || 10;
       const font = options.bold ? boldFont : (options.italic ? italicFont : regularFont);
       const color = options.color || darkText;
-      const safeText = sanitizeText(text);
+      const safe = sanitizeText(text);
+      if (!safe) return;
 
       try {
-        page.drawText(safeText, {
+        targetPage.drawText(safe, {
           x,
           y,
           size: fontSize,
           font,
           color,
           maxWidth: options.maxWidth || contentWidth,
-          ...options,
+          lineHeight: options.lineHeight || (fontSize + 3),
         });
-      } catch (error) {
-        console.warn('Text draw error:', error.message);
-        page.drawText('[Text error]', {
-          x, y, size: fontSize, font: regularFont, color: lightText
+      } catch (err) {
+        console.warn('PDF text render error:', err.message);
+      }
+    };
+
+    // Helper: Calculate text width
+    const getTextWidth = (text, size = 10, isBold = false) => {
+      const font = isBold ? boldFont : regularFont;
+      const safe = sanitizeText(text);
+      try {
+        return font.widthOfTextAtSize(safe, size);
+      } catch (e) {
+        return safe.length * (size * 0.5);
+      }
+    };
+
+    // Load Logo Image
+    let logoImage = null;
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const logoPath = path.join(process.cwd(), 'public', 'logo.png');
+      if (fs.existsSync(logoPath)) {
+        const logoBytes = fs.readFileSync(logoPath);
+        logoImage = await pdfDoc.embedPng(logoBytes);
+      }
+    } catch (e) {
+      console.warn('Company logo not found, skipping:', e.message);
+    }
+
+    // Load Profile Image
+    let profileImage = null;
+    const photoUrl = userData.profilePhoto || userData.photo || (userData.photos && userData.photos[0]);
+    if (photoUrl) {
+      try {
+        const response = await fetch(photoUrl);
+        if (response.ok) {
+          const imageBuffer = await response.arrayBuffer();
+          try {
+            profileImage = await pdfDoc.embedJpg(imageBuffer);
+          } catch (jpgErr) {
+            try {
+              profileImage = await pdfDoc.embedPng(imageBuffer);
+            } catch (pngErr) {
+              console.warn('Failed to embed profile image as JPG or PNG:', pngErr.message);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to fetch candidate profile image:', err.message);
+      }
+    }
+
+    // Page Break Tracker
+    let currentY = height - margin;
+
+    const checkPageBreak = (neededHeight) => {
+      if (currentY - neededHeight < margin + 40) {
+        page = pdfDoc.addPage([595, 842]);
+        currentY = height - margin - 20;
+
+        // Draw top subtle running header on page 2+
+        page.drawLine({
+          start: { x: margin, y: height - 25 },
+          end: { x: width - margin, y: height - 25 },
+          thickness: 0.5,
+          color: borderGray,
+        });
+
+        const nameStr = sanitizeText(userData.name || userData.fullName || 'Candidate Biodata');
+        drawTextOnPage(page, `BariVivah Biodata — ${nameStr}`, margin, height - 20, {
+          size: 8.5,
+          italic: true,
+          color: lightText,
         });
       }
     };
 
-    const formatDate = (date) => {
-      if (!date) return '';
-      // Handle different date formats
-      if (typeof date === 'string' && date.includes('/')) {
-        const parts = date.split('/');
-        if (parts.length === 3) {
-          return `${parts[0]}/${parts[1]}/${parts[2]}`;
-        }
-      }
-
+    // Date & Age Formatters
+    const formatDate = (dateVal) => {
+      if (!dateVal) return 'N/A';
+      if (typeof dateVal === 'string' && dateVal.includes('/')) return dateVal;
       try {
-        const d = new Date(date);
-        return isNaN(d) ? date : d.toLocaleDateString('en-IN', {
+        const d = new Date(dateVal);
+        return isNaN(d.getTime()) ? dateVal : d.toLocaleDateString('en-IN', {
           day: '2-digit',
           month: 'short',
           year: 'numeric'
         });
       } catch (e) {
-        return date;
+        return dateVal.toString();
       }
     };
 
-    const calculateAge = (dob) => {
-      if (!dob) return '';
-
-      // Handle different date formats
+    const calculateAge = (dobVal) => {
+      if (!dobVal) return null;
       let birthDate;
-      if (typeof dob === 'string' && dob.includes('/')) {
-        const parts = dob.split('/');
+      if (typeof dobVal === 'string' && dobVal.includes('/')) {
+        const parts = dobVal.split('/');
         if (parts.length === 3) {
           birthDate = new Date(parts[2], parts[1] - 1, parts[0]);
         } else {
-          birthDate = new Date(dob);
+          birthDate = new Date(dobVal);
         }
       } else {
-        birthDate = new Date(dob);
+        birthDate = new Date(dobVal);
       }
-
-      if (isNaN(birthDate)) return '';
-
+      if (isNaN(birthDate.getTime())) return null;
       const ageDiff = Date.now() - birthDate.getTime();
-      const ageDate = new Date(ageDiff);
-      return Math.abs(ageDate.getUTCFullYear() - 1970);
+      return Math.floor(ageDiff / (1000 * 60 * 60 * 24 * 365.25));
     };
 
-    let currentY = height - margin - 20;
+    // Extract all candidate profile fields supporting all naming conventions
+    const u = userData || {};
 
-    // HEADER WITH LOGO
+    const name = u.name || u.fullName || u.displayName || 'Candidate Member';
+    const age = u.age || calculateAge(u.dob || u.dateOfBirth || u.birthDate);
+    const dobStr = formatDate(u.dob || u.dateOfBirth || u.birthDate);
+    const heightStr = u.height || u.heightInFt || 'N/A';
+    const weightStr = u.weight ? `${u.weight} kg` : 'N/A';
+    const gender = u.gender || u.sex || 'N/A';
+    const maritalStatus = u.maritalStatus || u.marital || 'Never Married';
+    const motherTongue = u.motherTongue || u.language || 'N/A';
+    const diet = u.diet || u.eatingHabits || u.dietaryHabits || 'N/A';
+    const bloodGroup = u.bloodGroup || u.blood || 'N/A';
+    const wearsLens = u.wearsLens !== undefined ? (u.wearsLens === 'Yes' || u.wearsLens === true ? 'Yes' : 'No') : 'N/A';
+    const complexion = u.complexion || u.skinTone || 'N/A';
+
+    const religion = u.religion || 'Hindu';
+    const caste = u.caste || 'Bari';
+    const subCaste = u.subCaste || u.subcaste || 'N/A';
+    const gothra = u.gothra || u.gotra || 'N/A';
+    const rashi = u.rashi || u.zodiac || 'N/A';
+    const nakshatra = u.nakshatra || u.star || 'N/A';
+    const mangal = u.mangal || u.mangalDosha || u.manglik || 'No / Anshik';
+    const birthTime = u.birthTime || u.timeOfBirth || 'N/A';
+    const birthPlace = u.birthPlace || u.placeOfBirth || u.nativeCity || 'N/A';
+
+    const education = u.education || u.educationLevel || u.highestEducation || u.degree || 'N/A';
+    const fieldOfStudy = u.fieldOfStudy || u.field || u.specialization || u.branch || 'N/A';
+    const college = u.college || u.university || u.institute || 'N/A';
+    const occupation = u.occupation || u.profession || u.jobTitle || u.designation || 'N/A';
+    const company = u.company || u.companyName || u.employer || u.organization || 'N/A';
+    const workSector = u.workSector || u.employmentType || u.sector || 'N/A';
+    const income = u.income || u.annualIncome || u.salary || 'N/A';
+    const workCity = u.workCity || u.workLocation || u.currentCity || u.city || 'N/A';
+
+    const fatherName = u.fatherName || u.father || u.father_name || 'N/A';
+    const fatherOccupation = u.parentOccupation || u.fatherOccupation || u.father_occupation || 'N/A';
+    const motherName = u.mother || u.motherName || u.mother_name || 'N/A';
+    const motherOccupation = u.motherOccupation || u.mother_occupation || 'Homemaker';
+
+    let brothersStr = '0';
+    if (u.brothers !== undefined && u.brothers !== null && u.brothers !== '') {
+      brothersStr = `${u.brothers} (${u.marriedBrothers || 0} Married)`;
+    }
+
+    let sistersStr = '0';
+    if (u.sisters !== undefined && u.sisters !== null && u.sisters !== '') {
+      sistersStr = `${u.sisters} (${u.marriedSisters || 0} Married)`;
+    }
+
+    const nativeCity = u.nativeDistrict || u.nativeCity || u.parentResidenceCity || u.nativePlace || 'N/A';
+    const mamaSurname = u.mamaSurname || u.maternalGothra || u.maternalSurname || 'N/A';
+    const familyStatus = u.familyBackground || u.familyStatus || u.familyType || 'Traditional';
+
+    const bio = u.aboutMe || u.bio || u.profileSummary || u.about || 'N/A';
+    const hobbies = Array.isArray(u.hobbies) ? u.hobbies.join(', ') : (u.hobbies || 'N/A');
+
+    const phone = u.phone || u.mobile || u.contactNumber || u.phoneNumber || 'N/A';
+    const email = u.email || u.emailAddress || 'N/A';
+    const alternatePhone = u.alternatePhone || u.alternateMobile || 'N/A';
+    const currentAddress = u.address || u.permanentAddress || u.currentCity || u.city || 'N/A';
+
+    const partnerAge = u.partnerAgeRange || u.expectations?.age || u.partnerAge || 'N/A';
+    const partnerMarital = u.partnerMaritalStatus || u.expectations?.maritalStatus || 'Never Married';
+    const partnerCaste = u.partnerCaste || u.expectations?.caste || 'Bari / Any';
+    const partnerEducation = u.partnerEducation || u.expectations?.education || 'N/A';
+    const partnerOccupation = u.partnerOccupation || u.expectations?.occupation || 'N/A';
+    const partnerCity = u.partnerCity || u.expectations?.city || 'N/A';
+
+    // ==========================================
+    // 1. TOP BRANDING HEADER
+    // ==========================================
     if (logoImage) {
-      const logoDims = logoImage.scale(0.15);
       page.drawImage(logoImage, {
         x: margin,
-        y: currentY - logoDims.height / 2,
-        width: logoDims.width,
-        height: logoDims.height,
+        y: currentY - 30,
+        width: 85,
+        height: 28,
       });
     }
 
-    // Company name and branding
-    const headerX = logoImage ? margin + 120 : margin;
-    drawText('Barivivah Matrimony', headerX, currentY, {
+    const headerTextX = logoImage ? margin + 98 : margin;
+    drawTextOnPage(page, 'BariVivah Matrimony', headerTextX, currentY - 10, {
       size: 16,
       bold: true,
-      color: primaryRed
+      color: primaryRed,
     });
-    currentY -= 25;
 
-    drawText('Office No 209, Business Square, Bavdhan Pune 411021',
-      headerX, currentY, {
-      size: 9,
-      color: darkText
+    drawTextOnPage(page, 'Trusted Bari Community Matrimonial Portal', headerTextX, currentY - 22, {
+      size: 8,
+      italic: true,
+      color: lightText,
     });
-    currentY -= 12;
 
-    drawText('',
-      headerX, currentY, {
-      size: 9,
-      color: darkText
+    drawTextOnPage(page, 'Helpline: +91-9503424635  |  Email: support@barivivah.in', headerTextX, currentY - 33, {
+      size: 8,
+      color: bodyText,
     });
-    currentY -= 12;
 
-    drawText('Mobile: +91-9503424635 • Email: support@barivivah.in',
-      headerX, currentY, {
-      size: 9,
-      color: darkText
-    });
-    currentY -= 12;
+    currentY -= 48;
 
-    drawText('Website: www.barivivah.in',
-      headerX, currentY, {
-      size: 9,
-      color: accentBlue,
-      italic: true
-    });
-    currentY -= 50;
-
-    // Horizontal divider
+    // Header Divider Line
     page.drawLine({
       start: { x: margin, y: currentY },
       end: { x: width - margin, y: currentY },
-      thickness: 1,
-      color: borderGray
+      thickness: 1.5,
+      color: primaryRed,
     });
-    currentY -= 50;
 
+    currentY -= 15;
 
-    const profileId = userData.id ? userData.id.toString().slice(-6).toUpperCase() :
-      (userData._id ? userData._id.toString().slice(-6).toUpperCase() :
-        Date.now().toString().slice(-6));
+    // ==========================================
+    // 2. CANDIDATE HERO HEADER & PHOTO BOX
+    // ==========================================
+    const photoBoxWidth = 110;
+    const photoBoxHeight = 135;
+    const photoBoxX = width - margin - photoBoxWidth; // 449 pt
+    const photoBoxY = currentY - photoBoxHeight;
 
-    // Calculate text area width based on whether we have a profile image
-    // Increased the space for the larger profile photo
-    const textAreaWidth = profileImage ? contentWidth - 180 : contentWidth;
+    // Left text area width (leaves 18pt safe padding before photo box)
+    const textAreaWidth = photoBoxX - margin - 18; // 395 pt
 
-    // Draw profile image if available - INCREASED SIZE
+    // Render Photo Box Frame (Right side)
+    page.drawRectangle({
+      x: photoBoxX,
+      y: photoBoxY,
+      width: photoBoxWidth,
+      height: photoBoxHeight,
+      borderColor: borderGray,
+      borderWidth: 1.5,
+      color: lightGray,
+    });
+
     if (profileImage) {
-      const imgDims = profileImage.scale(0.35); // Increased from 0.25 to 0.35
-      const imgX = width - margin - imgDims.width - 10;
-      const imgY = currentY - 5; // Adjusted to align with text
+      try {
+        const scaled = profileImage.scaleToFit(photoBoxWidth - 6, photoBoxHeight - 6);
+        const imgX = photoBoxX + 3 + (photoBoxWidth - 6 - scaled.width) / 2;
+        const imgY = photoBoxY + 3 + (photoBoxHeight - 6 - scaled.height) / 2;
 
-      // Draw a border around the image
-      page.drawRectangle({
-        x: imgX - 5,
-        y: imgY - 5,
-        width: imgDims.width + 10,
-        height: imgDims.height + 10,
-        borderColor: borderGray,
-        borderWidth: 1,
+        page.drawImage(profileImage, {
+          x: imgX,
+          y: imgY,
+          width: scaled.width,
+          height: scaled.height,
+        });
+      } catch (imgErr) {
+        console.warn('Error drawing profile image onto PDF page:', imgErr.message);
+      }
+    } else {
+      // Placeholder text if photo not available
+      drawTextOnPage(page, 'Photo Not', photoBoxX + 28, photoBoxY + 75, {
+        size: 9,
+        color: lightText,
       });
-
-      page.drawImage(profileImage, {
-        x: imgX,
-        y: imgY,
-        width: imgDims.width,
-        height: imgDims.height,
+      drawTextOnPage(page, 'Available', photoBoxX + 30, photoBoxY + 60, {
+        size: 9,
+        color: lightText,
       });
     }
 
-    // Background for profile header - increased height to accommodate larger image
-    const profileHeaderHeight = profileImage ? 80 : 60;
-    page.drawRectangle({
-      x: margin,
-      y: currentY + 5,
-      width: textAreaWidth,
-      height: profileHeaderHeight,
-      color: lightGray,
-      opacity: 0.3
-    });
+    // Render Candidate Quick Info (Left side - strictly inside textAreaWidth)
+    let headerTextY = currentY - 5;
 
-    // Name with proper text wrapping to avoid overlapping with image
-    const name = userData.name || 'N/A';
-    drawText(name, margin + 10, currentY + 55, {
+    // Name
+    drawTextOnPage(page, name, margin, headerTextY, {
       size: 18,
       bold: true,
+      color: primaryDark,
+      maxWidth: textAreaWidth,
+    });
+    headerTextY -= 22;
+
+    // Profile ID
+    const rawId = u.id || u._id || Date.now();
+    const shortId = rawId.toString().slice(-6).toUpperCase();
+    const profileIdStr = `Profile ID: BV-${shortId}`;
+    drawTextOnPage(page, profileIdStr, margin, headerTextY, {
+      size: 10,
+      bold: true,
       color: primaryRed,
-      maxWidth: textAreaWidth - 20
+    });
+    headerTextY -= 16;
+
+    // Key stats row
+    const line1 = `Age: ${age ? `${age} Yrs` : 'N/A'}  •  DOB: ${dobStr}  •  Height: ${heightStr}`;
+    drawTextOnPage(page, line1, margin, headerTextY, {
+      size: 9.5,
+      color: bodyText,
+      maxWidth: textAreaWidth,
+    });
+    headerTextY -= 15;
+
+    const subCasteStr = subCaste && subCaste !== 'N/A' ? ` (${subCaste})` : '';
+    const line2 = `Community: ${religion} - ${caste}${subCasteStr}`;
+    drawTextOnPage(page, line2, margin, headerTextY, {
+      size: 9.5,
+      color: bodyText,
+      maxWidth: textAreaWidth,
+    });
+    headerTextY -= 15;
+
+    const line3 = `Current City: ${workCity}  •  Status: ${maritalStatus}`;
+    drawTextOnPage(page, line3, margin, headerTextY, {
+      size: 9.5,
+      color: bodyText,
+      maxWidth: textAreaWidth,
     });
 
-    // Profile ID positioned correctly
-    const profileIdText = `Profile ID: SB-${profileId}`;
-    const profileIdWidth = boldFont.widthOfTextAtSize(profileIdText, 10);
-    drawText(profileIdText, margin + textAreaWidth - profileIdWidth, currentY + 55, {
-      size: 10,
-      color: lightText
-    });
+    // Advance currentY past the bottom of the photo box & header text
+    currentY = Math.min(headerTextY - 15, photoBoxY - 15);
 
-    // DOB and Age
-    const dobText = `DOB: ${formatDate(userData.dob) || 'N/A'} | Age: ${userData.age || calculateAge(userData.dob) || 'N/A'} years`;
-    drawText(dobText, margin + 10, currentY + 35, {
-      size: 10,
-      color: darkText,
-      maxWidth: textAreaWidth - 20
-    });
+    // ==========================================
+    // SECTION BUILDERS
+    // ==========================================
+    const renderSectionHeader = (title) => {
+      checkPageBreak(32);
 
-    // Gender and Education
-    const genderEduText = `Gender: ${userData.gender || 'N/A'} | Education: ${userData.education || 'N/A'}`;
-    drawText(genderEduText, margin + 10, currentY + 20, {
-      size: 10,
-      color: darkText,
-      maxWidth: textAreaWidth - 20
-    });
-
-    currentY -= (profileHeaderHeight + 15);
-
-    // Draw section with improved styling
-    const drawSection = (title, data) => {
-      if (data.filter(([_, value]) => value).length === 0) return currentY;
-
-      // Section header with background
+      // Light background bar
       page.drawRectangle({
         x: margin,
-        y: currentY + 2,
+        y: currentY - 18,
         width: contentWidth,
-        height: 20,
+        height: 22,
+        color: lightGray,
+        borderColor: borderGray,
+        borderWidth: 0.5,
+      });
+
+      // Left accent bar
+      page.drawRectangle({
+        x: margin,
+        y: currentY - 18,
+        width: 4,
+        height: 22,
         color: primaryRed,
-        opacity: 0.1
       });
 
-      drawText(title.toUpperCase(), margin + 10, currentY + 5, {
-        size: 12,
+      drawTextOnPage(page, title.toUpperCase(), margin + 12, currentY - 12, {
+        size: 10.5,
         bold: true,
-        color: primaryRed
+        color: primaryDark,
       });
-      currentY -= 20;
 
-      // Section content with alternating row colors
-      const rows = data.filter(([_, value]) => value || value === 0 || value === false);
+      currentY -= 28;
+    };
 
-      rows.forEach(([label, value], index) => {
-        if (index % 2 === 0) {
+    // 2-Column Data Grid Renderer
+    const renderGridSection = (title, items) => {
+      const validItems = items.filter(([_, val]) => val !== undefined && val !== null && val !== '');
+      if (validItems.length === 0) return;
+
+      renderSectionHeader(title);
+
+      const col1X = margin + 8;
+      const col2X = margin + (contentWidth / 2) + 8;
+      const colWidth = (contentWidth / 2) - 16;
+
+      for (let i = 0; i < validItems.length; i += 2) {
+        checkPageBreak(18);
+
+        // Optional zebra striping
+        if ((i / 2) % 2 === 1) {
           page.drawRectangle({
             x: margin,
-            y: currentY - 2,
+            y: currentY - 13,
             width: contentWidth,
             height: 16,
             color: lightGray,
-            opacity: 0.2
+            opacity: 0.4,
           });
         }
 
-        const display = typeof value === 'boolean' ? (value ? 'Yes' : 'No') :
-          (Array.isArray(value) ? value.join(', ') : value);
-
-        drawText(`${label}:`, margin + 10, currentY, { size: 10, bold: true });
-        drawText(sanitizeText(display.toString()), margin + 120, currentY, {
-          size: 10,
-          maxWidth: contentWidth - 130
+        // Left Item
+        const [label1, value1] = validItems[i];
+        const valStr1 = sanitizeText(value1.toString());
+        drawTextOnPage(page, `${label1}:`, col1X, currentY - 10, {
+          size: 9,
+          bold: true,
+          color: bodyText,
         });
-        currentY -= 16;
-      });
+        drawTextOnPage(page, valStr1, col1X + 95, currentY - 10, {
+          size: 9,
+          color: darkText,
+          maxWidth: colWidth - 95,
+        });
 
-      currentY -= 10;
+        // Right Item (if exists)
+        if (i + 1 < validItems.length) {
+          const [label2, value2] = validItems[i + 1];
+          const valStr2 = sanitizeText(value2.toString());
+          drawTextOnPage(page, `${label2}:`, col2X, currentY - 10, {
+            size: 9,
+            bold: true,
+            color: bodyText,
+          });
+          drawTextOnPage(page, valStr2, col2X + 95, currentY - 10, {
+            size: 9,
+            color: darkText,
+            maxWidth: colWidth - 95,
+          });
+        }
+
+        currentY -= 17;
+      }
+
+      currentY -= 8;
     };
 
-    // Sections with improved layout
-    drawSection('Personal Information', [
-      ['Mobile Number', userData.phone],
-      ['Email Address', userData.email],
-      ['Marital Status', userData.maritalStatus],
-      ['Mother Tongue', userData.motherTongue],
-      ['Religion', userData.religion],
-      ['Caste', userData.caste],
-      ['Sub Caste', userData.subCaste],
-      ['Height', userData.height],
-      ['Address', userData.address],
-      ['Hobbies', userData.hobbies]
+    // Full-Width Text Section (e.g. Bio / Hobbies / Address)
+    const renderFullWidthSection = (title, items) => {
+      const validItems = items.filter(([_, val]) => val !== undefined && val !== null && val !== '');
+      if (validItems.length === 0) return;
+
+      renderSectionHeader(title);
+
+      validItems.forEach(([label, value]) => {
+        const valStr = sanitizeText(value.toString());
+        const labelWidth = getTextWidth(`${label}: `, 9, true);
+
+        // Estimate lines needed
+        const charsPerLine = 85;
+        const lineCount = Math.ceil(valStr.length / charsPerLine) || 1;
+        const neededH = Math.max(18, lineCount * 14);
+
+        checkPageBreak(neededH);
+
+        drawTextOnPage(page, `${label}:`, margin + 8, currentY - 10, {
+          size: 9,
+          bold: true,
+          color: bodyText,
+        });
+
+        drawTextOnPage(page, valStr, margin + 8 + labelWidth + 4, currentY - 10, {
+          size: 9,
+          color: darkText,
+          maxWidth: contentWidth - 16 - labelWidth,
+          lineHeight: 13,
+        });
+
+        currentY -= (neededH + 4);
+      });
+
+      currentY -= 6;
+    };
+
+    // ==========================================
+    // 3. RENDER ALL PROFILE SECTIONS
+    // ==========================================
+
+    // 1. Personal & Physical Details
+    renderGridSection('1. Personal & Physical Information', [
+      ['Full Name', name],
+      ['Gender', gender],
+      ['Age', age ? `${age} Years` : 'N/A'],
+      ['Date of Birth', dobStr],
+      ['Height', heightStr],
+      ['Weight', weightStr],
+      ['Marital Status', maritalStatus],
+      ['Mother Tongue', motherTongue],
+      ['Diet', diet],
+      ['Blood Group', bloodGroup],
+      ['Spectacles/Lens', wearsLens],
+      ['Complexion', complexion],
     ]);
 
-    drawSection('Education & Career', [
-      ['Education Level', userData.education],
-      ['Field of Study', userData.fieldOfStudy],
-      ['College', userData.college],
-      ['Occupation', userData.familyBackground],
-      ['Work Sector', userData.workSector],
-      ['Annual Income', userData.income]
+    // 2. Religious & Astrology (Kundali) Details
+    renderGridSection('2. Religious & Horoscope (Kundali) Details', [
+      ['Religion', religion],
+      ['Caste', caste],
+      ['Sub-Caste', subCaste],
+      ['Gothra', gothra],
+      ['Rashi (Zodiac)', rashi],
+      ['Nakshatra (Star)', nakshatra],
+      ['Mangal / Dosha', mangal],
+      ['Time of Birth', birthTime],
+      ['Place of Birth', birthPlace],
     ]);
 
-    drawSection('Family Background', [
-      ['Gothra', userData.gothra],
-      ['Family Background', userData.familyBackground]
+    // 3. Education & Career Information
+    renderGridSection('3. Education & Career Information', [
+      ['Highest Education', education],
+      ['Field / Degree', fieldOfStudy],
+      ['College/Institute', college],
+      ['Occupation / Job', occupation],
+      ['Company / Employer', company],
+      ['Work Sector', workSector],
+      ['Annual Income', income],
+      ['Work Location', workCity],
     ]);
 
-    // Footer with branding
-    currentY = Math.max(currentY - 20, 60);
+    // 4. Family Background & Relatives
+    renderGridSection('4. Family Background & Relatives', [
+      ['Father\'s Name', fatherName],
+      ['Father\'s Occupation', fatherOccupation],
+      ['Mother\'s Name', motherName],
+      ['Mother\'s Occupation', motherOccupation],
+      ['Brothers Count', brothersStr],
+      ['Sisters Count', sistersStr],
+      ['Native District/City', nativeCity],
+      ['Mama (Maternal) Surname', mamaSurname],
+      ['Family Status/Values', familyStatus],
+    ]);
 
-    // Footer divider
-    page.drawLine({
-      start: { x: margin, y: currentY },
-      end: { x: width - margin, y: currentY },
-      thickness: 1,
-      color: borderGray
-    });
-    currentY -= 15;
+    // 5. About Candidate & Hobbies (Full Width)
+    renderFullWidthSection('5. About Candidate & Hobbies', [
+      ['Profile Bio', bio],
+      ['Hobbies & Interests', hobbies],
+    ]);
 
-    // Footer content
-    drawText('Barivivah Matrimony', margin, currentY, {
-      size: 10,
-      bold: true,
-      color: primaryRed
-    });
-    currentY -= 12;
+    // 6. Contact Details (If provided / Unlocked)
+    renderFullWidthSection('6. Direct Contact Information', [
+      ['Phone / Mobile', phone],
+      ['Email Address', email],
+      ['Alternate Phone', alternatePhone],
+      ['Current Address', currentAddress],
+    ]);
 
-    drawText('', margin, currentY, {
-      size: 9,
-      color: darkText
-    });
+    // 7. Partner Preferences & Expectations
+    renderGridSection('7. Partner Preferences & Expectations', [
+      ['Preferred Age', partnerAge],
+      ['Preferred Marital Status', partnerMarital],
+      ['Preferred Religion/Caste', partnerCaste],
+      ['Preferred Education', partnerEducation],
+      ['Preferred Profession', partnerOccupation],
+      ['Preferred Location', partnerCity],
+    ]);
 
-    drawText(`Generated on ${new Date().toLocaleDateString('en-IN')}`, width - margin - 120, currentY, {
-      size: 9,
-      color: lightText
-    });
-    currentY -= 12;
+    // ==========================================
+    // 4. PAGE FOOTER (DRAWN ON ALL PAGES)
+    // ==========================================
+    const totalPages = pdfDoc.getPageCount();
+    for (let pIdx = 0; pIdx < totalPages; pIdx++) {
+      const p = pdfDoc.getPage(pIdx);
 
-    drawText('Contact: +91-9503424635 | Email: support@barivivah.in | Website: www.barivivah.in',
-      margin, currentY, {
-      size: 8,
-      color: lightText
-    });
+      // Footer divider line
+      p.drawLine({
+        start: { x: margin, y: 35 },
+        end: { x: width - margin, y: 35 },
+        thickness: 0.5,
+        color: borderGray,
+      });
 
-    // Final PDF
+      // Footer content
+      drawTextOnPage(p, 'Barivivah Matrimony — Confidential Candidate Biodata', margin, 22, {
+        size: 8,
+        bold: true,
+        color: primaryRed,
+      });
+
+      const todayStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      drawTextOnPage(p, `Generated: ${todayStr}  |  Page ${pIdx + 1} of ${totalPages}`, width - margin - 150, 22, {
+        size: 8,
+        color: lightText,
+      });
+    }
+
+    // Output Base64 PDF
     const pdfBytes = await pdfDoc.save();
     const base64Pdf = Buffer.from(pdfBytes).toString('base64');
-    const sanitizedName = (userData.name || 'Profile').replace(/[^a-zA-Z0-9]/g, '_');
-    const fileName = `Barivivah_Profile_${sanitizedName}.pdf`;
+    const sanitizedName = (name || 'Candidate').replace(/[^a-zA-Z0-9]/g, '_');
+    const fileName = `BariVivah_Biodata_${sanitizedName}.pdf`;
 
     return NextResponse.json({
       success: true,
       pdf: base64Pdf,
       fileName,
-      message: 'Profile PDF generated successfully',
-      profileId: `SB-${profileId}`
+      message: 'Candidate Profile PDF generated successfully',
+      profileId: `BV-${shortId}`
     });
 
   } catch (error) {

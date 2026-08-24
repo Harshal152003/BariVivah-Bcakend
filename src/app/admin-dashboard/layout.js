@@ -24,10 +24,10 @@ export default function AdminLayout({ children }) {
   const [filteredSections, setFilteredSections] = useState([]);
 
   const allAdminSections = [
-    { id: 'overview', label: 'Dashboard Overview', icon: BarChart3, route: "/admin-dashboard", permissionKey: "overview" },
+    // { id: 'overview', label: 'Dashboard Overview', icon: BarChart3, route: "/admin-dashboard", permissionKey: "overview" },
     { id: 'user-management', label: 'User Management', icon: Users, route: "/admin-dashboard/user-management", permissionKey: "userManagement" },
     { id: 'emp-management', label: 'Emp Management', icon: Users, route: "/admin-dashboard/emp-management", permissionKey: "empManagement" },
-    { id: 'form-management', label: 'Form Management', icon: Users, route: "/admin-dashboard/form-builder", permissionKey: "formManagement" },
+    // { id: 'form-management', label: 'Form Management', icon: Users, route: "/admin-dashboard/form-builder", permissionKey: "formManagement" },
     { id: 'Verification', label: 'Profile Verification', icon: CheckCircle, route: "/admin-dashboard/verifications", permissionKey: "verification" },
     { id: 'Payment', label: 'Payments & Plans', icon: FaRupeeSign, route: "/admin-dashboard/payment", permissionKey: "payment" },
     { id: 'Report', label: 'Reports & Complaints', icon: Flag, route: "/admin-dashboard/report", permissionKey: "report" },
@@ -43,8 +43,8 @@ export default function AdminLayout({ children }) {
     if (user) {
       if (user.role === 'admin') {
         setFilteredSections(allAdminSections);
-        setActiveTab('overview');
-        Router.push("/admin-dashboard");
+        setActiveTab('user-management');
+        Router.push("/admin-dashboard/user-management");
       } else if (user.role === 'Employee') {
         // Always include System Settings regardless of permissions
         const systemSettings = allAdminSections.find(section => section.id === 'setting');

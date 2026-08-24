@@ -131,7 +131,7 @@ export default function MyProfilePage() {
       basic: ['name', 'dob', 'height', 'gender', 'maritalStatus', 'motherTongue', 'currentCity', 'email', 'permanentAddress', 'wearsLens', 'bloodGroup', 'diet'],
       religious: ['religion', 'caste', 'subCaste', 'gothra'],
       education: ['education', 'fieldOfStudy', 'college', 'occupation', 'workSector', 'income'],
-      relative: ['fatherName', 'parentResidenceCity', 'mother', 'brothers', 'marriedBrothers', 'sisters', 'marriedSisters', 'nativeDistrict', 'nativeCity', 'relativeSurname', 'parentOccupation', 'mamaSurname',],
+      relative: ['fatherName', 'parentResidenceCity', 'mother', 'brothers', 'marriedBrothers', 'sisters', 'marriedSisters', 'nativeDistrict', 'nativeCity', 'relativeSurname', 'parentOccupation', 'mamaSurname', 'mamaContact'],
       horoscope: ['rashi', 'mangal', 'birthPlace', 'birthTime'],
       expectations: ['expectedCaste', 'expectedSubCaste', 'preferredCity', 'expectedAgeDifference', 'expectedEducation', 'expectedWorkingStatus', 'divorcee', 'expectedHeight', 'expectedIncome']
     };
@@ -255,6 +255,7 @@ export default function MyProfilePage() {
         relativeSurname: data.relativeSurname || '',
         parentOccupation: data.parentOccupation || '',
         mamaSurname: data.mamaSurname || '',
+        mamaContact: data.mamaContact || '',
         mangal: data.mangal || false,
         birthPlace: data.birthPlace || '',
         birthTime: data.birthTime || '',
@@ -1038,6 +1039,16 @@ export default function MyProfilePage() {
                     value={formData.mamaSurname}
                     onChange={(e) => setFormData({ ...formData, mamaSurname: e.target.value })}
                     placeholder="Enter Mamekul (mama's surname)"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Mama's Contact Details</label>
+                  <input
+                    type="text"
+                    value={formData.mamaContact}
+                    onChange={(e) => setFormData({ ...formData, mamaContact: e.target.value })}
+                    placeholder="Enter Mama's Contact Details (e.g. +91 9999999999)"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
                   />
                 </div>

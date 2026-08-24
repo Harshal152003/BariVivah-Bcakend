@@ -45,7 +45,7 @@ export default function HomePage() {
       <div id="success-stories" className="scroll-mt-24"><UserTestimonials /></div>
 
       <BlogPreview />
-      <div id="membership" className="scroll-mt-24"><MembershipPlans /></div>
+      {/* <div id="membership" className="scroll-mt-24"><MembershipPlans /></div> */}
       <div id="contact"><Footer /></div>
 
       <AuthModal 
