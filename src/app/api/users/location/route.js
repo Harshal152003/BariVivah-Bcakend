@@ -74,7 +74,7 @@ export async function PUT(request) {
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       updateData,
-      { new: true, runValidators: true }
+      { new: true, runValidators: false }
     ).select('-password -__v');
 
     if (!updatedUser) {

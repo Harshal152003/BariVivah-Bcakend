@@ -1,15 +1,14 @@
 import { NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
 import User from '@/models/User';
 import dbConnect from '@/lib/dbConnect';
+import { verifyToken } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': 'http://localhost:8081',
+  'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  'Access-Control-Allow-Credentials': 'true'
 };
 
 export async function OPTIONS() {
@@ -316,6 +315,30 @@ function calculateMutualCompatibility(user, candidate) {
   return Math.min(100, Math.max(0, mutualScore));
 }
 
+// Seeded PRNG for deterministic or session-based shuffling
+function mulberry32(a) {
+  return function() {
+    let t = a += 0x6D2B79F5;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function seededShuffle(array, seedString) {
+  let hash = 0;
+  for (let i = 0; i < seedString.length; i++) {
+    hash = Math.imul(31, hash) + seedString.charCodeAt(i) | 0;
+  }
+  const random = mulberry32(hash);
+  const result = [...array];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
 export async function GET(request) {
   try {
     await dbConnect();
@@ -331,7 +354,6 @@ export async function GET(request) {
 
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page'), 10) || 1;
-    const limit = parseInt(searchParams.get('limit'), 10) || 20;
     const minCompatibility = parseInt(searchParams.get('minScore'), 10) || 0;
     const requestedUserId = searchParams.get('userId');
 
@@ -339,8 +361,10 @@ export async function GET(request) {
 
     if (token && !currentUserId) {
       try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        currentUserId = decoded.userId;
+        const decoded = verifyToken(token);
+        if (decoded && decoded.userId) {
+          currentUserId = decoded.userId;
+        }
       } catch (err) {
         console.warn('Invalid JWT token in matches API:', err.message);
       }
@@ -350,6 +374,18 @@ export async function GET(request) {
     if (currentUserId) {
       currentUser = await User.findById(currentUserId).lean();
     }
+
+    // Binary Tier Check: Case 1 (Free User) vs Case 2 (Paid User)
+    const isPaidUser = Boolean(
+      currentUser?.isPremium ||
+      (currentUser?.subscription?.isSubscribed && (!currentUser?.subscription?.expiresAt || new Date(currentUser.subscription.expiresAt) > new Date())) ||
+      (currentUser?.subscription?.plan && String(currentUser.subscription.plan).toLowerCase() !== 'free') ||
+      (currentUser?.subscription?.planName && String(currentUser.subscription.planName).toLowerCase() !== 'free')
+    );
+
+    const defaultLimit = isPaidUser ? 30 : 20;
+    const limit = parseInt(searchParams.get('limit'), 10) || defaultLimit;
+    const cursor = searchParams.get('cursor') || null;
 
     // 2. Base Query
     const query = {};
@@ -368,9 +404,25 @@ export async function GET(request) {
       query.caste = new RegExp(searchParams.get('caste'), 'i');
     }
 
+    // Exclude interacted / blocked candidates if arrays exist on currentUser
+    const excludedIds = [];
+    if (currentUser?.interestsSent && Array.isArray(currentUser.interestsSent)) {
+      excludedIds.push(...currentUser.interestsSent.map(id => id.toString()));
+    }
+    if (currentUser?.passedUsers && Array.isArray(currentUser.passedUsers)) {
+      excludedIds.push(...currentUser.passedUsers.map(id => id.toString()));
+    }
+    if (currentUser?.blockedUsers && Array.isArray(currentUser.blockedUsers)) {
+      excludedIds.push(...currentUser.blockedUsers.map(id => id.toString()));
+    }
+
+    if (excludedIds.length > 0) {
+      query._id = { $ne: currentUserId, $nin: excludedIds };
+    }
+
     // 3. Fetch Candidate Pool
     const candidatePool = await User.find(query)
-      .select('-password -__v -verificationSelfieUrl -verificationDocUrl')
+      .select('-password -email -__v -verificationSelfieUrl -verificationDocUrl')
       .lean();
 
     // 4. Calculate Scores for candidates
@@ -396,23 +448,50 @@ export async function GET(request) {
       scoredCandidates = scoredCandidates.filter(c => c.matchPercentage >= minCompatibility);
     }
 
-    // 6. Sort by matchPercentage descending
-    scoredCandidates.sort((a, b) => b.matchPercentage - a.matchPercentage);
+    // 6. Hybrid Bucket Seeded Shuffling (Industry Standard)
+    // Paid Users: Fresh seed on each launch/refresh
+    // Free Users: Daily date seed (${currentUserId}_${YYYY-MM-DD})
+    const todayStr = new Date().toISOString().split('T')[0];
+    const sessionSeed = searchParams.get('seed') ||
+      (isPaidUser ? `${currentUserId}_${Date.now()}` : `${currentUserId}_${todayStr}`);
 
-    // 7. Paginate Results
-    const total = scoredCandidates.length;
-    const skip = (page - 1) * limit;
-    const paginatedCandidates = scoredCandidates.slice(skip, skip + limit);
+    const highMatchBucket = scoredCandidates.filter(c => c.matchPercentage >= 75);
+    const standardMatchBucket = scoredCandidates.filter(c => c.matchPercentage < 75);
+
+    const shuffledHigh = seededShuffle(highMatchBucket, `${sessionSeed}_high`);
+    const shuffledStandard = seededShuffle(standardMatchBucket, `${sessionSeed}_std`);
+
+    scoredCandidates = [...shuffledHigh, ...shuffledStandard];
+
+    // 7. Cursor Keyset Filtering if cursor is provided
+    let startIndex = 0;
+    if (cursor) {
+      const cursorIndex = scoredCandidates.findIndex(c => (c._id || c.id).toString() === cursor.toString());
+      if (cursorIndex !== -1) {
+        startIndex = cursorIndex + 1;
+      }
+    } else if (page > 1) {
+      startIndex = (page - 1) * limit;
+    }
+
+    const paginatedCandidates = scoredCandidates.slice(startIndex, startIndex + limit);
+    const lastCandidate = paginatedCandidates[paginatedCandidates.length - 1];
+    const nextCursor = lastCandidate ? (lastCandidate._id || lastCandidate.id).toString() : null;
+    const hasMore = startIndex + paginatedCandidates.length < scoredCandidates.length;
 
     return NextResponse.json(
       {
         success: true,
         data: paginatedCandidates,
         pagination: {
-          total,
+          total: scoredCandidates.length,
           page,
           limit,
-          totalPages: Math.ceil(total / limit)
+          totalPages: Math.ceil(scoredCandidates.length / limit),
+          nextCursor,
+          hasMore,
+          isPaidUser,
+          seed: sessionSeed
         }
       },
       { headers: corsHeaders }

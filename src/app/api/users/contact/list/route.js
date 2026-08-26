@@ -39,7 +39,7 @@ export async function GET(request) {
     const unlocks = await ContactUnlock.find({ userId })
       .populate({
         path: 'unlockedUserId',
-        select: 'name phone email profilePhoto education currentCity caste dob gender height maritalStatus income'
+        select: 'name phone profilePhoto education currentCity caste dob gender height maritalStatus income'
       })
       .sort({ createdAt: -1 });
 
