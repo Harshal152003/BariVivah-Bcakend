@@ -68,6 +68,12 @@ export const calculateProfileCompletion = (user) => {
       completedCount += 0.5;
       return;
     }
+    if (field === 'parentOccupation') {
+      if (user.fatherOccupation || user.motherOccupation || user.parentOccupation) {
+        completedCount += 0.5;
+      }
+      return;
+    }
     if (user[field] !== null && user[field] !== undefined && user[field] !== '') {
       completedCount += 0.5;
     }

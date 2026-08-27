@@ -90,6 +90,7 @@ const relationList = [
   { label: 'My Sister', val: 'Sister' },
   { label: 'My Son', val: 'Son' },
   { label: 'My Daughter', val: 'Daughter' },
+  { label: 'My Friend', val: 'Friend' },
   { label: 'My Relative', val: 'Relative' }
 ];
 

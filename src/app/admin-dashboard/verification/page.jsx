@@ -4,11 +4,11 @@ import { CheckCircle, XCircle, X, ChevronDown, ChevronUp, Edit, Save } from "luc
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from '@/context/SessionContext';
 
-const EditProfileModal = ({ 
-  profile, 
-  onSave, 
+const EditProfileModal = ({
+  profile,
+  onSave,
   onClose,
-  isSaving 
+  isSaving
 }) => {
   const [formData, setFormData] = useState(profile);
 
@@ -60,15 +60,15 @@ const EditProfileModal = ({
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold text-gray-800">Edit Profile</h2>
-            <button 
-              onClick={onClose} 
+            <button
+              onClick={onClose}
               className="text-gray-500 hover:text-gray-700"
               disabled={isSaving}
             >
               <X size={20} />
             </button>
           </div>
-          
+
           <div className="space-y-6">
             {/* Basic Info Section - Updated with new fields */}
             <div className="space-y-4">
@@ -652,7 +652,7 @@ function DetailItem({ label, value, field, profile, onEdit }) {
       <div className="flex justify-between items-start">
         <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{label}</p>
         {onEdit && (
-          <button 
+          <button
             onClick={() => setIsEditing(!isEditing)}
             className="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity"
           >
@@ -660,7 +660,7 @@ function DetailItem({ label, value, field, profile, onEdit }) {
           </button>
         )}
       </div>
-      
+
       {isEditing ? (
         <div className="flex gap-2">
           {typeof value === 'boolean' ? (
@@ -680,7 +680,7 @@ function DetailItem({ label, value, field, profile, onEdit }) {
               className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
             />
           )}
-          <button 
+          <button
             onClick={handleSave}
             className="px-2 py-1 text-xs bg-blue-500 text-white rounded"
           >
@@ -718,11 +718,11 @@ export default function Verification() {
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-    
+
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--;
     }
-    
+
     return age;
   };
 
@@ -800,21 +800,21 @@ export default function Verification() {
 
       if (res.ok) {
         const updatedProfile = await res.json();
-        
+
         if (activeTab === 'pending') {
-          setPendingProfiles(prev => 
+          setPendingProfiles(prev =>
             prev.map(p => p._id === updatedProfile._id ? updatedProfile : p)
           );
         } else {
-          setSubmissionProfiles(prev => 
+          setSubmissionProfiles(prev =>
             prev.map(p => p._id === updatedProfile._id ? updatedProfile : p)
           );
         }
-        
+
         if (selectedProfile && selectedProfile._id === updatedProfile._id) {
           setSelectedProfile(updatedProfile);
         }
-        
+
         setEditingProfile(null);
         alert('Profile updated successfully!');
       } else {
@@ -836,8 +836,8 @@ export default function Verification() {
   };
 
   const renderProfileCards = (profiles) => (
-    
-    <motion.div 
+
+    <motion.div
       layout
       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4"
     >
@@ -857,7 +857,7 @@ export default function Verification() {
 
           <div className="p-5 flex flex-col gap-4 relative">
             <div className="flex items-center gap-4">
-              <motion.div 
+              <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="cursor-pointer relative"
@@ -868,7 +868,7 @@ export default function Verification() {
                     src={u.profilePhoto}
                     alt={u.name}
                     className="w-full h-full object-cover"
-                   
+
                   />
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20 rounded-full" />
                 </div>
@@ -901,8 +901,8 @@ export default function Verification() {
                 </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="h-2 rounded-full bg-gradient-to-r from-rose-400 to-indigo-500" 
+                <div
+                  className="h-2 rounded-full bg-gradient-to-r from-rose-400 to-indigo-500"
                   style={{ width: `${u.profileCompletion}%` }}
                 />
               </div>
@@ -921,19 +921,19 @@ export default function Verification() {
                 </svg>
                 View Details
               </motion.button>
-             {
-              u?.profileSetup?.willAdminFill &&  <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setEditingProfile(u)}
-                className="flex-1 bg-gradient-to-r from-gray-50 to-white hover:from-gray-100 hover:to-white text-gray-600 px-3 py-2 rounded-lg text-sm font-medium border border-gray-200 transition-all flex items-center justify-center gap-1"
-              >
-                <Edit size={16} />
-                Edit
-              </motion.button>
-             }
+              {
+                u?.profileSetup?.willAdminFill && <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setEditingProfile(u)}
+                  className="flex-1 bg-gradient-to-r from-gray-50 to-white hover:from-gray-100 hover:to-white text-gray-600 px-3 py-2 rounded-lg text-sm font-medium border border-gray-200 transition-all flex items-center justify-center gap-1"
+                >
+                  <Edit size={16} />
+                  Edit
+                </motion.button>
+              }
               {activeTab === 'pending' ? (
-                               <motion.button
+                <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleVerification(u._id, 'APPROVE')}
@@ -950,7 +950,7 @@ export default function Verification() {
                   className="flex-1 bg-gradient-to-r from-blue-50 to-white hover:from-blue-100 hover:to-white text-blue-600 px-3 py-2 rounded-lg text-sm font-medium border border-blue-200 transition-all flex items-center justify-center gap-1"
                 >
                   <Save size={16} />
-                  Complete 
+                  Complete
                 </motion.button>
               )}
             </div>
@@ -963,15 +963,15 @@ export default function Verification() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
-        
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">
-              {activeTab === 'pending' 
-                ? `${pendingProfiles.length} pending verifications`
-                : `${submissionProfiles.length} profiles need setup`}
-            </span>
-          </div>
-        
+
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-500">
+            {activeTab === 'pending'
+              ? `${pendingProfiles.length} pending verifications`
+              : `${submissionProfiles.length} profiles need setup`}
+          </span>
+        </div>
+
 
         {/* Tabs */}
         <div className="flex border-b border-gray-200 mb-6">
@@ -1036,8 +1036,8 @@ export default function Verification() {
                 <div className="p-6">
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-bold text-gray-800">{selectedProfile.name}'s Profile</h2>
-                    <button 
-                      onClick={() => setSelectedProfile(null)} 
+                    <button
+                      onClick={() => setSelectedProfile(null)}
                       className="text-gray-500 hover:text-gray-700"
                     >
                       <X size={20} />
@@ -1046,558 +1046,557 @@ export default function Verification() {
 
                   <div className="flex flex-col md:flex-row gap-6">
                     <div className="md:w-1/3">
-                     <div className="sticky top-4 space-y-4">
-                      <div 
-                        className="relative rounded-xl overflow-hidden bg-gray-100 aspect-square cursor-pointer"
-                        onClick={() => setShowFullImage(true)}
-                      >
-                        <img
-                          src={selectedProfile.profilePhoto }
-                          alt={selectedProfile.name}
-                          className="w-full h-full object-cover"
-                         
-                        />
-                      </div>
+                      <div className="sticky top-4 space-y-4">
+                        <div
+                          className="relative rounded-xl overflow-hidden bg-gray-100 aspect-square cursor-pointer"
+                          onClick={() => setShowFullImage(true)}
+                        >
+                          <img
+                            src={selectedProfile.profilePhoto}
+                            alt={selectedProfile.name}
+                            className="w-full h-full object-cover"
 
-                      <div className="mt-4 space-y-3">
-                        <div className="flex justify-between items-center">
-                          <h3 className="font-medium text-gray-700">Verification Status</h3>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            selectedProfile.isVerified 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-amber-100 text-amber-800'
-                          }`}>
-                            {selectedProfile.isVerified ? 'Verified' : 'Pending'}
-                          </span>
-                        </div>
-
-                        <div className="flex justify-between items-center">
-                          <h3 className="font-medium text-gray-700">Profile Completion</h3>
-                          <span className="text-sm font-bold text-rose-600">
-                            {selectedProfile.profileCompletion}%
-                          </span>
-                        </div>
-
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="h-2 rounded-full bg-gradient-to-r from-rose-400 to-indigo-500" 
-                            style={{ width: `${selectedProfile.profileCompletion}%` }}
                           />
                         </div>
-                      </div>
 
-                    <div className="mt-6 space-y-4">
-  {activeTab === 'pending' ? (
-    <div className="grid grid-cols-2 gap-3">
-      <button
-        onClick={() => handleVerification(selectedProfile._id, 'REJECT')}
-        className="px-4 py-2 text-sm font-medium text-rose-700 bg-rose-100 rounded-md hover:bg-rose-200 flex items-center justify-center gap-2"
-      >
-        <XCircle size={16} /> Reject
-      </button>
-      <button
-        onClick={() => handleVerification(selectedProfile._id, 'APPROVE')}
-        className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 flex items-center justify-center gap-2"
-      >
-        <CheckCircle size={16} /> Approve
-      </button>
-    </div>
-  ) : (
-    <div className="grid grid-cols-2 gap-3">
-      <button
-        onClick={() => setEditingProfile(selectedProfile)}
-        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 flex items-center justify-center gap-2"
-      >
-        <Edit size={16} /> Edit Profile
-      </button>
-      <button
-        onClick={() => handleVerification(selectedProfile._id, 'COMPLETE_SETUP')}
-        className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 flex items-center justify-center gap-2"
-      >
-        <Save size={16} /> Complete 
-      </button>
-    </div>
-  )}
-</div>
-</div>
-</div>
+                        <div className="mt-4 space-y-3">
+                          <div className="flex justify-between items-center">
+                            <h3 className="font-medium text-gray-700">Verification Status</h3>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${selectedProfile.isVerified
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-amber-100 text-amber-800'
+                              }`}>
+                              {selectedProfile.isVerified ? 'Verified' : 'Pending'}
+                            </span>
+                          </div>
+
+                          <div className="flex justify-between items-center">
+                            <h3 className="font-medium text-gray-700">Profile Completion</h3>
+                            <span className="text-sm font-bold text-rose-600">
+                              {selectedProfile.profileCompletion}%
+                            </span>
+                          </div>
+
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className="h-2 rounded-full bg-gradient-to-r from-rose-400 to-indigo-500"
+                              style={{ width: `${selectedProfile.profileCompletion}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="mt-6 space-y-4">
+                          {activeTab === 'pending' ? (
+                            <div className="grid grid-cols-2 gap-3">
+                              <button
+                                onClick={() => handleVerification(selectedProfile._id, 'REJECT')}
+                                className="px-4 py-2 text-sm font-medium text-rose-700 bg-rose-100 rounded-md hover:bg-rose-200 flex items-center justify-center gap-2"
+                              >
+                                <XCircle size={16} /> Reject
+                              </button>
+                              <button
+                                onClick={() => handleVerification(selectedProfile._id, 'APPROVE')}
+                                className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 flex items-center justify-center gap-2"
+                              >
+                                <CheckCircle size={16} /> Approve
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="grid grid-cols-2 gap-3">
+                              <button
+                                onClick={() => setEditingProfile(selectedProfile)}
+                                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 flex items-center justify-center gap-2"
+                              >
+                                <Edit size={16} /> Edit Profile
+                              </button>
+                              <button
+                                onClick={() => handleVerification(selectedProfile._id, 'COMPLETE_SETUP')}
+                                className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 flex items-center justify-center gap-2"
+                              >
+                                <Save size={16} /> Complete
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                     <div className="md:w-2/3 space-y-6 overflow-y-auto max-h-[calc(100vh-200px)]">
                       {/* Basic Information Section */}
                       <div className="space-y-4">
-                        <div 
+                        <div
                           className="flex justify-between items-center cursor-pointer"
                           onClick={() => toggleSection('basic')}
                         >
                           <h3 className="font-medium text-gray-700">Basic Information</h3>
                           {expandedSections.basic ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                         </div>
-                        
-                      <AnimatePresence>
-                  {expandedSections.basic && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                    >
-                      <DetailItem 
-                        label="Name" 
-                        value={selectedProfile.name} 
-                        field="name"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                     <DetailItem 
-  label="Date of Birth" 
-  value={new Date(selectedProfile.dob).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  })} // outputs: 29 Feb 2004
-  field="dob"
-  profile={selectedProfile}
-  onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-/>
 
-                      <DetailItem 
-                        label="Age" 
-                        value={selectedProfile.age} 
-                        field="age"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Height" 
-                        value={selectedProfile.height} 
-                        field="height"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
+                        <AnimatePresence>
+                          {expandedSections.basic && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                            >
+                              <DetailItem
+                                label="Name"
+                                value={selectedProfile.name}
+                                field="name"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Date of Birth"
+                                value={new Date(selectedProfile.dob).toLocaleDateString('en-GB', {
+                                  day: '2-digit',
+                                  month: 'short',
+                                  year: 'numeric',
+                                })} // outputs: 29 Feb 2004
+                                field="dob"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
 
-                      <DetailItem 
-                        label="Gender" 
-                        value={selectedProfile.gender} 
-                        field="gender"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Marital Status" 
-                        value={selectedProfile.maritalStatus} 
-                        field="maritalStatus"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Mother Tongue" 
-                        value={selectedProfile.motherTongue} 
-                        field="motherTongue"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Current City" 
-                        value={selectedProfile.currentCity} 
-                        field="currentCity"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Permanent Address" 
-                        value={selectedProfile.permanentAddress} 
-                        field="permanentAddress"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Wears Lens" 
-                        value={selectedProfile.wearsLens} 
-                        field="wearsLens"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Blood Group" 
-                        value={selectedProfile.bloodGroup} 
-                        field="bloodGroup"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Diet" 
-                        value={selectedProfile.diet} 
-                        field="diet"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
+                              <DetailItem
+                                label="Age"
+                                value={selectedProfile.age}
+                                field="age"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Height"
+                                value={selectedProfile.height}
+                                field="height"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
 
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+                              <DetailItem
+                                label="Gender"
+                                value={selectedProfile.gender}
+                                field="gender"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Marital Status"
+                                value={selectedProfile.maritalStatus}
+                                field="maritalStatus"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Mother Tongue"
+                                value={selectedProfile.motherTongue}
+                                field="motherTongue"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Current Location"
+                                value={selectedProfile.currentCity}
+                                field="currentCity"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Permanent Address"
+                                value={selectedProfile.permanentAddress}
+                                field="permanentAddress"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Wears Lens"
+                                value={selectedProfile.wearsLens}
+                                field="wearsLens"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Blood Group"
+                                value={selectedProfile.bloodGroup}
+                                field="bloodGroup"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Diet"
+                                value={selectedProfile.diet}
+                                field="diet"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
 
-              {/* Religious Information Section - Updated */}
-              <div className="space-y-4">
-                <div 
-                  className="flex justify-between items-center cursor-pointer"
-                  onClick={() => toggleSection('religious')}
-                >
-                  <h3 className="font-medium text-gray-700">Religious & Community</h3>
-                  {expandedSections.religious ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+
+                      {/* Religious Information Section - Updated */}
+                      <div className="space-y-4">
+                        <div
+                          className="flex justify-between items-center cursor-pointer"
+                          onClick={() => toggleSection('religious')}
+                        >
+                          <h3 className="font-medium text-gray-700">Religious & Community</h3>
+                          {expandedSections.religious ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                        </div>
+
+                        <AnimatePresence>
+                          {expandedSections.religious && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                            >
+                              <DetailItem
+                                label="Religion"
+                                value={selectedProfile.religion}
+                                field="religion"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Caste"
+                                value={selectedProfile.caste}
+                                field="caste"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Sub Caste"
+                                value={selectedProfile.subCaste}
+                                field="subCaste"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Gothra"
+                                value={selectedProfile.gothra}
+                                field="gothra"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+
+                      {/* Professional Information Section - Updated */}
+                      <div className="space-y-4">
+                        <div
+                          className="flex justify-between items-center cursor-pointer"
+                          onClick={() => toggleSection('professional')}
+                        >
+                          <h3 className="font-medium text-gray-700">Education & Profession</h3>
+                          {expandedSections.professional ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                        </div>
+
+                        <AnimatePresence>
+                          {expandedSections.professional && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                            >
+                              <DetailItem
+                                label="Education"
+                                value={selectedProfile.education}
+                                field="education"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Field of Study"
+                                value={selectedProfile.fieldOfStudy}
+                                field="fieldOfStudy"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="College/University"
+                                value={selectedProfile.college}
+                                field="college"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Occupation"
+                                value={selectedProfile.occupation}
+                                field="occupation"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Work Sector"
+                                value={selectedProfile.workSector}
+                                field="workSector"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Income"
+                                value={selectedProfile.income}
+                                field="income"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+
+                      {/* Family Information Section - Updated */}
+                      <div className="space-y-4">
+                        <div
+                          className="flex justify-between items-center cursor-pointer"
+                          onClick={() => toggleSection('family')}
+                        >
+                          <h3 className="font-medium text-gray-700">Family Information</h3>
+                          {expandedSections.family ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                        </div>
+
+                        <AnimatePresence>
+                          {expandedSections.family && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                            >
+                              <DetailItem
+                                label="Father's Name"
+                                value={selectedProfile.fatherName}
+                                field="fatherName"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Mother's Name"
+                                value={selectedProfile.mother}
+                                field="mother"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Brothers"
+                                value={selectedProfile.brothers}
+                                field="brothers"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Married Brothers"
+                                value={selectedProfile.marriedBrothers}
+                                field="marriedBrothers"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Sisters"
+                                value={selectedProfile.sisters}
+                                field="sisters"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Married Sisters"
+                                value={selectedProfile.marriedSisters}
+                                field="marriedSisters"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Parent Residence City"
+                                value={selectedProfile.parentResidenceCity}
+                                field="parentResidenceCity"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Native District"
+                                value={selectedProfile.nativeDistrict}
+                                field="nativeDistrict"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Native City"
+                                value={selectedProfile.nativeCity}
+                                field="nativeCity"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+
+                              <DetailItem
+                                label="Parent Occupation"
+                                value={selectedProfile.parentOccupation}
+                                field="parentOccupation"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Mamekul (mama's surname)"
+                                value={selectedProfile.mamaSurname}
+                                field="mamaSurname"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              {selectedProfile.relativeSurname?.map((surname, index) => (
+                                <DetailItem
+                                  key={index}
+                                  label={`Relative Surname ${index + 1}`}
+                                  value={surname}
+                                  field={`relativeSurname[${index}]`}
+                                  profile={selectedProfile}
+                                  onEdit={(field, value) => {
+                                    const newSurnames = [...selectedProfile.relativeSurname];
+                                    newSurnames[index] = value;
+                                    handleEditProfile({ ...selectedProfile, relativeSurname: newSurnames });
+                                  }}
+                                />
+                              ))}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+
+                      {/* New Horoscope Information Section */}
+                      <div className="space-y-4">
+                        <div
+                          className="flex justify-between items-center cursor-pointer"
+                          onClick={() => toggleSection('horoscope')}
+                        >
+                          <h3 className="font-medium text-gray-700">Horoscope Information</h3>
+                          {expandedSections.horoscope ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                        </div>
+
+                        <AnimatePresence>
+                          {expandedSections.horoscope && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                            >
+                              <DetailItem
+                                label="Rashi"
+                                value={selectedProfile.rashi}
+                                field="rashi"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+
+                              <DetailItem
+                                label="Mangal"
+                                value={selectedProfile.mangal}
+                                field="mangal"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Birth Place"
+                                value={selectedProfile.birthPlace}
+                                field="birthPlace"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Birth Time"
+                                value={selectedProfile.birthTime}
+                                field="birthTime"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+
+                      {/* New Partner Expectations Section */}
+                      <div className="space-y-4">
+                        <div
+                          className="flex justify-between items-center cursor-pointer"
+                          onClick={() => toggleSection('expectations')}
+                        >
+                          <h3 className="font-medium text-gray-700">Partner Expectations</h3>
+                          {expandedSections.expectations ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                        </div>
+
+                        <AnimatePresence>
+                          {expandedSections.expectations && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                            >
+                              <DetailItem
+                                label="Expected Caste"
+                                value={selectedProfile.expectedCaste}
+                                field="expectedCaste"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Preferred City"
+                                value={selectedProfile.preferredCity}
+                                field="preferredCity"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Expected Age Difference"
+                                value={selectedProfile.expectedAgeDifference}
+                                field="expectedAgeDifference"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Expected Education"
+                                value={selectedProfile.expectedEducation}
+                                field="expectedEducation"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Accept Divorcee"
+                                value={selectedProfile.divorcee}
+                                field="divorcee"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Expected Height"
+                                value={selectedProfile.expectedHeight}
+                                field="expectedHeight"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                              <DetailItem
+                                label="Expected Income"
+                                value={selectedProfile.expectedIncome}
+                                field="expectedIncome"
+                                profile={selectedProfile}
+                                onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
+                              />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                
-                <AnimatePresence>
-                  {expandedSections.religious && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                    >
-                      <DetailItem 
-                        label="Religion" 
-                        value={selectedProfile.religion} 
-                        field="religion"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Caste" 
-                        value={selectedProfile.caste} 
-                        field="caste"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Sub Caste" 
-                        value={selectedProfile.subCaste} 
-                        field="subCaste"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Gothra" 
-                        value={selectedProfile.gothra} 
-                        field="gothra"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Professional Information Section - Updated */}
-              <div className="space-y-4">
-                <div 
-                  className="flex justify-between items-center cursor-pointer"
-                  onClick={() => toggleSection('professional')}
-                >
-                  <h3 className="font-medium text-gray-700">Education & Profession</h3>
-                  {expandedSections.professional ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                </div>
-                
-                <AnimatePresence>
-                  {expandedSections.professional && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                    >
-                      <DetailItem 
-                        label="Education" 
-                        value={selectedProfile.education} 
-                        field="education"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Field of Study" 
-                        value={selectedProfile.fieldOfStudy} 
-                        field="fieldOfStudy"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="College/University" 
-                        value={selectedProfile.college} 
-                        field="college"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Occupation" 
-                        value={selectedProfile.occupation} 
-                        field="occupation"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Work Sector" 
-                        value={selectedProfile.workSector} 
-                        field="workSector"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Income" 
-                        value={selectedProfile.income} 
-                        field="income"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Family Information Section - Updated */}
-              <div className="space-y-4">
-                <div 
-                  className="flex justify-between items-center cursor-pointer"
-                  onClick={() => toggleSection('family')}
-                >
-                  <h3 className="font-medium text-gray-700">Family Information</h3>
-                  {expandedSections.family ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                </div>
-                
-                <AnimatePresence>
-                  {expandedSections.family && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                    >
-                      <DetailItem 
-                        label="Father's Name" 
-                        value={selectedProfile.fatherName} 
-                        field="fatherName"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Mother's Name" 
-                        value={selectedProfile.mother} 
-                        field="mother"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Brothers" 
-                        value={selectedProfile.brothers} 
-                        field="brothers"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Married Brothers" 
-                        value={selectedProfile.marriedBrothers} 
-                        field="marriedBrothers"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Sisters" 
-                        value={selectedProfile.sisters} 
-                        field="sisters"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Married Sisters" 
-                        value={selectedProfile.marriedSisters} 
-                        field="marriedSisters"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Parent Residence City" 
-                        value={selectedProfile.parentResidenceCity} 
-                        field="parentResidenceCity"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Native District" 
-                        value={selectedProfile.nativeDistrict} 
-                        field="nativeDistrict"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Native City" 
-                        value={selectedProfile.nativeCity} 
-                        field="nativeCity"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-
-                      <DetailItem 
-                        label="Parent Occupation" 
-                        value={selectedProfile.parentOccupation} 
-                        field="parentOccupation"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Mamekul (mama's surname)" 
-                        value={selectedProfile.mamaSurname} 
-                        field="mamaSurname"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      {selectedProfile.relativeSurname?.map((surname, index) => (
-                        <DetailItem 
-                          key={index}
-                          label={`Relative Surname ${index + 1}`} 
-                          value={surname} 
-                          field={`relativeSurname[${index}]`}
-                          profile={selectedProfile}
-                          onEdit={(field, value) => {
-                            const newSurnames = [...selectedProfile.relativeSurname];
-                            newSurnames[index] = value;
-                            handleEditProfile({ ...selectedProfile, relativeSurname: newSurnames });
-                          }}
-                        />
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* New Horoscope Information Section */}
-              <div className="space-y-4">
-                <div 
-                  className="flex justify-between items-center cursor-pointer"
-                  onClick={() => toggleSection('horoscope')}
-                >
-                  <h3 className="font-medium text-gray-700">Horoscope Information</h3>
-                  {expandedSections.horoscope ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                </div>
-                
-                <AnimatePresence>
-                  {expandedSections.horoscope && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                    >
-                      <DetailItem 
-                        label="Rashi" 
-                        value={selectedProfile.rashi} 
-                        field="rashi"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-
-                      <DetailItem 
-                        label="Mangal" 
-                        value={selectedProfile.mangal} 
-                        field="mangal"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Birth Place" 
-                        value={selectedProfile.birthPlace} 
-                        field="birthPlace"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Birth Time" 
-                        value={selectedProfile.birthTime} 
-                        field="birthTime"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* New Partner Expectations Section */}
-              <div className="space-y-4">
-                <div 
-                  className="flex justify-between items-center cursor-pointer"
-                  onClick={() => toggleSection('expectations')}
-                >
-                  <h3 className="font-medium text-gray-700">Partner Expectations</h3>
-                  {expandedSections.expectations ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                </div>
-                
-                <AnimatePresence>
-                  {expandedSections.expectations && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                    >
-                      <DetailItem 
-                        label="Expected Caste" 
-                        value={selectedProfile.expectedCaste} 
-                        field="expectedCaste"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Preferred City" 
-                        value={selectedProfile.preferredCity} 
-                        field="preferredCity"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Expected Age Difference" 
-                        value={selectedProfile.expectedAgeDifference} 
-                        field="expectedAgeDifference"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Expected Education" 
-                        value={selectedProfile.expectedEducation} 
-                        field="expectedEducation"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Accept Divorcee" 
-                        value={selectedProfile.divorcee} 
-                        field="divorcee"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Expected Height" 
-                        value={selectedProfile.expectedHeight} 
-                        field="expectedHeight"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                      <DetailItem 
-                        label="Expected Income" 
-                        value={selectedProfile.expectedIncome} 
-                        field="expectedIncome"
-                        profile={selectedProfile}
-                        onEdit={(field, value) => handleEditProfile({ ...selectedProfile, [field]: value })}
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
-  )}
-</AnimatePresence>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Edit Profile Modal */}
         {editingProfile && (

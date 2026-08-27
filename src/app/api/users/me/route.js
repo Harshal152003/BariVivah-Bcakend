@@ -84,6 +84,7 @@ export async function GET(request) {
       fieldOfStudy: user.fieldOfStudy,
       college: user.college,
       occupation: user.occupation,
+      workSector: user.workSector,
       company: user.company,
       income: user.income,
       profilePhoto: user.profilePhoto,
@@ -95,8 +96,11 @@ export async function GET(request) {
 
       // Relative Info
       fatherName: user.fatherName,
+      fatherOccupation: user.fatherOccupation,
       parentResidenceCity: user.parentResidenceCity,
       mother: user.mother,
+      motherName: user.mother || user.motherName,
+      motherOccupation: user.motherOccupation,
       brothers: user.brothers,
       marriedBrothers: user.marriedBrothers,
       sisters: user.sisters,
