@@ -3,6 +3,14 @@ import mongoose from "mongoose";
 const UserSchema = new mongoose.Schema({
 
   name: String,
+  profileId: {
+    type: String,
+    unique: true,
+    sparse: true,
+    uppercase: true,
+    index: true,
+    trim: true,
+  },
   phone: {
     type: String,
     unique: true,
@@ -240,7 +248,16 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
+// Auto-generate standardized profileId (BV-XXXXXX) if not explicitly set
+UserSchema.pre('save', function (next) {
+  if (!this.profileId && this._id) {
+    this.profileId = `BV-${this._id.toString().slice(-6).toUpperCase()}`;
+  }
+  next();
+});
+
 // --- HIGH PERFORMANCE DATABASE INDEXES (Scale to 10,000+ Users) ---
+UserSchema.index({ profileId: 1 });
 UserSchema.index({ gender: 1, isVerified: 1, createdAt: -1 });
 UserSchema.index({ caste: 1, currentCity: 1, isVerified: 1 });
 UserSchema.index({ 'location.latitude': 1, 'location.longitude': 1 });

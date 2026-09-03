@@ -65,6 +65,7 @@ export async function GET(request) {
             const regex = new RegExp(q, 'i'); // case-insensitive
             const searchConditions = [
                 { name: regex },
+                { profileId: regex },
                 { currentCity: regex },
                 { caste: regex },
                 { subCaste: regex }, // Added subCaste search
@@ -165,10 +166,10 @@ export async function GET(request) {
 
         const [users, total] = await Promise.all([
             User.find(query)
-                .select('name dob profilePhoto currentCity profession religion caste subCaste gender') // Select only needed fields including subCaste
+                .select('-password -__v -verificationSelfieUrl -verificationDocUrl')
                 .skip(skip)
                 .limit(limit)
-                .lean(), // faster
+                .lean(),
             User.countDocuments(query)
         ]);
 
@@ -184,17 +185,12 @@ export async function GET(request) {
             }
 
             return {
-                _id: user._id,
-                name: user.name,
-                dob: user.dob,
-                age: age,
-                profilePhoto: user.profilePhoto,
-                currentCity: user.currentCity,
-                profession: user.occupation, // Mapping 'occupation' to 'profession' as per request key
-                religion: user.religion,
-                caste: user.caste,
-                subCaste: user.subCaste,
-                gender: user.gender
+                ...user,
+                age: age || user.age || 26,
+                profession: user.occupation || user.profession,
+                about: user.about || user.bio || user.description || '',
+                bio: user.bio || user.about || user.description || '',
+                description: user.description || user.about || user.bio || '',
             };
         });
 

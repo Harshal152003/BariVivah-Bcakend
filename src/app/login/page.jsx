@@ -858,7 +858,11 @@ export default function MatrimonialLogin() {
                             <button
                               key={rel.val}
                               type="button"
-                              onClick={() => setCreatedFor(rel.val)}
+                              onClick={() => {
+                                setCreatedFor(rel.val);
+                                if (rel.val === 'Son' || rel.val === 'Brother') setGender('Male');
+                                else if (rel.val === 'Daughter' || rel.val === 'Sister') setGender('Female');
+                              }}
                               className={`py-3 px-4 text-xs font-semibold rounded-xl border transition-all flex items-center space-x-2 ${isActive
                                 ? 'border-[#FB2467] bg-[#FB2467]/5 text-[#FB2467] shadow-sm'
                                 : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'

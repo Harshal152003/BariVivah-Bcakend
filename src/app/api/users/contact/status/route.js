@@ -41,6 +41,11 @@ export async function GET(request) {
 
   try {
     await connectDB();
+
+    if (!targetUserId || targetUserId.startsWith('disc_') || targetUserId.startsWith('mock_')) {
+      return NextResponse.json({ unlocked: false }, { status: 200, headers: corsHeaders });
+    }
+
     // Check if there is an existing unlock record
     const unlockRecord = await ContactUnlock.findOne({ userId, unlockedUserId: targetUserId });
     

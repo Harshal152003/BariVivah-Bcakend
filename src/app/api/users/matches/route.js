@@ -404,6 +404,20 @@ export async function GET(request) {
       query.caste = new RegExp(searchParams.get('caste'), 'i');
     }
 
+    // Filter by Verified Badged status
+    if (searchParams.get('isVerified') === 'true' || searchParams.get('verified') === 'true') {
+      query.$or = [
+        { isVerified: true },
+        { verificationStatus: 'Verified' },
+        { verified: true }
+      ];
+    }
+
+    // Filter by Location if specified
+    if (searchParams.get('location')) {
+      query.currentCity = new RegExp(searchParams.get('location'), 'i');
+    }
+
     // Exclude interacted / blocked candidates if arrays exist on currentUser
     const excludedIds = [];
     if (currentUser?.interestsSent && Array.isArray(currentUser.interestsSent)) {
@@ -420,8 +434,11 @@ export async function GET(request) {
       query._id = { $ne: currentUserId, $nin: excludedIds };
     }
 
+    const sortOption = searchParams.get('sort') === 'newest' ? { createdAt: -1 } : {};
+
     // 3. Fetch Candidate Pool
     const candidatePool = await User.find(query)
+      .sort(sortOption)
       .select('-password -email -__v -verificationSelfieUrl -verificationDocUrl')
       .lean();
 
