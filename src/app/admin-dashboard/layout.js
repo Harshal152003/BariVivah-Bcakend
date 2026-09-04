@@ -10,7 +10,8 @@ import {
   Flag,
   Bell,
   Menu,
-  X
+  X,
+  Megaphone
 } from 'lucide-react';
 import { FaRupeeSign } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
@@ -28,6 +29,7 @@ export default function AdminLayout({ children }) {
     { id: 'user-management', label: 'User Management', icon: Users, route: "/admin-dashboard/user-management", permissionKey: "userManagement" },
     { id: 'emp-management', label: 'Emp Management', icon: Users, route: "/admin-dashboard/emp-management", permissionKey: "empManagement" },
     // { id: 'form-management', label: 'Form Management', icon: Users, route: "/admin-dashboard/form-builder", permissionKey: "formManagement" },
+    { id: 'banners', label: 'Ad Banners', icon: Megaphone, route: "/admin-dashboard/banners", permissionKey: "banners" },
     { id: 'Verification', label: 'Profile Verification', icon: CheckCircle, route: "/admin-dashboard/verifications", permissionKey: "verification" },
     { id: 'Payment', label: 'Payments & Plans', icon: FaRupeeSign, route: "/admin-dashboard/payment", permissionKey: "payment" },
     { id: 'Report', label: 'Reports & Complaints', icon: Flag, route: "/admin-dashboard/report", permissionKey: "report" },
