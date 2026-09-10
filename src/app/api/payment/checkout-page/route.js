@@ -47,111 +47,238 @@ export async function GET(request) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>BariVivah - Secure Razorpay Checkout</title>
+  <title>BariVivah - Secure Checkout</title>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background-color: #FFFFFF;
+      background: #F8FAFC;
       color: #0F172A;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      margin: 0;
-      padding: 0;
+      padding: 20px 16px;
+      -webkit-font-smoothing: antialiased;
     }
     .card {
-      background: #1E293B;
-      border: 1px solid #334155;
-      border-radius: 20px;
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 24px;
       padding: 28px 24px;
-      max-width: 400px;
+      max-width: 380px;
       width: 100%;
       text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.06), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
     }
-    .logo {
-      font-size: 26px;
-      font-weight: 800;
+    .logo-container {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+    .brand-logo {
+      height: 40px;
+      width: auto;
+      max-width: 180px;
+      object-fit: contain;
+    }
+    .tm-badge {
+      position: absolute;
+      top: 0px;
+      right: -8px;
+      font-size: 8px;
+      font-weight: 700;
+      color: #475569;
+      letter-spacing: 0.5px;
+      font-family: sans-serif;
+    }
+    .plan-badge {
+      display: inline-block;
+      background: #FFF1F2;
       color: #E11D48;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 12px;
       margin-bottom: 6px;
-      letter-spacing: -0.5px;
+      border: 1px solid #FFE4E6;
     }
     .plan {
-      font-size: 18px;
-      font-weight: 600;
-      color: #F8FAFC;
-      margin-bottom: 4px;
+      font-size: 17px;
+      font-weight: 700;
+      color: #0F172A;
+      margin-bottom: 2px;
+    }
+    .price-wrap {
+      margin: 8px 0 16px;
     }
     .price {
       font-size: 32px;
       font-weight: 800;
-      color: #F59E0B;
-      margin-bottom: 16px;
+      color: #0F172A;
+      letter-spacing: -0.5px;
+    }
+    .breakdown-box {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin: 0 0 14px;
+      text-align: left;
+      font-size: 12.5px;
+      color: #64748B;
+    }
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .breakdown-row:last-child {
+      margin-bottom: 0;
+    }
+    .breakdown-val {
+      color: #0F172A;
+      font-weight: 600;
+    }
+    .breakdown-divider {
+      height: 1px;
+      background-color: #E2E8F0;
+      margin: 7px 0;
+    }
+    .breakdown-total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #0F172A;
+      font-weight: 700;
+    }
+    .breakdown-total-val {
+      color: #E11D48;
+      font-weight: 800;
+      font-size: 14.5px;
+    }
+    .security-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #ECFDF5;
+      border: 1px solid #A7F3D0;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #059669;
+      margin-bottom: 12px;
     }
     .spinner {
-      border: 3px solid rgba(255,255,255,0.1);
-      border-left-color: #F59E0B;
+      border: 3px solid #F1F5F9;
+      border-top-color: #E11D48;
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 0.9s linear infinite;
-      margin: 20px auto;
+      width: 32px;
+      height: 32px;
+      animation: spin 0.85s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      margin: 14px auto 10px;
     }
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
     .status {
-      font-size: 14px;
-      color: #94A3B8;
-      margin-top: 12px;
-      line-height: 1.5;
+      font-size: 13px;
+      color: #64748B;
+      font-weight: 500;
+      line-height: 1.4;
     }
     .success-badge {
-      font-size: 48px;
-      margin-bottom: 12px;
+      margin: 10px auto;
       display: none;
     }
     .btn-action {
-      background: linear-gradient(135deg, #10B981, #059669);
+      background: #0F172A;
       color: white;
       border: none;
-      padding: 14px 28px;
+      padding: 12px 20px;
       border-radius: 12px;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       cursor: pointer;
-      margin-top: 20px;
+      margin-top: 16px;
       display: none;
       width: 100%;
       text-decoration: none;
     }
     .btn-retry {
-      background: #E11D48;
-      color: white;
-      border: none;
-      padding: 12px 24px;
+      background: #F1F5F9;
+      color: #0F172A;
+      border: 1px solid #CBD5E1;
+      padding: 10px 20px;
       border-radius: 10px;
       font-weight: 600;
+      font-size: 13px;
       cursor: pointer;
-      margin-top: 16px;
+      margin-top: 12px;
       display: none;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="logo">BariVivah</div>
+    <div class="logo-container">
+      <img src="/logo_header2.png" alt="BariVivah" class="brand-logo" onerror="this.style.display='none'; document.getElementById('textLogo').style.display='inline-block';" />
+      <span id="textLogo" style="display:none; font-size:22px; font-weight:800; color:#E11D48;">BariVivah</span>
+      <span class="tm-badge">TM</span>
+    </div>
+
+    <div class="plan-badge">Subscription</div>
     <div class="plan">${planName}</div>
-    <div class="price">₹${transaction.amount}</div>
     
-    <div class="success-badge" id="successBadge">🎉</div>
+    <div class="price-wrap">
+      <span class="price">₹${transaction.amount}</span>
+    </div>
+    
+    <div class="breakdown-box">
+      <div class="breakdown-row">
+        <span>Plan Base Price:</span>
+        <span class="breakdown-val">₹${transaction.gstBreakdown?.baseAmount || transaction.amount}</span>
+      </div>
+      <div class="breakdown-row">
+        <span>GST (18% SAC 998599):</span>
+        <span class="breakdown-val">₹${transaction.gstBreakdown?.totalTax || 0}</span>
+      </div>
+      <div class="breakdown-divider"></div>
+      <div class="breakdown-total-row">
+        <span>Total Payable:</span>
+        <span class="breakdown-total-val">₹${transaction.amount}</span>
+      </div>
+    </div>
+
+    <div class="security-badge">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+      </svg>
+      <span>256-Bit SSL Encrypted</span>
+    </div>
+    
+    <div class="success-badge" id="successBadge">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+    </div>
+
     <div class="spinner" id="spinner"></div>
-    <div class="status" id="statusText">Opening Secure Payment Gateway...</div>
+    <div class="status" id="statusText">Processing Payment...</div>
 
     <button class="btn-action" id="returnBtn" onclick="returnToApp()">Return to BariVivah App</button>
     <button class="btn-retry" id="retryBtn" onclick="openCheckout()">Retry Payment</button>
@@ -160,11 +287,12 @@ export async function GET(request) {
   <script>
     let finalRedirectUrl = "${redirectUrl}";
 
-    function returnToApp() {
+    function returnToApp(payload) {
       if (window.ReactNativeWebView) {
-        window.ReactNativeWebView.postMessage(JSON.stringify({ status: 'SUCCESS' }));
+        window.ReactNativeWebView.postMessage(JSON.stringify(payload || { status: 'SUCCESS' }));
+      } else {
+        window.location.href = finalRedirectUrl;
       }
-      window.location.href = finalRedirectUrl;
     }
 
     const options = {
@@ -214,16 +342,18 @@ export async function GET(request) {
             document.getElementById('statusText').innerHTML = "<strong style='color:#10B981;'>Payment Verified & Subscription Activated!</strong><br>Your account has been upgraded.";
             document.getElementById('returnBtn').style.display = 'block';
 
-            // Auto redirect after 1.5 seconds
-            setTimeout(returnToApp, 1500);
+            // Auto redirect / postMessage after 1.2 seconds
+            setTimeout(function() {
+              returnToApp(returnPayload);
+            }, 1200);
             return;
           }
         } catch (e) {
           console.warn('Direct verify fetch failed, attempting redirect:', e);
         }
 
-        // Fallback to app deep link redirect
-        returnToApp();
+        // Fallback to app postMessage / redirect
+        returnToApp(returnPayload);
       },
       modal: {
         ondismiss: function() {
@@ -231,11 +361,12 @@ export async function GET(request) {
           document.getElementById('spinner').style.display = 'none';
           document.getElementById('retryBtn').style.display = 'inline-block';
 
-          finalRedirectUrl = "${redirectUrl}?status=CANCELLED";
           if (window.ReactNativeWebView) {
             window.ReactNativeWebView.postMessage(JSON.stringify({ status: 'CANCELLED' }));
+          } else {
+            finalRedirectUrl = "${redirectUrl}?status=CANCELLED";
+            window.location.href = finalRedirectUrl;
           }
-          window.location.href = finalRedirectUrl;
         }
       }
     };
@@ -247,11 +378,15 @@ export async function GET(request) {
       document.getElementById('spinner').style.display = 'none';
       document.getElementById('retryBtn').style.display = 'inline-block';
 
-      finalRedirectUrl = "${redirectUrl}?status=FAILED&error=" + encodeURIComponent(response.error.description || 'Payment Failed');
       if (window.ReactNativeWebView) {
-        window.ReactNativeWebView.postMessage(JSON.stringify({ status: 'FAILED' }));
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          status: 'FAILED',
+          error: response.error?.description || 'Payment Failed'
+        }));
+      } else {
+        finalRedirectUrl = "${redirectUrl}?status=FAILED&error=" + encodeURIComponent(response.error?.description || 'Payment Failed');
+        window.location.href = finalRedirectUrl;
       }
-      window.location.href = finalRedirectUrl;
     });
 
     function openCheckout() {

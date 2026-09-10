@@ -2,6 +2,7 @@
 import React from 'react';
 import { Phone, Mail, Share2 } from 'lucide-react';
 import Image from 'next/image';
+import TrademarkLogo from './TrademarkLogo';
 
 const Footer = () => {
   return (
@@ -11,14 +12,8 @@ const Footer = () => {
           
           {/* Brand Column */}
           <div className="lg:col-span-4 lg:pr-8 flex flex-col space-y-3">
-            <div className="-mb-10 -ml-2">
-              <Image 
-                src={"/images/new-logo.png"} 
-                width={300} 
-                height={100} 
-                className="h-24 lg:h-40 w-auto object-contain" 
-                alt="BariVivah Logo" 
-              />
+            <div className="mb-2">
+              <TrademarkLogo width={210} href="/" />
             </div>
             <p className="text-[#5C3F43] text-[15px] leading-relaxed">
               India's premier matrimony platform dedicated to helping you find your perfect life partner through verified, trusted connections.

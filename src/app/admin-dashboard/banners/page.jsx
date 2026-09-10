@@ -20,6 +20,11 @@ import {
   Sparkles,
   Check,
   X,
+  Globe,
+  Smartphone as AppIcon,
+  MessageCircle,
+  Ban,
+  Link as LinkIcon,
 } from "lucide-react";
 
 export default function AdBannersPage() {
@@ -31,7 +36,14 @@ export default function AdBannersPage() {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [alert, setAlert] = useState(null);
 
-  // Form State
+  // Redirection link builder helper state
+  const [targetMode, setTargetMode] = useState("in_app"); // "in_app" | "external" | "whatsapp" | "none"
+  const [externalUrl, setExternalUrl] = useState("");
+  const [inAppRoute, setInAppRoute] = useState("/(dashboard)/subscription");
+  const [whatsappPhone, setWhatsappPhone] = useState("");
+  const [whatsappText, setWhatsappText] = useState("");
+
+  // Main Form State
   const [formData, setFormData] = useState({
     title: "",
     imageUrl: "",
@@ -73,6 +85,12 @@ export default function AdBannersPage() {
 
   const handleOpenAdd = () => {
     setEditingBanner(null);
+    setTargetMode("in_app");
+    setExternalUrl("");
+    setInAppRoute("/(dashboard)/subscription");
+    setWhatsappPhone("");
+    setWhatsappText("");
+
     setFormData({
       title: "",
       imageUrl: "",
@@ -86,22 +104,67 @@ export default function AdBannersPage() {
 
   const handleOpenEdit = (banner) => {
     setEditingBanner(banner);
+    const type = banner.targetType || "in_app";
+    setTargetMode(type);
+
+    if (type === "external") {
+      setExternalUrl(banner.targetUrl || "");
+      setInAppRoute("/(dashboard)/subscription");
+    } else if (type === "whatsapp") {
+      setInAppRoute("/(dashboard)/subscription");
+      try {
+        if (banner.targetUrl && banner.targetUrl.includes("wa.me/")) {
+          const parts = banner.targetUrl.split("wa.me/")[1]?.split("?text=");
+          setWhatsappPhone(parts?.[0] || "");
+          setWhatsappText(parts?.[1] ? decodeURIComponent(parts[1]) : "");
+        }
+      } catch (e) {
+        setWhatsappPhone("");
+      }
+    } else if (type === "in_app") {
+      setInAppRoute(banner.targetUrl || "/(dashboard)/subscription");
+      setExternalUrl("");
+    }
+
     setFormData({
       title: banner.title,
       imageUrl: banner.imageUrl,
       targetUrl: banner.targetUrl || "/(dashboard)/subscription",
-      targetType: banner.targetType || "in_app",
+      targetType: type,
       order: banner.order !== undefined ? banner.order : 0,
       isActive: banner.isActive !== undefined ? banner.isActive : true,
     });
     setIsModalOpen(true);
   };
 
+  // Sync computed targetUrl when redirection modes change
+  const computeFinalTargetUrl = (mode) => {
+    if (mode === "none") {
+      return { url: "", type: "none" };
+    }
+    if (mode === "external") {
+      let cleaned = externalUrl.trim();
+      if (cleaned && !cleaned.startsWith("http://") && !cleaned.startsWith("https://")) {
+        cleaned = `https://${cleaned}`;
+      }
+      return { url: cleaned, type: "external" };
+    }
+    if (mode === "whatsapp") {
+      const cleanPhone = whatsappPhone.replace(/[^0-9]/g, "");
+      const encodedMsg = whatsappText.trim() ? `?text=${encodeURIComponent(whatsappText.trim())}` : "";
+      return {
+        url: cleanPhone ? `https://wa.me/${cleanPhone}${encodedMsg}` : "",
+        type: "whatsapp",
+      };
+    }
+    // in_app
+    return { url: inAppRoute, type: "in_app" };
+  };
+
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // File validation
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
       showAlert("error", "Please upload a valid image file (PNG, JPG, or WebP).");
       return;
@@ -154,6 +217,24 @@ export default function AdBannersPage() {
       return;
     }
 
+    const { url: finalUrl, type: finalType } = computeFinalTargetUrl(targetMode);
+
+    if (targetMode === "external" && !finalUrl) {
+      showAlert("error", "Please enter a valid external website link.");
+      return;
+    }
+
+    if (targetMode === "whatsapp" && !whatsappPhone.trim()) {
+      showAlert("error", "Please enter a WhatsApp phone number.");
+      return;
+    }
+
+    const payload = {
+      ...formData,
+      targetUrl: finalUrl,
+      targetType: finalType,
+    };
+
     try {
       setSubmitting(true);
 
@@ -165,7 +246,7 @@ export default function AdBannersPage() {
       const res = await fetch(endpoint, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -232,6 +313,10 @@ export default function AdBannersPage() {
     }
   };
 
+  const getEffectivePreviewUrl = () => {
+    return computeFinalTargetUrl(targetMode).url;
+  };
+
   const activeBannersCount = banners.filter((b) => b.isActive).length;
 
   return (
@@ -263,10 +348,10 @@ export default function AdBannersPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-900">
-                Home Ad Banners
+                Home Ad Banners & Redirection
               </h1>
               <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-                Manage promotional banners & advertisements displayed on the mobile app home screen.
+                Manage promotional banners and configure custom redirection destinations (Website, WhatsApp, or App screens).
               </p>
             </div>
           </div>
@@ -336,7 +421,7 @@ export default function AdBannersPage() {
         </div>
       </div>
 
-      {/* Aspect Ratio & Upload Guidelines Card */}
+      {/* Aspect Ratio & Redirection Guide */}
       <div className="bg-gradient-to-br from-indigo-900 via-slate-900 to-slate-950 text-white rounded-2xl p-6 mb-8 shadow-xl relative overflow-hidden">
         <div className="absolute right-0 top-0 translate-x-12 -translate-y-8 w-64 h-64 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
         
@@ -344,30 +429,39 @@ export default function AdBannersPage() {
           <div className="space-y-2 max-w-2xl">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-semibold text-rose-300 border border-white/10">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Design & Upload Specification</span>
+              <span>Smart Redirection & Banner Standards</span>
             </div>
             <h2 className="text-xl font-bold text-white tracking-tight">
-              Recommended Aspect Ratio: <span className="text-rose-400">2 : 1 (1200 × 600 px)</span>
+              Supported Click Destinations & 2:1 Aspect Ratio
             </h2>
             <p className="text-sm text-slate-300 leading-relaxed">
-              For crisp, undistorted visuals on iOS and Android displays, design your promotional banners with the following standards:
+              When users tap a banner on the app home screen, you can direct them to an <strong>external promotional landing page</strong>, <strong>WhatsApp inquiry</strong>, or an <strong>in-app screen</strong> (Subscription, Discover, Matches).
             </p>
             
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
               <div className="bg-white/5 border border-white/10 rounded-xl p-3">
-                <span className="text-xs text-slate-400 block font-medium">Resolution</span>
-                <span className="text-sm font-bold text-white">1200 × 600 px</span>
-                <span className="text-[11px] text-slate-400 block mt-0.5">(Min: 800×400 px)</span>
+                <span className="text-xs text-rose-300 block font-bold flex items-center gap-1">
+                  <Globe className="w-3.5 h-3.5" /> Web Links
+                </span>
+                <span className="text-xs text-slate-300 block mt-1">
+                  Opens inside seamless In-App Browser
+                </span>
               </div>
               <div className="bg-white/5 border border-white/10 rounded-xl p-3">
-                <span className="text-xs text-slate-400 block font-medium">Safe Margin Zone</span>
-                <span className="text-sm font-bold text-white">40px Inner Padding</span>
-                <span className="text-[11px] text-slate-400 block mt-0.5">Clears rounded corners</span>
+                <span className="text-xs text-emerald-300 block font-bold flex items-center gap-1">
+                  <MessageCircle className="w-3.5 h-3.5" /> WhatsApp
+                </span>
+                <span className="text-xs text-slate-300 block mt-1">
+                  Direct 1-tap chat with pre-filled message
+                </span>
               </div>
               <div className="bg-white/5 border border-white/10 rounded-xl p-3">
-                <span className="text-xs text-slate-400 block font-medium">Formats & Limits</span>
-                <span className="text-sm font-bold text-white">PNG, JPG, WebP</span>
-                <span className="text-[11px] text-slate-400 block mt-0.5">Max size: 5 MB</span>
+                <span className="text-xs text-indigo-300 block font-bold flex items-center gap-1">
+                  <AppIcon className="w-3.5 h-3.5" /> App Screens
+                </span>
+                <span className="text-xs text-slate-300 block mt-1">
+                  Instant native navigation to plans/feed
+                </span>
               </div>
             </div>
           </div>
@@ -375,10 +469,10 @@ export default function AdBannersPage() {
           <div className="bg-white/10 border border-white/20 p-4 rounded-xl backdrop-blur-md text-xs space-y-1.5 w-full lg:w-72">
             <div className="font-semibold text-rose-300 flex items-center gap-1.5">
               <Info className="w-4 h-4" />
-              <span>Pro Tip for Graphic Designers:</span>
+              <span>Recommended Image Format:</span>
             </div>
             <p className="text-slate-300 text-[12px] leading-normal">
-              Keep headlines, offers, and logo branding centered. Avoid placing important contact text along the extreme bottom where navigation dots appear.
+              <strong>1200 × 600 px (2:1 Ratio)</strong> in PNG or JPG. Keep vital titles and branding centered with 40px margin from the edges.
             </p>
           </div>
         </div>
@@ -409,7 +503,7 @@ export default function AdBannersPage() {
               No Advertisement Banners Yet
             </h3>
             <p className="text-sm text-slate-500 mb-6">
-              Upload promotional banners to showcase subscription discounts, matrimony festivals, or announcements.
+              Upload promotional banners to showcase subscription discounts, matrimony festivals, or announcements with custom redirection.
             </p>
             <button
               onClick={handleOpenAdd}
@@ -425,107 +519,154 @@ export default function AdBannersPage() {
               <thead>
                 <tr className="bg-slate-50/75 border-b border-slate-100 text-xs font-semibold text-slate-500 uppercase tracking-wider">
                   <th className="py-3.5 px-4 sm:px-6">Preview (2:1 Ratio)</th>
-                  <th className="py-3.5 px-4 sm:px-6">Title & Destination</th>
-                  <th className="py-3.5 px-4 sm:px-6 text-center">Priority Order</th>
+                  <th className="py-3.5 px-4 sm:px-6">Campaign Title</th>
+                  <th className="py-3.5 px-4 sm:px-6">Redirection Destination</th>
+                  <th className="py-3.5 px-4 sm:px-6 text-center">Priority</th>
                   <th className="py-3.5 px-4 sm:px-6 text-center">Status</th>
                   <th className="py-3.5 px-4 sm:px-6 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-sm">
-                {banners.map((banner) => (
-                  <tr
-                    key={banner._id}
-                    className="hover:bg-slate-50/60 transition-colors group"
-                  >
-                    {/* Banner Image Preview */}
-                    <td className="py-4 px-4 sm:px-6">
-                      <div className="w-36 h-18 sm:w-44 sm:h-22 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 relative shadow-sm group-hover:shadow transition-shadow">
-                        <img
-                          src={banner.imageUrl}
-                          alt={banner.title}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute top-1 right-1 px-1.5 py-0.5 bg-black/60 backdrop-blur-sm rounded text-[10px] font-medium text-white">
-                          2:1
+                {banners.map((banner) => {
+                  const targetType = banner.targetType || (banner.targetUrl?.startsWith("http") ? "external" : "in_app");
+
+                  return (
+                    <tr
+                      key={banner._id}
+                      className="hover:bg-slate-50/60 transition-colors group"
+                    >
+                      {/* Banner Image Preview */}
+                      <td className="py-4 px-4 sm:px-6">
+                        <div className="w-36 h-18 sm:w-44 sm:h-22 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 relative shadow-sm group-hover:shadow transition-shadow">
+                          <img
+                            src={banner.imageUrl}
+                            alt={banner.title}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute top-1 right-1 px-1.5 py-0.5 bg-black/60 backdrop-blur-sm rounded text-[10px] font-medium text-white">
+                            Ad
+                          </div>
                         </div>
-                      </div>
-                    </td>
+                      </td>
 
-                    {/* Title & Target Info */}
-                    <td className="py-4 px-4 sm:px-6">
-                      <h4 className="font-bold text-slate-900 group-hover:text-rose-600 transition-colors">
-                        {banner.title}
-                      </h4>
-                      <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1">
-                        <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
-                        <span className="font-mono bg-slate-100 px-2 py-0.5 rounded text-slate-600 truncate max-w-xs">
-                          {banner.targetUrl || "Default Subscription Screen"}
+                      {/* Title */}
+                      <td className="py-4 px-4 sm:px-6">
+                        <h4 className="font-bold text-slate-900 group-hover:text-rose-600 transition-colors">
+                          {banner.title}
+                        </h4>
+                        <span className="inline-block mt-1 text-[11px] text-slate-400">
+                          Added on {new Date(banner.createdAt).toLocaleDateString()}
                         </span>
-                      </div>
-                      <span className="inline-block mt-1 text-[11px] text-slate-400">
-                        Added on {new Date(banner.createdAt).toLocaleDateString()}
-                      </span>
-                    </td>
+                      </td>
 
-                    {/* Priority Order */}
-                    <td className="py-4 px-4 sm:px-6 text-center">
-                      <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 font-bold text-slate-700 text-xs">
-                        #{banner.order}
-                      </span>
-                    </td>
-
-                    {/* Active Status Switch */}
-                    <td className="py-4 px-4 sm:px-6 text-center">
-                      <button
-                        onClick={() => handleToggleStatus(banner)}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-                          banner.isActive
-                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"
-                            : "bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200"
-                        }`}
-                      >
-                        {banner.isActive ? (
-                          <>
-                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                            <span>Active</span>
-                          </>
+                      {/* Redirection Destination */}
+                      <td className="py-4 px-4 sm:px-6">
+                        {targetType === "external" ? (
+                          <div className="space-y-1">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                              <Globe className="w-3 h-3" /> External Web URL
+                            </span>
+                            <a
+                              href={banner.targetUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="flex items-center gap-1 text-xs text-rose-600 hover:underline font-mono truncate max-w-xs"
+                            >
+                              <span className="truncate">{banner.targetUrl}</span>
+                              <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                            </a>
+                          </div>
+                        ) : targetType === "whatsapp" ? (
+                          <div className="space-y-1">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              <MessageCircle className="w-3 h-3" /> WhatsApp Link
+                            </span>
+                            <a
+                              href={banner.targetUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="flex items-center gap-1 text-xs text-emerald-600 hover:underline font-mono truncate max-w-xs"
+                            >
+                              <span className="truncate">{banner.targetUrl}</span>
+                              <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                            </a>
+                          </div>
+                        ) : targetType === "none" ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-500 border border-slate-200">
+                            <Ban className="w-3 h-3" /> No Redirection
+                          </span>
                         ) : (
-                          <>
-                            <span className="w-2 h-2 rounded-full bg-slate-400" />
-                            <span>Disabled</span>
-                          </>
+                          <div className="space-y-1">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                              <AppIcon className="w-3 h-3" /> In-App Screen
+                            </span>
+                            <span className="block font-mono text-xs text-slate-600 bg-slate-100 px-2 py-0.5 rounded w-fit">
+                              {banner.targetUrl || "/(dashboard)/subscription"}
+                            </span>
+                          </div>
                         )}
-                      </button>
-                    </td>
+                      </td>
 
-                    {/* Actions */}
-                    <td className="py-4 px-4 sm:px-6 text-right">
-                      <div className="inline-flex items-center gap-1.5">
+                      {/* Priority Order */}
+                      <td className="py-4 px-4 sm:px-6 text-center">
+                        <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 font-bold text-slate-700 text-xs">
+                          #{banner.order}
+                        </span>
+                      </td>
+
+                      {/* Active Status Switch */}
+                      <td className="py-4 px-4 sm:px-6 text-center">
                         <button
-                          onClick={() => handleOpenEdit(banner)}
-                          className="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                          title="Edit Banner"
+                          onClick={() => handleToggleStatus(banner)}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+                            banner.isActive
+                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"
+                              : "bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200"
+                          }`}
                         >
-                          <Edit2 className="w-4 h-4" />
+                          {banner.isActive ? (
+                            <>
+                              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                              <span>Active</span>
+                            </>
+                          ) : (
+                            <>
+                              <span className="w-2 h-2 rounded-full bg-slate-400" />
+                              <span>Disabled</span>
+                            </>
+                          )}
                         </button>
-                        <button
-                          onClick={() => handleDelete(banner._id)}
-                          className="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                          title="Delete Banner"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+
+                      {/* Actions */}
+                      <td className="py-4 px-4 sm:px-6 text-right">
+                        <div className="inline-flex items-center gap-1.5">
+                          <button
+                            onClick={() => handleOpenEdit(banner)}
+                            className="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                            title="Edit Banner"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(banner._id)}
+                            className="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                            title="Delete Banner"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )}
       </div>
 
-      {/* Create / Edit Banner Modal with Live Mobile Preview */}
+      {/* Create / Edit Banner Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-3xl max-w-4xl w-full shadow-2xl overflow-hidden border border-slate-100 my-8">
@@ -540,7 +681,7 @@ export default function AdBannersPage() {
                     {editingBanner ? "Edit Advertisement Banner" : "Upload New Advertisement Banner"}
                   </h3>
                   <p className="text-xs text-slate-300">
-                    Aspect Ratio: 2:1 (1200 x 600 px) for mobile app carousel
+                    Aspect Ratio: 2:1 (1200 x 600 px) with Custom Redirection Link
                   </p>
                 </div>
               </div>
@@ -652,31 +793,199 @@ export default function AdBannersPage() {
                     </div>
                   </div>
 
-                  {/* Destination / Click Route */}
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                      Destination / Screen Route
+                  {/* Redirection Destination Configuration */}
+                  <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 space-y-3">
+                    <label className="block text-xs font-semibold text-slate-800 uppercase tracking-wider">
+                      Redirection On Click <span className="text-rose-500">*</span>
                     </label>
-                    <select
-                      value={formData.targetUrl}
-                      onChange={(e) =>
-                        setFormData({ ...formData, targetUrl: e.target.value })
-                      }
-                      className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 text-slate-900 font-medium"
-                    >
-                      <option value="/(dashboard)/subscription">
-                        ⭐ Subscription Plans Screen (/(dashboard)/subscription)
-                      </option>
-                      <option value="/(dashboard)/(tabs)/discover">
-                        🔥 Discover Feed (/(dashboard)/(tabs)/discover)
-                      </option>
-                      <option value="/(dashboard)/(tabs)/search">
-                        🔍 Search Matches (/(dashboard)/(tabs)/search)
-                      </option>
-                      <option value="/(dashboard)/(tabs)/profile">
-                        👤 My Profile (/(dashboard)/(tabs)/profile)
-                      </option>
-                    </select>
+
+                    {/* Mode Selector Tabs */}
+                    <div className="grid grid-cols-4 gap-1.5 bg-white p-1 rounded-xl border border-slate-200">
+                      <button
+                        type="button"
+                        onClick={() => setTargetMode("external")}
+                        className={`flex flex-col items-center gap-1 py-2 px-1 rounded-lg text-xs font-semibold transition-all ${
+                          targetMode === "external"
+                            ? "bg-rose-500 text-white shadow-sm"
+                            : "text-slate-600 hover:bg-slate-100"
+                        }`}
+                      >
+                        <Globe className="w-4 h-4" />
+                        <span>Web URL</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setTargetMode("in_app")}
+                        className={`flex flex-col items-center gap-1 py-2 px-1 rounded-lg text-xs font-semibold transition-all ${
+                          targetMode === "in_app"
+                            ? "bg-rose-500 text-white shadow-sm"
+                            : "text-slate-600 hover:bg-slate-100"
+                        }`}
+                      >
+                        <AppIcon className="w-4 h-4" />
+                        <span>App Screen</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setTargetMode("whatsapp")}
+                        className={`flex flex-col items-center gap-1 py-2 px-1 rounded-lg text-xs font-semibold transition-all ${
+                          targetMode === "whatsapp"
+                            ? "bg-rose-500 text-white shadow-sm"
+                            : "text-slate-600 hover:bg-slate-100"
+                        }`}
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        <span>WhatsApp</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setTargetMode("none")}
+                        className={`flex flex-col items-center gap-1 py-2 px-1 rounded-lg text-xs font-semibold transition-all ${
+                          targetMode === "none"
+                            ? "bg-rose-500 text-white shadow-sm"
+                            : "text-slate-600 hover:bg-slate-100"
+                        }`}
+                      >
+                        <Ban className="w-4 h-4" />
+                        <span>No Link</span>
+                      </button>
+                    </div>
+
+                    {/* Mode Specific Inputs */}
+                    {targetMode === "external" && (
+                      <div className="space-y-2 pt-1">
+                        <label className="block text-[11px] font-semibold text-slate-600">
+                          External Website / Landing Page URL
+                        </label>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="url"
+                            value={externalUrl}
+                            onChange={(e) => setExternalUrl(e.target.value)}
+                            placeholder="https://example.com/promo or instagram.com/..."
+                            className="flex-1 px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 text-slate-900 font-mono text-xs"
+                            required={targetMode === "external"}
+                          />
+                          {externalUrl.trim() && (
+                            <a
+                              href={
+                                externalUrl.startsWith("http")
+                                  ? externalUrl
+                                  : `https://${externalUrl}`
+                              }
+                              target="_blank"
+                              rel="noreferrer"
+                              className="px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1 whitespace-nowrap transition-colors"
+                            >
+                              <span>Test Link</span>
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-slate-400">
+                          Opens in a fast, in-app mobile browser with close button.
+                        </p>
+                      </div>
+                    )}
+
+                    {targetMode === "in_app" && (
+                      <div className="space-y-1.5 pt-1">
+                        <label className="block text-[11px] font-semibold text-slate-600">
+                          Select Mobile App Screen
+                        </label>
+                        <select
+                          value={inAppRoute}
+                          onChange={(e) => setInAppRoute(e.target.value)}
+                          className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 text-slate-900 font-medium"
+                        >
+                          <option value="/(dashboard)/subscription">
+                            ⭐ Subscription Plans Screen (/(dashboard)/subscription)
+                          </option>
+                          <option value="/(dashboard)/(tabs)/discover">
+                            🔥 Discover Feed (/(dashboard)/(tabs)/discover)
+                          </option>
+                          <option value="/(dashboard)/(tabs)/search">
+                            🔍 Search Matches (/(dashboard)/(tabs)/search)
+                          </option>
+                          <option value="/(dashboard)/(tabs)/matches">
+                            💌 Requests & Matches (/(dashboard)/(tabs)/matches)
+                          </option>
+                          <option value="/(dashboard)/(tabs)/profile">
+                            👤 My Profile (/(dashboard)/(tabs)/profile)
+                          </option>
+                          <option value="/(dashboard)/verification">
+                            🛡️ Profile Verification (/(dashboard)/verification)
+                          </option>
+                          <option value="/(dashboard)/viewed-contacts">
+                            📞 Viewed Contacts (/(dashboard)/viewed-contacts)
+                          </option>
+                          <option value="/(dashboard)/get-noticed">
+                            🚀 Get Noticed Boost (/(dashboard)/get-noticed)
+                          </option>
+                        </select>
+                      </div>
+                    )}
+
+                    {targetMode === "whatsapp" && (
+                      <div className="space-y-2.5 pt-1">
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                            WhatsApp Phone Number (with Country Code) <span className="text-rose-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={whatsappPhone}
+                            onChange={(e) => setWhatsappPhone(e.target.value)}
+                            placeholder="e.g. 919876543210 (India)"
+                            className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 text-slate-900 font-mono text-xs"
+                            required={targetMode === "whatsapp"}
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                            Pre-filled Message (Optional)
+                          </label>
+                          <input
+                            type="text"
+                            value={whatsappText}
+                            onChange={(e) => setWhatsappText(e.target.value)}
+                            placeholder="e.g. Hi, I am interested in your BariVivah promo offer"
+                            className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 text-slate-900 text-xs"
+                          />
+                        </div>
+
+                        {whatsappPhone.trim() && (
+                          <div className="flex items-center justify-between pt-1">
+                            <span className="text-[11px] font-mono text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg truncate max-w-[240px]">
+                              https://wa.me/{whatsappPhone.replace(/[^0-9]/g, "")}
+                            </span>
+                            <a
+                              href={`https://wa.me/${whatsappPhone.replace(/[^0-9]/g, "")}${
+                                whatsappText.trim()
+                                  ? `?text=${encodeURIComponent(whatsappText.trim())}`
+                                  : ""
+                              }`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1"
+                            >
+                              <span>Test WhatsApp</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {targetMode === "none" && (
+                      <p className="text-xs text-slate-500 py-1 italic">
+                        Banner will display statically without any clickable redirection.
+                      </p>
+                    )}
                   </div>
 
                   {/* Order & Status Row */}
@@ -775,19 +1084,27 @@ export default function AdBannersPage() {
                         </div>
                       </div>
 
+                      {/* Destination preview pill */}
+                      <div className="mt-2 px-2 py-1 bg-white rounded-lg border border-slate-200 text-[10px] text-slate-600 flex items-center gap-1 truncate">
+                        <LinkIcon className="w-3 h-3 text-rose-500 flex-shrink-0" />
+                        <span className="truncate">
+                          {getEffectivePreviewUrl() || "No click destination"}
+                        </span>
+                      </div>
+
                       {/* Fake Home Content below Banner */}
-                      <div className="mt-3 space-y-1.5 opacity-60">
-                        <div className="h-2.5 bg-slate-200 rounded w-2/3" />
-                        <div className="grid grid-cols-2 gap-1.5 pt-1">
-                          <div className="h-16 bg-slate-200 rounded-xl" />
-                          <div className="h-16 bg-slate-200 rounded-xl" />
+                      <div className="mt-2 space-y-1.5 opacity-60">
+                        <div className="h-2 bg-slate-200 rounded w-2/3" />
+                        <div className="grid grid-cols-2 gap-1.5 pt-0.5">
+                          <div className="h-14 bg-slate-200 rounded-xl" />
+                          <div className="h-14 bg-slate-200 rounded-xl" />
                         </div>
                       </div>
                     </div>
                   </div>
 
                   <p className="text-[11px] text-slate-400 text-center mt-3 leading-tight">
-                    Shows exact 2:1 rounded card display as seen on user devices.
+                    Shows exact 2:1 rounded card display and click behavior on user devices.
                   </p>
                 </div>
               </div>

@@ -19,7 +19,7 @@ const BannerSchema = new mongoose.Schema(
     },
     targetType: {
       type: String,
-      enum: ["in_app", "external", "none"],
+      enum: ["in_app", "external", "whatsapp", "none"],
       default: "in_app",
     },
     isActive: {

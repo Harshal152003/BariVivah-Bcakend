@@ -8,6 +8,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { useSession } from '@/context/SessionContext';
 import Image from 'next/image';
+import TrademarkLogo from '@/components/TrademarkLogo';
 
 // Data lists for the registration steps
 const stateList = [
@@ -208,10 +209,11 @@ export default function MatrimonialLogin() {
 
   useEffect(() => {
     setIsLoaded(true);
-    if (user) {
-      router.push('/dashboard');
+    // Only redirect if user is already logged in on login tab (not in the middle of 9-step signup wizard)
+    if (user && activeTab === 'login') {
+      router.push('/download-app?type=login');
     }
-  }, [user, router]);
+  }, [user, activeTab, router]);
 
   // Resend OTP countdown
   useEffect(() => {
@@ -276,7 +278,7 @@ export default function MatrimonialLogin() {
       if (response.ok && data.success) {
         await login(data.user.phone);
         await refreshUser();
-        router.push('/dashboard');
+        router.push('/download-app?type=login');
       } else {
         setError(data.message || 'Invalid mobile number or password');
       }
@@ -506,14 +508,14 @@ export default function MatrimonialLogin() {
       const data = await response.json();
       if (response.ok && data.success) {
         await refreshUser();
-        router.push('/dashboard');
+        router.push('/download-app?type=registered');
       } else {
         setError(data.message || 'Failed to save preferences.');
       }
     } catch (err) {
       console.error('Preferences update error:', err);
-      setError('Connection failed. Redirecting you to home.');
-      router.push('/dashboard');
+      setError('Connection failed. Redirecting to app download.');
+      router.push('/download-app?type=registered');
     } finally {
       setIsLoading(false);
     }
@@ -677,12 +679,9 @@ export default function MatrimonialLogin() {
           {currentStep !== 5 && (
             <div className="text-left px-4 sm:px-8 pt-4 pb-2">
               <div className="mb-4">
-                <Image
-                  src="/new-logo.png"
-                  width={240}
-                  height={80}
-                  className="h-20 w-auto object-contain"
-                  alt="BariVivah Logo"
+                <TrademarkLogo
+                  width={210}
+                  href="/"
                   priority
                 />
               </div>
@@ -1410,10 +1409,8 @@ export default function MatrimonialLogin() {
                     <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-2xl py-8 px-4 bg-gray-50/50 hover:bg-rose-50/10 transition-colors relative">
                       {photoUri ? (
                         <div className="relative group">
-                          <Image
+                          <img
                             src={photoUri}
-                            width={160}
-                            height={160}
                             className="w-40 h-40 object-cover rounded-full border-4 border-white shadow-md"
                             alt="Preview Profile Photo"
                           />

@@ -60,20 +60,28 @@ export async function GET(request) {
             query._id = { $ne: currentUserId };
         }
 
-        // Text Search (Partial Match)
+        // Text Search (Partial Match & Profile ID Lookup)
+        const isProfileIdSearch = q && (/^BV-?/i.test(q.trim()) || /^[0-9a-fA-F]{6}$/.test(q.trim()));
+
         if (q) {
-            const regex = new RegExp(q, 'i'); // case-insensitive
+            const cleanQ = q.trim();
+            const regex = new RegExp(cleanQ, 'i'); // case-insensitive
+            const stripped = cleanQ.replace(/^BV-?/i, '');
+            const strippedRegex = new RegExp(stripped, 'i');
+
             const searchConditions = [
                 { name: regex },
                 { profileId: regex },
+                { profileId: strippedRegex },
+                { profileId: new RegExp(`BV-${stripped}`, 'i') },
                 { currentCity: regex },
                 { caste: regex },
-                { subCaste: regex }, // Added subCaste search
+                { subCaste: regex },
             ];
 
             // Check if q is a number (Age Search)
-            const ageQuery = parseInt(q);
-            if (!isNaN(ageQuery)) {
+            const ageQuery = parseInt(cleanQ);
+            if (!isNaN(ageQuery) && cleanQ.length <= 2) {
                 const today = new Date();
                 const maxDob = new Date(today.getFullYear() - ageQuery, today.getMonth(), today.getDate());
                 const minDob = new Date(today.getFullYear() - ageQuery - 1, today.getMonth(), today.getDate());
@@ -86,10 +94,10 @@ export async function GET(request) {
             query.$or = searchConditions;
         }
 
-        // Exact Filters
+        // Exact Filters (Do not restrict gender if searching explicitly by unique Profile ID)
         if (gender) {
             query.gender = gender;
-        } else if (currentUserId) {
+        } else if (currentUserId && !isProfileIdSearch) {
             const currentUser = await User.findById(currentUserId).select('gender').lean();
             if (currentUser && currentUser.gender) {
                 const oppositeGender = currentUser.gender === 'Male' ? 'Female' : currentUser.gender === 'Female' ? 'Male' : null;

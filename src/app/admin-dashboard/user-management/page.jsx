@@ -17,9 +17,20 @@ import {
   Loader2,
   ToggleLeft,
   ToggleRight,
+  Trash2,
+  Heart,
+  HelpCircle,
+  Calendar,
+  MapPin,
+  Phone,
+  Mail,
+  FileText,
+  Sparkles,
+  ShieldAlert,
 } from "lucide-react";
 
 export default function UserManagement() {
+  const [viewMode, setViewMode] = useState("active"); // "active" | "deleted"
   const [selectedUser, setSelectedUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [allUsers, setAllUsers] = useState([]); // Store all users for filtering
@@ -27,6 +38,14 @@ export default function UserManagement() {
   const [error, setError] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
   const [editFormData, setEditFormData] = useState({});
+
+  // Deleted Accounts state
+  const [deletedAccounts, setDeletedAccounts] = useState([]);
+  const [deletedLoading, setDeletedLoading] = useState(false);
+  const [deletedSearch, setDeletedSearch] = useState("");
+  const [deletedReasonFilter, setDeletedReasonFilter] = useState("All");
+  const [deletedStats, setDeletedStats] = useState({ totalAll: 0, marriedCount: 0, otherCount: 0 });
+  const [selectedDeletedAccount, setSelectedDeletedAccount] = useState(null);
   
   // Filter states
   const [searchTerm, setSearchTerm] = useState("");
@@ -39,6 +58,29 @@ export default function UserManagement() {
   const [totalPages, setTotalPages] = useState(1);
   const usersPerPage = 10;
 
+  const fetchDeletedAccounts = async () => {
+    try {
+      setDeletedLoading(true);
+      const response = await fetch(`/api/admin/deleted-accounts?limit=all`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && Array.isArray(data.data)) {
+          setDeletedAccounts(data.data);
+          if (data.stats) {
+            setDeletedStats(data.stats);
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch deleted accounts:", err);
+    } finally {
+      setDeletedLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDeletedAccounts();
+  }, []);
   
   // Modify the fetchUsers function to fetch all users at once
 const fetchUsers = async (page = 1) => {
@@ -288,215 +330,426 @@ const fetchUsers = async (page = 1) => {
     );
   }
 
+  // Compute filtered deleted accounts
+  const filteredDeletedAccounts = deletedAccounts.filter((account) => {
+    const matchesSearch =
+      !deletedSearch.trim() ||
+      (account.name && account.name.toLowerCase().includes(deletedSearch.toLowerCase())) ||
+      (account.phone && account.phone.includes(deletedSearch)) ||
+      (account.email && account.email.toLowerCase().includes(deletedSearch.toLowerCase())) ||
+      (account.profileId && account.profileId.toLowerCase().includes(deletedSearch.toLowerCase())) ||
+      (account.reasonText && account.reasonText.toLowerCase().includes(deletedSearch.toLowerCase())) ||
+      (account.city && account.city.toLowerCase().includes(deletedSearch.toLowerCase()));
+
+    const matchesReason =
+      deletedReasonFilter === "All" || account.reasonCategory === deletedReasonFilter;
+
+    return matchesSearch && matchesReason;
+  });
+
   return (
     <div className="space-y-6">
-      {/* User Management Header */}
+      {/* Top Header Card with View Mode Switcher */}
       <div className="bg-white rounded-xl p-6 shadow-lg border border-rose-100/50">
         <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
           <div>
             <h2 className="text-xl font-bold text-gray-900">User Management</h2>
-            <p className="text-gray-600">Manage all registered users and their profiles ({totalUsers} total users)</p>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="mt-6 flex flex-wrap items-center gap-4">
-          <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search users..."
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <select 
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            {uniqueStatuses.map(status => (
-              <option key={status} value={status}>{status}</option>
-            ))}
-          </select>
-          <select 
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
-            value={planFilter}
-            onChange={(e) => setPlanFilter(e.target.value)}
-          >
-            {uniquePlans.map(plan => (
-              <option key={plan} value={plan}>{plan}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Users Table */}
-      <div className="bg-white rounded-xl shadow-lg border border-rose-100/50 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="text-left py-4 px-6 font-semibold text-gray-900">User</th>
-                <th className="text-left py-4 px-6 font-semibold text-gray-900">Status</th>
-                <th className="text-left py-4 px-6 font-semibold text-gray-900">Plan</th>
-                <th className="text-left py-4 px-6 font-semibold text-gray-900">Joined</th>
-                <th className="text-left py-4 px-6 font-semibold text-gray-900">Last Login</th>
-                <th className="text-left py-4 px-6 font-semibold text-gray-900">Admin Can Fill</th>
-                <th className="text-left py-4 px-6 font-semibold text-gray-900">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.slice(startIndex, endIndex).map((user, index) => (
-                <tr key={user.id} className="border-b border-gray-100 hover:bg-rose-50/30 transition-colors">
-                  <td className="py-4 px-6">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-rose-100 to-amber-100 rounded-full flex items-center justify-center">
-                        <Users className="w-5 h-5 text-rose-500" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">{user.name}</p>
-                        <p className="text-xs text-gray-500 flex items-center gap-1">
-                          <span>📍 {user.address}</span>
-                          {user.gpsVerified && (
-                            <span className="ml-1 text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-bold">
-                              GPS Verified
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-4 px-6">
-                    <span
-                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                        user.status === "Active"
-                          ? "bg-green-100 text-green-800"
-                          : user.status === "Pending"
-                          ? "bg-amber-100 text-amber-800"
-                          : user.status === "Inactive"
-                          ? "bg-gray-100 text-gray-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {user.status}
-                    </span>
-                  </td>
-                  <td className="py-4 px-6">
-                    <span
-                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                        user.plan === "Premium" || user.plan === "Gold"
-                          ? "bg-amber-100 text-amber-800"
-                          : "bg-gray-100 text-gray-800"
-                      }`}
-                    >
-                      {user.plan === "Premium" || user.plan === "Gold" ? (
-                        <Crown className="w-3 h-3 mr-1" />
-                      ) : null}
-                      {user.plan}
-                    </span>
-                  </td>
-                  <td className="py-4 px-6 text-sm text-gray-600">{user.joined}</td>
-                  <td className="py-4 px-6 text-sm text-gray-600">{user.lastLogin}</td>
-                  <td className="py-4 px-6">
-                    <button
-                      onClick={() => handleToggleAdminFill(user.id, user.adminWillFill)}
-                      className={`relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none ${
-                        user.adminWillFill ? 'bg-rose-500' : 'bg-gray-200'
-                      }`}
-                    >
-                      <span
-                        className={`inline-block w-4 h-4 transform transition-transform bg-white rounded-full ${
-                          user.adminWillFill ? 'translate-x-6' : 'translate-x-1'
-                        }`}
-                      />
-                      {user.adminWillFill ? (
-                        <ToggleRight className="absolute left-1 w-3 h-3 text-white" />
-                      ) : (
-                        <ToggleLeft className="absolute right-1 w-3 h-3 text-gray-600" />
-                      )}
-                    </button>
-                  </td>
-                  <td className="py-4 px-6">
-                    <div className="flex items-center space-x-2">
-                      <button
-                        className="text-blue-600 hover:text-blue-700 p-1"
-                        onClick={() => handleViewUser(user)}
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button 
-                        className="text-green-600 hover:text-green-700 p-1"
-                        onClick={() => handleExportUser(user)}
-                      >
-                        <Download className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Enhanced Pagination */}
-        <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-600">
-              Showing {startIndex + 1} to {endIndex} of {totalUsers} users
+            <p className="text-gray-600">
+              {viewMode === "active"
+                ? `Manage all active registered members and their profiles (${totalUsers} active users)`
+                : `Review permanent account deletion records and candidate feedback (${deletedStats.totalAll} deleted accounts)`}
             </p>
-            <div className="flex items-center space-x-2">
-              <button 
-                onClick={handlePrevious}
-                disabled={currentPage === 1}
-                className={`px-3 py-2 border rounded-lg text-sm font-medium flex items-center ${
-                  currentPage === 1 
-                    ? 'border-gray-200 text-gray-400 cursor-not-allowed' 
-                    : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <ChevronLeft className="w-4 h-4 mr-1" />
-                Previous
-              </button>
-              
-              {/* Page Numbers */}
-              <div className="flex items-center space-x-1">
-                {[...Array(totalPages)].map((_, index) => {
-                  const pageNumber = index + 1;
-                  return (
-                    <button
-                      key={pageNumber}
-                      onClick={() => goToPage(pageNumber)}
-                      className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                        currentPage === pageNumber
-                          ? 'bg-rose-500 text-white'
-                          : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      {pageNumber}
-                    </button>
-                  );
-                })}
+          </div>
+        </div>
+
+        {/* View Mode Toggle Tabs */}
+        <div className="flex items-center space-x-3 mt-6 border-b border-gray-100 pb-4">
+          <button
+            onClick={() => setViewMode("active")}
+            className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 ${
+              viewMode === "active"
+                ? "bg-rose-600 text-white shadow-md shadow-rose-200"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            <span>Active Members ({totalUsers})</span>
+          </button>
+          <button
+            onClick={() => {
+              setViewMode("deleted");
+              fetchDeletedAccounts();
+            }}
+            className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 ${
+              viewMode === "deleted"
+                ? "bg-rose-600 text-white shadow-md shadow-rose-200"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            <Trash2 className="w-4 h-4" />
+            <span>Deleted Accounts ({deletedStats.totalAll})</span>
+          </button>
+        </div>
+
+        {viewMode === "active" ? (
+          /* Active Users Filters */
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search users..."
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent text-sm"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <select 
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent text-sm"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              {uniqueStatuses.map(status => (
+                <option key={status} value={status}>{status}</option>
+              ))}
+            </select>
+            <select 
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent text-sm"
+              value={planFilter}
+              onChange={(e) => setPlanFilter(e.target.value)}
+            >
+              {uniquePlans.map(plan => (
+                <option key={plan} value={plan}>{plan}</option>
+              ))}
+            </select>
+          </div>
+        ) : (
+          /* Deleted Accounts Filters & KPI Cards */
+          <div className="space-y-5 mt-4">
+            {/* KPI Stat Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center font-bold">
+                  <Trash2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 font-medium uppercase">Total Deleted</p>
+                  <p className="text-xl font-bold text-slate-900">{deletedStats.totalAll}</p>
+                </div>
               </div>
-              
-              <button 
-                onClick={handleNext}
-                disabled={currentPage === totalPages}
-                className={`px-3 py-2 border rounded-lg text-sm font-medium flex items-center ${
-                  currentPage === totalPages 
-                    ? 'border-gray-200 text-gray-400 cursor-not-allowed' 
-                    : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                }`}
+
+              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-200 text-emerald-800 flex items-center justify-center font-bold">
+                  <Heart className="w-5 h-5 text-emerald-600 fill-emerald-100" />
+                </div>
+                <div>
+                  <p className="text-xs text-emerald-700 font-medium uppercase">💍 Got Married / Found Match</p>
+                  <p className="text-xl font-bold text-emerald-900">{deletedStats.marriedCount}</p>
+                </div>
+              </div>
+
+              <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl bg-rose-200 text-rose-800 flex items-center justify-center font-bold">
+                  <HelpCircle className="w-5 h-5 text-rose-600" />
+                </div>
+                <div>
+                  <p className="text-xs text-rose-700 font-medium uppercase">📝 Other Reasons</p>
+                  <p className="text-xl font-bold text-rose-900">{deletedStats.otherCount}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Filter Bar */}
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="relative flex-1 min-w-[240px]">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search deleted accounts (Name, Phone, Profile ID, Reason)..."
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent text-sm"
+                  value={deletedSearch}
+                  onChange={(e) => setDeletedSearch(e.target.value)}
+                />
+              </div>
+              <select
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent text-sm"
+                value={deletedReasonFilter}
+                onChange={(e) => setDeletedReasonFilter(e.target.value)}
               >
-                Next
-                <ChevronRight className="w-4 h-4 ml-1" />
+                <option value="All">All Reasons ({deletedStats.totalAll})</option>
+                <option value="Married">💍 Got Married ({deletedStats.marriedCount})</option>
+                <option value="Other">📝 Other Reason ({deletedStats.otherCount})</option>
+              </select>
+              <button
+                onClick={fetchDeletedAccounts}
+                className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors"
+              >
+                Refresh
               </button>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
+      {viewMode === "active" ? (
+        /* Active Users Table */
+        <div className="bg-white rounded-xl shadow-lg border border-rose-100/50 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900">User</th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900">Status</th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900">Plan</th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900">Joined</th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900">Last Login</th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900">Admin Can Fill</th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.slice(startIndex, endIndex).map((user, index) => (
+                  <tr key={user.id} className="border-b border-gray-100 hover:bg-rose-50/30 transition-colors">
+                    <td className="py-4 px-6">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-rose-100 to-amber-100 rounded-full flex items-center justify-center">
+                          <Users className="w-5 h-5 text-rose-500" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{user.name}</p>
+                          <p className="text-xs text-gray-500 flex items-center gap-1">
+                            {user.phone ? `+91 ${user.phone}` : user.email}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        user.status === 'Active' 
+                          ? 'bg-green-100 text-green-800' 
+                          : user.status === 'Pending' 
+                          ? 'bg-amber-100 text-amber-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {user.status}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        user.plan === 'Premium' || user.plan === 'Gold'
+                          ? 'bg-amber-100 text-amber-800'
+                          : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {user.plan === 'Premium' || user.plan === 'Gold' ? <Crown className="w-3 h-3 mr-1" /> : null}
+                        {user.plan}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6 text-sm text-gray-600">
+                      {user.joined}
+                    </td>
+                    <td className="py-4 px-6 text-sm text-gray-600">
+                      {user.lastLogin}
+                    </td>
+                    <td className="py-4 px-6 text-sm text-gray-600">
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={user.adminWillFill}
+                          onChange={(e) => handleToggleAdminFill(user.id, user.adminWillFill)}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-rose-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500"></div>
+                      </label>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => handleViewUser(user)}
+                          className="p-1 hover:bg-gray-100 rounded text-gray-600 hover:text-rose-600"
+                          title="View Profile"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleEditUser(user)}
+                          className="p-1 hover:bg-gray-100 rounded text-gray-600 hover:text-blue-600"
+                          title="Edit User"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleBanUser(user.name)}
+                          className="p-1 hover:bg-gray-100 rounded text-gray-600 hover:text-red-600"
+                          title="Suspend User"
+                        >
+                          <Ban className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Enhanced Pagination */}
+          <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-gray-600">
+                Showing {startIndex + 1} to {endIndex} of {totalUsers} users
+              </p>
+              <div className="flex items-center space-x-2">
+                <button 
+                  onClick={handlePrevious}
+                  disabled={currentPage === 1}
+                  className={`px-3 py-2 border rounded-lg text-sm font-medium flex items-center ${
+                    currentPage === 1 
+                      ? 'border-gray-200 text-gray-400 cursor-not-allowed' 
+                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <ChevronLeft className="w-4 h-4 mr-1" />
+                  Previous
+                </button>
+                
+                {/* Page Numbers */}
+                <div className="flex items-center space-x-1">
+                  {[...Array(totalPages)].map((_, index) => {
+                    const pageNumber = index + 1;
+                    return (
+                      <button
+                        key={pageNumber}
+                        onClick={() => goToPage(pageNumber)}
+                        className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                          currentPage === pageNumber
+                            ? 'bg-rose-500 text-white'
+                            : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        {pageNumber}
+                      </button>
+                    );
+                  })}
+                </div>
+                
+                <button 
+                  onClick={handleNext}
+                  disabled={currentPage === totalPages}
+                  className={`px-3 py-2 border rounded-lg text-sm font-medium flex items-center ${
+                    currentPage === totalPages 
+                      ? 'border-gray-200 text-gray-400 cursor-not-allowed' 
+                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4 ml-1" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* Deleted Accounts Table View */
+        <div className="bg-white rounded-xl shadow-lg border border-rose-100/50 overflow-hidden">
+          {deletedLoading ? (
+            <div className="flex items-center justify-center p-12 text-gray-500">
+              <Loader2 className="w-6 h-6 animate-spin text-rose-500 mr-2" />
+              <span>Loading deleted accounts archive...</span>
+            </div>
+          ) : filteredDeletedAccounts.length === 0 ? (
+            <div className="p-12 text-center text-gray-500">
+              <Trash2 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="font-semibold text-gray-700">No deleted accounts found</p>
+              <p className="text-xs text-gray-400 mt-1">
+                {deletedSearch ? 'Try adjusting your search criteria' : 'No account deletions recorded yet.'}
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-slate-50 border-b border-gray-200">
+                  <tr>
+                    <th className="text-left py-4 px-6 font-semibold text-gray-900">Candidate</th>
+                    <th className="text-left py-4 px-6 font-semibold text-gray-900">Contact / City</th>
+                    <th className="text-left py-4 px-6 font-semibold text-gray-900">Reason Category</th>
+                    <th className="text-left py-4 px-6 font-semibold text-gray-900">User Reason / Feedback</th>
+                    <th className="text-left py-4 px-6 font-semibold text-gray-900">Deleted On</th>
+                    <th className="text-left py-4 px-6 font-semibold text-gray-900">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredDeletedAccounts.map((account) => (
+                    <tr key={account._id || account.userId} className="border-b border-gray-100 hover:bg-rose-50/20 transition-colors">
+                      <td className="py-4 px-6">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-slate-200 to-rose-100 rounded-full flex items-center justify-center text-slate-700 font-bold text-sm">
+                            {account.name ? account.name.charAt(0).toUpperCase() : 'M'}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-900">{account.name || 'Candidate'}</p>
+                            <p className="text-xs text-rose-600 font-bold tracking-wider">
+                              ID: {account.profileId || `BV-${account.userId ? account.userId.slice(-5).toUpperCase() : 'N/A'}`}
+                            </p>
+                            {account.gender && (
+                              <p className="text-[11px] text-gray-400">{account.gender}</p>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="text-sm">
+                          <p className="text-gray-900 font-medium">
+                            {account.phone ? `+91 ${account.phone.replace('+91', '')}` : 'No phone'}
+                          </p>
+                          <p className="text-xs text-gray-500">{account.email || 'No email'}</p>
+                          {account.city && (
+                            <p className="text-xs text-slate-600 mt-0.5">📍 {account.city}</p>
+                          )}
+                        </div>
+                      </td>
+                      <td className="py-4 px-6">
+                        {account.reasonCategory === 'Married' ? (
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            <Heart className="w-3 h-3 mr-1 text-emerald-600 fill-emerald-600" />
+                            💍 Got Married
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200">
+                            <HelpCircle className="w-3 h-3 mr-1 text-rose-600" />
+                            📝 Other Reason
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-4 px-6 max-w-xs">
+                        <p className="text-sm text-gray-800 line-clamp-2" title={account.reasonText}>
+                          {account.reasonText || 'No specific explanation given.'}
+                        </p>
+                      </td>
+                      <td className="py-4 px-6 text-sm text-gray-600 whitespace-nowrap">
+                        <p className="font-medium text-gray-900">
+                          {account.deletedAt ? new Date(account.deletedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {account.deletedAt ? new Date(account.deletedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : ''}
+                        </p>
+                      </td>
+                      <td className="py-4 px-6">
+                        <button
+                          onClick={() => setSelectedDeletedAccount(account)}
+                          className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>Details</span>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* View User Modal */}
       {selectedUser && (
@@ -869,6 +1122,132 @@ const fetchUsers = async (page = 1) => {
                 className="px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-lg hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
               >
                 Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Deleted Account Details Modal */}
+      {selectedDeletedAccount && (
+        <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl border border-rose-100 w-full max-w-2xl overflow-hidden max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-slate-900 to-slate-800 px-6 py-4 text-white flex justify-between items-center">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-rose-400">
+                  <Trash2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold">Deleted Account Details</h3>
+                  <p className="text-xs text-slate-300">
+                    ID: {selectedDeletedAccount.profileId || `BV-${selectedDeletedAccount.userId?.slice(-5).toUpperCase() || 'N/A'}`}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedDeletedAccount(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 space-y-5 overflow-y-auto">
+              {/* Deletion Reason Hero Banner */}
+              <div className={`p-4 rounded-xl border ${
+                selectedDeletedAccount.reasonCategory === 'Married'
+                  ? 'bg-emerald-50 border-emerald-200'
+                  : 'bg-rose-50 border-rose-200'
+              }`}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
+                    selectedDeletedAccount.reasonCategory === 'Married'
+                      ? 'bg-emerald-200 text-emerald-900'
+                      : 'bg-rose-200 text-rose-900'
+                  }`}>
+                    {selectedDeletedAccount.reasonCategory === 'Married' ? (
+                      <>
+                        <Heart className="w-3.5 h-3.5 mr-1 text-emerald-700 fill-emerald-700" />
+                        💍 Got Married / Found Match
+                      </>
+                    ) : (
+                      <>
+                        <HelpCircle className="w-3.5 h-3.5 mr-1 text-rose-700" />
+                        📝 Other Reason
+                      </>
+                    )}
+                  </span>
+                  <span className="text-xs text-slate-500 font-medium">
+                    Deleted on {selectedDeletedAccount.deletedAt ? new Date(selectedDeletedAccount.deletedAt).toLocaleString('en-IN') : 'N/A'}
+                  </span>
+                </div>
+                <div className="mt-2">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">User Explanation / Feedback:</p>
+                  <p className="text-sm text-slate-800 bg-white/80 p-3 rounded-lg border border-slate-200/60 leading-relaxed font-medium">
+                    "{selectedDeletedAccount.reasonText || 'No custom reason specified by user.'}"
+                  </p>
+                </div>
+              </div>
+
+              {/* Candidate Info Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Member Details</h4>
+                  <div className="space-y-2 text-sm">
+                    <div>
+                      <p className="text-xs text-slate-400">Full Name</p>
+                      <p className="font-semibold text-slate-800">{selectedDeletedAccount.name || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-400">Gender</p>
+                      <p className="font-medium text-slate-700">{selectedDeletedAccount.gender || 'Not specified'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-400">Location / City</p>
+                      <p className="font-medium text-slate-700">📍 {selectedDeletedAccount.city || 'Not provided'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Contact & Account</h4>
+                  <div className="space-y-2 text-sm">
+                    <div>
+                      <p className="text-xs text-slate-400">Mobile Phone</p>
+                      <p className="font-semibold text-slate-800">
+                        {selectedDeletedAccount.phone ? `+91 ${selectedDeletedAccount.phone.replace('+91', '')}` : 'N/A'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-400">Email Address</p>
+                      <p className="font-medium text-slate-700">{selectedDeletedAccount.email || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-400">Plan at Deletion</p>
+                      <p className="font-medium text-slate-700">{selectedDeletedAccount.plan || 'Free'}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Original Registration Timestamp */}
+              <div className="p-3 bg-gray-50 rounded-lg text-xs text-gray-500 flex justify-between items-center">
+                <span>Original Registration Date:</span>
+                <span className="font-medium text-gray-700">
+                  {selectedDeletedAccount.registeredAt ? new Date(selectedDeletedAccount.registeredAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : 'N/A'}
+                </span>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-slate-50 px-6 py-3 border-t border-slate-200 flex justify-end">
+              <button
+                onClick={() => setSelectedDeletedAccount(null)}
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-sm font-medium transition-colors"
+              >
+                Close
               </button>
             </div>
           </div>

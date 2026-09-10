@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/dbConnect";
 import Interest from "@/models/Interest";
-import User from "@/models/User"; // Import User model
+import User from "@/models/User";
+import Notification from "@/models/Notification";
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': 'http://localhost:8081', // Must be explicit, not *
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
@@ -50,8 +52,36 @@ export async function POST(req) {
         reverseInterest.status = 'accepted';
         await reverseInterest.save();
 
+        // Create match notifications for both users
+        try {
+          await Notification.create([
+            {
+              title: "Request Accepted & Matched!",
+              message: `It's a Match! You and ${senderExists.name || 'a member'} both expressed interest in each other.`,
+              type: "INTEREST",
+              priority: "HIGH",
+              recipientType: "SPECIFIC",
+              recipientUser: receiverId,
+              actionUrl: "/(dashboard)/(tabs)/matches",
+              createdBy: "SYSTEM",
+            },
+            {
+              title: "Request Accepted & Matched!",
+              message: `It's a Match! You and ${receiverExists.name || 'a member'} both expressed interest in each other.`,
+              type: "INTEREST",
+              priority: "HIGH",
+              recipientType: "SPECIFIC",
+              recipientUser: senderId,
+              actionUrl: "/(dashboard)/(tabs)/matches",
+              createdBy: "SYSTEM",
+            },
+          ]);
+        } catch (notifErr) {
+          console.warn("Match notification creation failed:", notifErr);
+        }
+
         return NextResponse.json({
-          message: "🎉 It's a Match! You both expressed interest in each other.",
+          message: "It's a Match! You both expressed interest in each other.",
           isMatch: true,
           interest: {
             ...reverseInterest._doc,
@@ -71,6 +101,22 @@ export async function POST(req) {
     // Create new interest
     const interest = new Interest({ senderId, receiverId, status: 'pending' });
     await interest.save();
+
+    // Create incoming request notification for receiver
+    try {
+      await Notification.create({
+        title: "New Connection Request",
+        message: `${senderExists.name || 'A BariVivah member'} has sent you a connection request!`,
+        type: "INTEREST",
+        priority: "HIGH",
+        recipientType: "SPECIFIC",
+        recipientUser: receiverId,
+        actionUrl: "/(dashboard)/(tabs)/matches",
+        createdBy: "SYSTEM",
+      });
+    } catch (notifErr) {
+      console.warn("Incoming interest notification creation failed:", notifErr);
+    }
 
     return NextResponse.json({
       message: "Interest sent successfully",

@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 
 // Helper: Draw filled rounded rectangle with optional border in pdf-lib
-function drawRoundedRectangle(page, { x, y, width, height, radius = 8, color, borderColor, borderWidth = 1 }) {
+function drawRoundedRectangle(page, { x, y, width, height, radius = 12, color, borderColor, borderWidth = 1 }) {
   const r = Math.min(radius, width / 2, height / 2);
   page.drawRectangle({ x: x + r, y, width: width - (2 * r), height, color, borderColor: color });
   page.drawRectangle({ x, y: y + r, width, height: height - (2 * r), color, borderColor: color });
@@ -22,48 +22,9 @@ function drawRoundedRectangle(page, { x, y, width, height, radius = 8, color, bo
   }
 }
 
-// Sleek Elegant Pink Badge Icons (Reduced Radius for Refined Look)
-function drawBadgeIcon(page, cx, cy, type, { pinkPrimary, white }) {
-  const badgeR = 9.5; // Reduced radius for sleek, proportional design
-  page.drawCircle({ x: cx, y: cy, size: badgeR, color: pinkPrimary });
-
-  try {
-    if (type === 'mail') {
-      page.drawRectangle({ x: cx - 4.5, y: cy - 3, width: 9, height: 6, color: white });
-      page.drawLine({ start: { x: cx - 4.5, y: cy + 3 }, end: { x: cx, y: cy }, thickness: 0.8, color: pinkPrimary });
-      page.drawLine({ start: { x: cx + 4.5, y: cy + 3 }, end: { x: cx, y: cy }, thickness: 0.8, color: pinkPrimary });
-    } else if (type === 'phone') {
-      page.drawRectangle({ x: cx - 4, y: cy - 3, width: 8, height: 6, color: white });
-      page.drawRectangle({ x: cx - 1.5, y: cy - 0.8, width: 3, height: 3.8, color: pinkPrimary });
-      page.drawCircle({ x: cx - 2.5, y: cy - 1.5, size: 1, color: white });
-      page.drawCircle({ x: cx + 2.5, y: cy - 1.5, size: 1, color: white });
-    } else if (type === 'person') {
-      page.drawCircle({ x: cx, y: cy + 2.2, size: 2.8, color: white });
-      page.drawRectangle({ x: cx - 4, y: cy - 4, width: 8, height: 4, color: white });
-      page.drawCircle({ x: cx - 2.8, y: cy - 1.5, size: 1.2, color: white });
-      page.drawCircle({ x: cx + 2.8, y: cy - 1.5, size: 1.2, color: white });
-    } else if (type === 'family') {
-      page.drawRectangle({ x: cx - 3.5, y: cy - 4, width: 7, height: 5, color: white });
-      page.drawLine({ start: { x: cx - 5, y: cy + 0.8 }, end: { x: cx, y: cy + 4.8 }, thickness: 1.5, color: white });
-      page.drawLine({ start: { x: cx + 5, y: cy + 0.8 }, end: { x: cx, y: cy + 4.8 }, thickness: 1.5, color: white });
-      page.drawRectangle({ x: cx - 1.2, y: cy - 4, width: 2.4, height: 3.2, color: pinkPrimary });
-    } else if (type === 'education') {
-      page.drawLine({ start: { x: cx - 5.5, y: cy + 1.5 }, end: { x: cx, y: cy + 4.2 }, thickness: 1.5, color: white });
-      page.drawLine({ start: { x: cx + 5.5, y: cy + 1.5 }, end: { x: cx, y: cy + 4.2 }, thickness: 1.5, color: white });
-      page.drawLine({ start: { x: cx - 5.5, y: cy + 1.5 }, end: { x: cx, y: cy - 1.2 }, thickness: 1.5, color: white });
-      page.drawLine({ start: { x: cx + 5.5, y: cy + 1.5 }, end: { x: cx, y: cy - 1.2 }, thickness: 1.5, color: white });
-      page.drawRectangle({ x: cx - 3, y: cy - 3.8, width: 6, height: 2.5, color: white });
-    } else {
-      page.drawCircle({ x: cx, y: cy, size: 3, color: white });
-    }
-  } catch (e) {
-    page.drawCircle({ x: cx, y: cy, size: 3, color: white });
-  }
-}
-
 // Helper: Wrap text into lines fitting specified maximum width
 function wrapText(text, font, fontSize, maxW) {
-  if (text === null || text === undefined || text === '') return ['N/A'];
+  if (text === null || text === undefined || text === '') return ['Not specified'];
   const words = text.toString().split(' ');
   const lines = [];
   let currentLine = '';
@@ -82,7 +43,7 @@ function wrapText(text, font, fontSize, maxW) {
   if (currentLine) {
     lines.push(currentLine);
   }
-  return lines.length > 0 ? lines : ['N/A'];
+  return lines.length > 0 ? lines : ['Not specified'];
 }
 
 export async function POST(request) {
@@ -100,18 +61,18 @@ export async function POST(request) {
     const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
     const italicFont = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
 
-    let page = pdfDoc.addPage([595, 842]); // A4 size: 595 x 842 pt
-    const width = 595;
-    const height = 842;
-    const margin = 24;
+    const width = 595; // A4 standard width
+    const height = 842; // A4 standard height
+    const page = pdfDoc.addPage([width, height]);
 
-    // Palette matching home screen header aesthetic
-    const pinkPrimary = rgb(0.91, 0.12, 0.39); // #E91E63 (Vibrant Brand Pink)
-    const pinkLight = rgb(0.99, 0.94, 0.96);   // #FDF2F8 (Soft Card Pink Tint)
-    const pinkBorder = rgb(0.94, 0.76, 0.84);  // #F3CEE2 (Soft Pink Card Border)
-    const darkText = rgb(0.12, 0.16, 0.22);    // #1F2937 (Bold Dark Headline & Value Text)
-    const bodyText = rgb(0.22, 0.25, 0.32);    // #374151 (Dark Neutral Body Text)
-    const labelText = rgb(0.35, 0.38, 0.45);   // #555555 (Field Label Gray Text)
+    // Color Palette matching design screenshot
+    const coralPink = rgb(0.98, 0.35, 0.40);    // #FB5263 (Accent line & badge color)
+    const softPink = rgb(0.99, 0.93, 0.94);     // #FDECEF (Light bio background)
+    const darkTitle = rgb(0.12, 0.16, 0.23);    // #1E293B (Dark bold section headers & values)
+    const labelColor = rgb(0.40, 0.45, 0.52);   // #64748B (Muted grey label text)
+    const bodyColor = rgb(0.20, 0.25, 0.33);    // #334155 (Bio & content body text)
+    const pageBorderColor = rgb(0.85, 0.88, 0.92); // #D8E0EA (Clean outer page boundary)
+    const linkBlue = rgb(0.01, 0.52, 0.78);     // #0284C7 (Profile link color)
     const white = rgb(1, 1, 1);
 
     // Helper: Sanitize text for PDF standard fonts
@@ -123,9 +84,9 @@ export async function POST(request) {
         .trim();
     };
 
-    // Helper: Format date as 'DD MMM YYYY'
+    // Helper: Format date as 'DD-MMM-YYYY' matching screenshot
     const formatDate = (dateVal) => {
-      if (!dateVal) return 'N/A';
+      if (!dateVal) return 'Not specified';
       if (typeof dateVal === 'string' && dateVal.includes('/')) return dateVal;
       try {
         const d = new Date(dateVal);
@@ -134,7 +95,7 @@ export async function POST(request) {
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const month = months[d.getMonth()];
         const year = d.getFullYear();
-        return `${day} ${month} ${year}`;
+        return `${day}-${month}-${year}`;
       } catch (e) {
         return dateVal.toString();
       }
@@ -146,155 +107,78 @@ export async function POST(request) {
     const rawId = u.profileId || u.customId || u.id || u._id || Date.now();
     const shortId = rawId.toString().slice(-6).toUpperCase();
     const candidateProfileId = u.profileId || u.customId || `BV-${shortId}`;
+    const profileUrl = `https://barivivah.in/profile?profileid=${candidateProfileId}`;
 
-    // 1. Personal Details fields
+    // Field extractions with robust fallbacks
     const fullName = u.name || u.fullName || u.displayName || 'Candidate Member';
-    const gender = u.gender || u.sex || 'N/A';
     const dobStr = formatDate(u.dob || u.dateOfBirth || u.birthDate);
+    const heightStr = u.height || u.heightInFt || 'Not specified';
     const maritalStatus = u.maritalStatus || u.marital || 'Never Married';
-    const bloodGroup = u.bloodGroup || u.blood || u.blood_group || 'N/A';
-    const hobbiesStr = Array.isArray(u.hobbies) ? u.hobbies.join(', ') : (u.hobbies || u.interests || 'N/A');
-    const heightStr = u.height || u.heightInFt || 'N/A';
+    const emailStr = u.email || u.emailId || 'Not specified';
+    const phoneStr = u.phone || u.mobile || u.contactNumber || u.phoneNumber || 'Not specified';
+    const bloodGroup = u.bloodGroup || u.blood || u.blood_group || 'Not specified';
 
-    // 2. Family Details fields (mama's surname and mama's contact strictly separated)
-    const fatherName = u.fatherName || u.father || u.father_name || 'N/A';
-    const motherName = u.motherName || u.mother || u.mother_name || 'N/A';
-    const fatherOccupation = u.fatherOccupation || u.parentOccupation || u.father_occupation || 'N/A';
-    const motherOccupation = u.motherOccupation || u.mother_occupation || 'Homemaker';
+    const religionStr = u.religion || 'Hindu';
+    const communityStr = u.caste || u.community || 'Bari';
+    const subCasteStr = u.subcaste || u.subCaste || u.sect || 'Not specified';
+    const gotraStr = u.gotra || u.gothra || 'Not specified';
+    const motherTongueStr = u.motherTongue || u.language || 'Hindi';
+    const manglikStr = u.manglik || u.mangal || 'No';
 
-    const brothers = u.brothers !== undefined && u.brothers !== null && u.brothers !== '' ? u.brothers : 0;
-    const marriedBrothers = u.marriedBrothers || 0;
-    const sisters = u.sisters !== undefined && u.sisters !== null && u.sisters !== '' ? u.sisters : 0;
-    const marriedSisters = u.marriedSisters || 0;
-    const brothersSistersStr = `${brothers} Brother(s) [${marriedBrothers} Married], ${sisters} Sister(s) [${marriedSisters} Married]`;
+    const livingInStr = u.currentAddress || [u.currentCity || u.city, u.state].filter(Boolean).join(', ') || 'Not specified';
+    const permanentAddrStr = u.permanentAddress || u.parentResidenceCity || u.nativePlace || u.nativeCity || 'Not specified';
+    const educationStr = u.education || u.highestEducation || u.degree || 'Not specified';
+    const collegeStr = u.college || u.university || u.institute || u.collegeAttended || 'Not specified';
+    const workSectorStr = u.workSector || u.employmentType || 'Not specified';
+    const occupationStr = u.occupation || u.profession || u.jobTitle || 'Not specified';
+    const incomeStr = u.income || u.annualIncome || u.salary || 'Not specified';
 
-    const mamaSurname = u.mamaSurname || u.maternalGothra || u.maternalSurname || 'N/A';
-    const mamaContact = u.mamaContact || u.maternalContact || 'N/A';
+    const fatherName = u.fatherName || u.father || 'Not specified';
+    const fatherOccupation = u.fatherOccupation || u.parentOccupation || 'Not specified';
+    const motherName = u.motherName || u.mother || 'Not specified';
+    const motherOccupation = u.motherOccupation || 'Homemaker';
 
-    const residenceCity = u.nativeDistrict || u.nativeCity || u.parentResidenceCity || u.nativePlace || u.city || 'N/A';
-    const permanentAddress = u.permanentAddress || u.address || u.currentAddress || residenceCity;
+    const brothers = u.brothers !== undefined && u.brothers !== null && u.brothers !== '' ? Number(u.brothers) : 0;
+    const marriedBrothers = u.marriedBrothers ? Number(u.marriedBrothers) : 0;
+    const sisters = u.sisters !== undefined && u.sisters !== null && u.sisters !== '' ? Number(u.sisters) : 0;
+    const marriedSisters = u.marriedSisters ? Number(u.marriedSisters) : 0;
+    const siblingsStr = `${brothers} Brother(s) (${marriedBrothers} Married), ${sisters} Sister(s) (${marriedSisters} Married)`;
 
-    // 3. Location, Education & Career fields
-    const locationStr = [u.workCity || u.currentCity || u.city, u.state].filter(Boolean).join(', ') || 'N/A';
-    const educationStr = u.education || u.highestEducation || u.degree || 'N/A';
-    const workSector = u.workSector || u.employmentType || u.sector || u.companyType || 'N/A';
-    const occupationStr = u.occupation || u.profession || u.jobTitle || u.designation || 'N/A';
-    const collegeStr = u.college || u.university || u.institute || 'N/A';
-    const incomeStr = u.income || u.annualIncome || u.salary || 'N/A';
+    const mamaSurname = u.mamaSurname || u.maternalGothra || u.mamekul || 'Not specified';
+    const mamaContact = u.mamaContact || u.maternalContact || 'Not specified';
+    const nativePlaceStr = u.nativePlace || u.nativeCity || u.nativeDistrict || u.parentResidenceCity || 'Not specified';
 
-    const bio = u.aboutMe || u.bio || u.profileSummary || u.about || u.description || 'No summary provided.';
-    const phoneStr = u.phone || u.mobile || u.contactNumber || u.phoneNumber || '+91 90111 11111';
-
-    // ==========================================
-    // 1. HOME SCREEN HEADER LOGO & TAGLINE
-    // ==========================================
-    let logoH = 36;
-    try {
-      const publicDir = path.join(process.cwd(), 'public');
-      const logoPath = path.join(publicDir, 'logo_header2.png');
-      if (fs.existsSync(logoPath)) {
-        const logoBytes = fs.readFileSync(logoPath);
-        const logoImg = await pdfDoc.embedPng(logoBytes);
-        const scaled = logoImg.scaleToFit(140, 36);
-        logoH = scaled.height;
-        page.drawImage(logoImg, {
-          x: (width - scaled.width) / 2,
-          y: height - 16 - scaled.height,
-          width: scaled.width,
-          height: scaled.height,
-        });
-      } else {
-        const logoStr = 'barivivah.in';
-        const logoW = boldFont.widthOfTextAtSize(logoStr, 22);
-        page.drawText(logoStr, {
-          x: (width - logoW) / 2,
-          y: height - 16 - 22,
-          size: 22,
-          font: boldFont,
-          color: pinkPrimary,
-        });
-      }
-    } catch (e) {
-      console.warn('Header logo render note:', e.message);
-    }
-
-    // Tagline Below Logo
-    const taglineStr = "India's #1 Most Trusted Bari Matrimony Platform";
-    const taglineW = italicFont.widthOfTextAtSize(taglineStr, 8.5);
-    const taglineY = height - 16 - logoH - 10;
-
-    page.drawText(taglineStr, {
-      x: (width - taglineW) / 2,
-      y: taglineY,
-      size: 8.5,
-      font: italicFont,
-      color: pinkPrimary,
-    });
+    const bio = u.aboutMe || u.bio || u.profileSummary || u.about || u.description ||
+      'I am looking for a partner who shares similar values, is understanding, supportive, and respects family traditions.';
 
     // ==========================================
-    // 2. TOP BANNER BAR
+    // 1. CLEAN OUTER PAGE BORDER (Matching Screenshot)
     // ==========================================
-    const bannerY = taglineY - 30;
-    const bannerHeight = 26;
-    const bannerWidth = width - (2 * margin);
-
-    drawRoundedRectangle(page, {
-      x: margin,
-      y: bannerY,
-      width: bannerWidth,
-      height: bannerHeight,
-      radius: 6,
-      color: pinkLight,
-      borderColor: pinkBorder,
+    const outerMargin = 18;
+    page.drawRectangle({
+      x: outerMargin,
+      y: outerMargin,
+      width: width - (2 * outerMargin),
+      height: height - (2 * outerMargin),
+      borderColor: pageBorderColor,
       borderWidth: 1,
-    });
-
-    let curX = margin + 110;
-
-    drawBadgeIcon(page, curX + 10, bannerY + 13, 'mail', { pinkPrimary, white });
-    curX += 24;
-
-    page.drawText('support@barivivah.in', {
-      x: curX,
-      y: bannerY + 9,
-      size: 8.5,
-      font: boldFont,
-      color: darkText,
-    });
-    curX += 120;
-
-    page.drawText('|', { x: curX, y: bannerY + 9, size: 9, font: regularFont, color: rgb(0.75, 0.75, 0.75) });
-    curX += 15;
-
-    drawBadgeIcon(page, curX + 10, bannerY + 13, 'phone', { pinkPrimary, white });
-    curX += 24;
-
-    page.drawText(phoneStr, {
-      x: curX,
-      y: bannerY + 9,
-      size: 8.5,
-      font: boldFont,
-      color: darkText,
+      color: white,
     });
 
     // ==========================================
-    // 3. TWO COLUMN LAYOUT
+    // 2. LEFT COLUMN (Photo Card + Auto-Fit Bio Card)
     // ==========================================
-    const mainY = bannerY - 14;
-    const leftColX = margin;
-    const leftColWidth = 175;
-    const rightColX = leftColX + leftColWidth + 18; // 217
-    const rightColWidth = width - margin - rightColX; // 354
-    const bottomMargin = 45;
+    const leftMargin = 34;
+    const leftColW = 195;
+    const contentTopY = height - 58; // Generous space from the top page border
 
-    // ------------------------------------------
-    // LEFT COLUMN: PROFILE PHOTO & BIO CARD WITH ID
-    // ------------------------------------------
-    const photoSize = 165;
-    const photoY = mainY - photoSize;
+    // A) TOP PHOTO CARD
+    const photoCardH = 185;
+    const photoCardY = contentTopY - photoCardH;
 
+    // Fetch and prepare profile photo if available
     let profileImage = null;
-    const photoUrl = u.profilePhoto || u.photo || (u.photos && u.photos[0]);
+    const photoUrl = u.profilePhoto || u.photo || (u.photos && u.photos[0]?.url) || (u.photos && u.photos[0]);
     if (photoUrl) {
       try {
         const response = await fetch(photoUrl);
@@ -311,23 +195,24 @@ export async function POST(request) {
       } catch (err) {}
     }
 
-    // Clean Photo Frame Container
-    drawRoundedRectangle(page, {
-      x: leftColX,
-      y: photoY,
-      width: leftColWidth,
-      height: photoSize,
-      radius: 14,
-      color: white,
-      borderColor: pinkBorder,
-      borderWidth: 1.5,
-    });
-
     if (profileImage) {
+      // Draw clean frame without pink background
+      drawRoundedRectangle(page, {
+        x: leftMargin,
+        y: photoCardY,
+        width: leftColW,
+        height: photoCardH,
+        radius: 18,
+        color: white,
+        borderColor: pageBorderColor,
+        borderWidth: 1,
+      });
+
       try {
-        const scaled = profileImage.scaleToFit(leftColWidth - 10, photoSize - 10);
-        const imgX = leftColX + 5 + (leftColWidth - 10 - scaled.width) / 2;
-        const imgY = photoY + 5 + (photoSize - 10 - scaled.height) / 2;
+        const padding = 3;
+        const scaled = profileImage.scaleToFit(leftColW - (2 * padding), photoCardH - (2 * padding));
+        const imgX = leftMargin + padding + (leftColW - (2 * padding) - scaled.width) / 2;
+        const imgY = photoCardY + padding + (photoCardH - (2 * padding) - scaled.height) / 2;
 
         page.drawImage(profileImage, {
           x: imgX,
@@ -337,267 +222,254 @@ export async function POST(request) {
         });
       } catch (e) {}
     } else {
-      page.drawCircle({ x: leftColX + leftColWidth / 2, y: photoY + 95, size: 28, color: pinkLight, borderColor: pinkBorder, borderWidth: 1 });
-      const initialLetter = (fullName || 'V').charAt(0).toUpperCase();
-      const initW = boldFont.widthOfTextAtSize(initialLetter, 34);
-      page.drawText(initialLetter, {
-        x: leftColX + (leftColWidth - initW) / 2,
-        y: photoY + 84,
-        size: 34,
-        font: boldFont,
-        color: pinkPrimary,
+      // Fallback: Elegant initial monogram with coral pink background (when no photo is uploaded)
+      drawRoundedRectangle(page, {
+        x: leftMargin,
+        y: photoCardY,
+        width: leftColW,
+        height: photoCardH,
+        radius: 18,
+        color: coralPink,
       });
-      page.drawText('Candidate Profile Photo', {
-        x: leftColX + 26,
-        y: photoY + 30,
-        size: 8.5,
+
+      const initialChar = (fullName || 'B').charAt(0).toUpperCase();
+      const initSize = 110;
+      const initW = boldFont.widthOfTextAtSize(initialChar, initSize);
+      page.drawText(initialChar, {
+        x: leftMargin + (leftColW - initW) / 2,
+        y: photoCardY + (photoCardH - initSize) / 2 + 10,
+        size: initSize,
         font: boldFont,
-        color: labelText,
+        color: white,
       });
     }
 
-    // BIO CONTAINER CARD (Extends cleanly to bottomMargin)
-    const bioY = bottomMargin;
-    const bioHeight = photoY - 12 - bioY;
+    // B) BOTTOM SOFT PINK BIO CARD (Auto-fits to bio length)
+    const rawBio = sanitizeText(bio);
+    const quoteText = `“${rawBio}”`;
+    const bioLines = wrapText(quoteText, regularFont, 9, leftColW - 32);
+
+    const nameSectionH = 16 + 10 + 2.5 + 14;
+    const bioTextH = bioLines.length * 13.5;
+    const bioCardH = Math.max(85, nameSectionH + bioTextH + 26);
+    const bioCardY = photoCardY - 14 - bioCardH;
 
     drawRoundedRectangle(page, {
-      x: leftColX,
-      y: bioY,
-      width: leftColWidth,
-      height: bioHeight,
-      radius: 14,
-      color: pinkLight,
-      borderColor: pinkBorder,
-      borderWidth: 1,
+      x: leftMargin,
+      y: bioCardY,
+      width: leftColW,
+      height: bioCardH,
+      radius: 18,
+      color: softPink,
     });
 
-    let bioCurY = bioY + bioHeight - 24;
+    let bioCurY = bioCardY + bioCardH - 24;
 
     // Candidate Name
-    const nameStr = sanitizeText(fullName);
-    page.drawText(nameStr, {
-      x: leftColX + 14,
+    const cleanName = sanitizeText(fullName);
+    page.drawText(cleanName, {
+      x: leftMargin + 16,
       y: bioCurY,
-      size: 15,
+      size: 16,
       font: boldFont,
-      color: darkText,
-      maxWidth: leftColWidth - 28,
-    });
-    bioCurY -= 14;
-
-    // Candidate Profile ID below Name
-    const idText = `ID: ${candidateProfileId}`;
-    page.drawText(idText, {
-      x: leftColX + 14,
-      y: bioCurY,
-      size: 9.5,
-      font: boldFont,
-      color: pinkPrimary,
+      color: darkTitle,
+      maxWidth: leftColW - 32,
     });
     bioCurY -= 10;
 
-    // Accent line below Candidate ID
+    // Accent line under Name (Matching screenshot)
     page.drawRectangle({
-      x: leftColX + 14,
+      x: leftMargin + 16,
       y: bioCurY,
-      width: 32,
+      width: 28,
       height: 2.5,
-      color: pinkPrimary,
+      color: coralPink,
     });
-    bioCurY -= 18;
+    bioCurY -= 16;
 
-    page.drawText('“', {
-      x: leftColX + 10,
-      y: bioCurY,
-      size: 24,
-      font: boldFont,
-      color: pinkPrimary,
-    });
-
-    const bioTextClean = sanitizeText(bio);
-    const bioLines = wrapText(bioTextClean, regularFont, 8.5, leftColWidth - 32);
-    let textY = bioCurY - 6;
-
+    // About Me Quote Text
     bioLines.forEach((line) => {
       page.drawText(line, {
-        x: leftColX + 20,
-        y: textY,
-        size: 8.5,
+        x: leftMargin + 16,
+        y: bioCurY,
+        size: 9,
         font: regularFont,
-        color: bodyText,
+        color: bodyColor,
       });
-      textY -= 13;
+      bioCurY -= 13.5;
     });
 
-    page.drawText('”', {
-      x: leftColX + leftColWidth - 24,
-      y: textY,
-      size: 24,
-      font: boldFont,
-      color: pinkPrimary,
-    });
+    // ==========================================
+    // 3. RIGHT COLUMN (Clean Key-Value Sections with Standard Spacing)
+    // ==========================================
+    const rightColX = leftMargin + leftColW + 26; // 253
+    const labelWidth = 118;
+    const colonX = rightColX + labelWidth;
+    const valueX = colonX + 12;
+    const maxValueW = width - outerMargin - valueX - 16;
 
-    // ------------------------------------------
-    // RIGHT COLUMN: SECTIONS
-    // ------------------------------------------
-    let rightY = mainY;
-    const valueMaxW = rightColWidth - 158;
+    let rightCurY = contentTopY - 2;
 
-    const renderSection = (title, iconType, items) => {
-      const sanitizedTitle = sanitizeText(title);
-
-      let itemsTotalH = 0;
-      const itemRowData = items.map(([label, val]) => {
-        const valClean = sanitizeText(val);
-        const valLines = wrapText(valClean, boldFont, 9, valueMaxW);
-        const rowH = Math.max(17.5, valLines.length * 12.5 + 3.5);
-        itemsTotalH += rowH;
-        return { label: sanitizeText(label), valLines, rowH };
-      });
-
-      const sectionHeight = 28 + itemsTotalH + 6;
-      const sectionY = rightY - sectionHeight;
-
-      // Card Container
-      drawRoundedRectangle(page, {
+    // Helper: Render section with title + accent underline + all key-value rows
+    const renderSection = (title, fields) => {
+      // Section Title
+      page.drawText(title, {
         x: rightColX,
-        y: sectionY,
-        width: rightColWidth,
-        height: sectionHeight,
-        radius: 12,
-        color: white,
-        borderColor: pinkBorder,
-        borderWidth: 1,
-      });
-
-      // Section Header
-      const headerCenterY = rightY - 15;
-      drawBadgeIcon(page, rightColX + 14, headerCenterY, iconType, { pinkPrimary, white });
-
-      page.drawText(sanitizedTitle, {
-        x: rightColX + 28,
-        y: headerCenterY - 4,
+        y: rightCurY,
         size: 12.5,
         font: boldFont,
-        color: darkText,
+        color: darkTitle,
       });
 
-      const titleW = boldFont.widthOfTextAtSize(sanitizedTitle, 12.5);
-      page.drawLine({
-        start: { x: rightColX + 34 + titleW, y: headerCenterY },
-        end: { x: rightColX + rightColWidth - 12, y: headerCenterY },
-        thickness: 1,
-        color: pinkPrimary,
+      // Accent underline under title
+      page.drawRectangle({
+        x: rightColX,
+        y: rightCurY - 5,
+        width: 28,
+        height: 2.5,
+        color: coralPink,
       });
 
-      // Dynamic Item Rows
-      let curItemY = headerCenterY - 18;
-      itemRowData.forEach(({ label, valLines, rowH }) => {
+      rightCurY -= 20;
+
+      // Render all key-value rows
+      fields.forEach(([label, value]) => {
+        const valClean = sanitizeText(value || 'Not specified');
+        const valLines = wrapText(valClean, boldFont, 9.5, maxValueW);
+
+        // Label
         page.drawText(label, {
-          x: rightColX + 12,
-          y: curItemY,
-          size: 9,
+          x: rightColX,
+          y: rightCurY,
+          size: 9.5,
           font: regularFont,
-          color: labelText,
-          maxWidth: 120,
+          color: labelColor,
+          maxWidth: labelWidth - 4,
         });
 
+        // Colon
         page.drawText(':', {
-          x: rightColX + 136,
-          y: curItemY,
-          size: 9,
+          x: colonX,
+          y: rightCurY,
+          size: 9.5,
           font: boldFont,
-          color: bodyText,
+          color: darkTitle,
         });
 
-        let lineY = curItemY;
+        // Value (Multi-line supported)
+        let lineY = rightCurY;
         valLines.forEach((l) => {
           page.drawText(l, {
-            x: rightColX + 148,
+            x: valueX,
             y: lineY,
-            size: 9,
+            size: 9.5,
             font: boldFont,
-            color: darkText,
+            color: darkTitle,
           });
           lineY -= 12.5;
         });
 
-        curItemY -= rowH;
+        const rowHeight = Math.max(16.5, valLines.length * 12.5 + 4);
+        rightCurY -= rowHeight;
       });
 
-      rightY = sectionY - 9;
+      rightCurY -= 16; // Comfortable breathing room between sections
     };
 
-    // 1) Personal Details
-    renderSection('Personal Details', 'person', [
-      ['Full Name', fullName],
-      ['Gender', gender],
-      ['Date Of Birth', dobStr],
+    // 1) Basic Details
+    renderSection('Basic Details', [
+      ['Date of Birth', dobStr],
+      ['Height', heightStr],
       ['Marital Status', maritalStatus],
       ['Blood Group', bloodGroup],
-      ['Hobbies & Interest', hobbiesStr],
-      ['Height', heightStr],
+      ['Email ID', emailStr],
+      ['Contact No.', phoneStr],
     ]);
 
-    // 2) Family Details (Strictly separated Mama's Surname & Mama's Contact)
-    renderSection('Family Details', 'family', [
-      ['Father Name', fatherName],
-      ['Mother Name', motherName],
-      ['Father Occupation', fatherOccupation],
-      ['Mother Occupation', motherOccupation],
-      ['Brothers & Sisters', brothersSistersStr],
-      ['Mama\'s Surname', mamaSurname],
-      ['Mama\'s Contact', mamaContact],
-      ['Residence / Family City', residenceCity],
-      ['Permanent Address', permanentAddress],
+    // 2) Religious Background
+    renderSection('Religious Background', [
+      ['Religion', religionStr],
+      ['Community', communityStr],
+      ['Sub-caste', subCasteStr],
+      ['Gotra', gotraStr],
+      ['Mother Tongue', motherTongueStr],
+      ['Manglik', manglikStr],
     ]);
 
     // 3) Location, Education & Career
-    renderSection('Location, Education & Career', 'education', [
-      ['Location', locationStr],
-      ['Education', educationStr],
-      ['Work Sectors', workSector],
-      ['Occupation', occupationStr],
+    renderSection('Location, Education & Career', [
+      ['Living in', livingInStr],
+      ['Permanent Address', permanentAddrStr],
+      ['Highest Qualification', educationStr],
       ['College Attended', collegeStr],
+      ['Work Sector', workSectorStr],
+      ['Occupation', occupationStr],
       ['Income', incomeStr],
     ]);
 
+    // 4) Family Details
+    renderSection('Family Details', [
+      ['Father\'s Name', fatherName],
+      ['Father\'s Occupation', fatherOccupation],
+      ['Mother\'s Name', motherName],
+      ['Mother\'s Occupation', motherOccupation],
+      ['Brothers & Sisters', siblingsStr],
+      ['Mama\'s Surname', mamaSurname],
+      ['Mama\'s Contact', mamaContact],
+      ['Native Place', nativePlaceStr],
+    ]);
+
     // ==========================================
-    // 4. FOOTER (DRAWN ON ALL PAGES)
+    // 4. BOTTOM OF PAGE: PROFILE LINK & BRANDING
     // ==========================================
-    const totalPages = pdfDoc.getPageCount();
-    const todayStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    const footerY = 25;
 
-    for (let pIdx = 0; pIdx < totalPages; pIdx++) {
-      const p = pdfDoc.getPage(pIdx);
+    // Link Text at bottom (as requested: "and the link to the usersprofile it should at the bottom of the page")
+    page.drawText('Click here to view my BariVivah Profile: ', {
+      x: leftMargin,
+      y: footerY,
+      size: 8.5,
+      font: boldFont,
+      color: darkTitle,
+    });
 
-      // Footer divider line
-      p.drawLine({
-        start: { x: margin, y: 30 },
-        end: { x: width - margin, y: 30 },
-        thickness: 0.6,
-        color: pinkBorder,
-      });
+    const prefixW = boldFont.widthOfTextAtSize('Click here to view my BariVivah Profile: ', 8.5);
+    page.drawText(profileUrl, {
+      x: leftMargin + prefixW,
+      y: footerY,
+      size: 8.5,
+      font: boldFont,
+      color: linkBlue,
+    });
 
-      // Left Footer
-      p.drawText('BariVivah Matrimony — Confidential Candidate Biodata', {
-        x: margin,
-        y: 16,
-        size: 8.5,
+    // Bottom Right Branding: BariVivah Trademark Logo / Text
+    let logoDrawn = false;
+    try {
+      const publicDir = path.join(process.cwd(), 'public');
+      const logoPath = path.join(publicDir, 'logo_header2.png');
+      if (fs.existsSync(logoPath)) {
+        const logoBytes = fs.readFileSync(logoPath);
+        const logoImg = await pdfDoc.embedPng(logoBytes);
+        const scaled = logoImg.scaleToFit(85, 24);
+        page.drawImage(logoImg, {
+          x: width - outerMargin - scaled.width - 16,
+          y: footerY - 4,
+          width: scaled.width,
+          height: scaled.height,
+        });
+        logoDrawn = true;
+      }
+    } catch (e) {}
+
+    if (!logoDrawn) {
+      const brandStr = 'barivivah.in';
+      const brandW = boldFont.widthOfTextAtSize(brandStr, 11);
+      page.drawText(brandStr, {
+        x: width - outerMargin - brandW - 16,
+        y: footerY,
+        size: 11,
         font: boldFont,
-        color: pinkPrimary,
-      });
-
-      // Right Footer
-      const rightFooterText = `Generated: ${todayStr}  |  Page ${pIdx + 1} of ${totalPages}`;
-      const rightW = regularFont.widthOfTextAtSize(rightFooterText, 8.5);
-
-      p.drawText(rightFooterText, {
-        x: width - margin - rightW,
-        y: 16,
-        size: 8.5,
-        font: regularFont,
-        color: bodyText,
+        color: coralPink,
       });
     }
 
