@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Heart, User, Menu, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import TrademarkLogo from './TrademarkLogo';
 
 export default function MatrimonialNavbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -27,8 +28,8 @@ export default function MatrimonialNavbar() {
     <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-[#f8f8f8] shadow-md py-2' : 'bg-[#f8f8f8] py-3'
       }`}>
       <div className="w-full max-w-[1200px] mx-auto px-4 flex items-center justify-between">
-        <div className="flex items-center relative h-14 lg:h-16 w-56 lg:w-72">
-          <Image src={"/images/new-logo.png"} width={400} height={150} className='absolute top-1/2 -translate-y-1/2 left-0 h-24 lg:h-32 w-auto object-contain' alt='BariVivah Logo' />
+        <div className="flex items-center">
+          <TrademarkLogo width={180} href="/" priority />
         </div>
 
         {/* Desktop Menu */}

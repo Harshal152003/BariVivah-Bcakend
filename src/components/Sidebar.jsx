@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import TrademarkLogo from "./TrademarkLogo";
 import {
   LayoutDashboard,
   User,
@@ -47,16 +48,12 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen }) {
 
         {/* Header Section */}
         <div className="p-6 border-b border-gray-100 flex-shrink-0 flex justify-center">
-          <Link href="/dashboard" className="flex items-center">
-            <Image
-              src="/logo-new.png"
-              alt="Barivivah Logo"
-              width={200}
-              height={110}
-              className="object-contain hover:scale-105 transition-transform duration-300"
-              priority
-            />
-          </Link>
+          <TrademarkLogo
+            width={180}
+            href="/dashboard"
+            priority
+            className="hover:scale-105 transition-transform duration-300"
+          />
         </div>
 
         {/* Navigation Section */}

@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowRight, Lock, Mail, User, Crown } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import TrademarkLogo from '@/components/TrademarkLogo'
 
 export default function EmployeeLoginForm() {
   const { login } = useAuth()
@@ -44,11 +45,12 @@ export default function EmployeeLoginForm() {
     <div className="w-full bg-[#FFFFFF] flex items-center justify-center">
       <div className="w-full max-w-lg mx-auto p-8 bg-white rounded-3xl border border-primary/20 shadow-xl shadow-gray-200/50 transition-all duration-300">
         {/* Header with crown icon matching admin panel */}
-        <div className="text-center mb-8">
-          <img 
-            src="/admin-logo.png" 
-            alt="Admin Logo" 
-            className="h-24 w-auto mx-auto mb-4 object-contain"
+        <div className="text-center mb-8 flex flex-col items-center">
+          <TrademarkLogo 
+            width={200}
+            href="/"
+            priority
+            className="mb-4"
           />
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Admin Portal</h2>
           <p className="text-gray-500">Sign in to access your dashboard</p>

@@ -23,9 +23,15 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
+  Receipt,
+  Layers,
 } from "lucide-react";
+import TransactionsTab from "./TransactionsTab";
 
 export default function SubscriptionPlans() {
+  // Main Tab Navigation: 'plans' or 'transactions'
+  const [activeMainTab, setActiveMainTab] = useState("plans");
+
   // State for plans data and UI
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -292,32 +298,64 @@ export default function SubscriptionPlans() {
     <div className="min-h-screen bg-gradient-to-br from-rose-50/50 via-white to-amber-50/30 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-rose-100 to-amber-100 rounded-full mb-6 shadow-lg">
-            <Crown className="w-10 h-10 text-rose-500" />
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-rose-100 to-amber-100 rounded-2xl mb-4 shadow-md">
+            <Crown className="w-8 h-8 text-rose-500" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Subscription Plans
+          <h1 className="text-3xl sm:text-4xl font-black text-gray-900 mb-2">
+            Payments & Subscription Management
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Manage and customize your subscription offerings
+          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+            Manage membership tiers, monitor customer transactions, and download GST tax invoices.
           </p>
         </div>
 
-        {/* Controls */}
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-          <div className="relative w-full md:w-64">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search plans..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all"
-            />
+        {/* Top Tab Switcher */}
+        <div className="flex justify-center mb-8">
+          <div className="inline-flex p-1.5 bg-gray-200/70 rounded-2xl border border-gray-300/60 shadow-inner">
+            <button
+              onClick={() => setActiveMainTab("plans")}
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 ${
+                activeMainTab === "plans"
+                  ? "bg-white text-gray-900 shadow-md"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-white/50"
+              }`}
+            >
+              <Layers className="w-4 h-4 text-[#FB2467]" />
+              <span>Subscription Plans</span>
+            </button>
+            <button
+              onClick={() => setActiveMainTab("transactions")}
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 ${
+                activeMainTab === "transactions"
+                  ? "bg-white text-gray-900 shadow-md"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-white/50"
+              }`}
+            >
+              <Receipt className="w-4 h-4 text-[#FB2467]" />
+              <span>Transactions & GST Invoices</span>
+            </button>
           </div>
+        </div>
 
-          <button
+        {activeMainTab === "transactions" ? (
+          <TransactionsTab />
+        ) : (
+          <>
+            {/* Controls */}
+            <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+              <div className="relative w-full md:w-64">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search plans..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all"
+                />
+              </div>
+
+              <button
             onClick={() => {
               setEditingPlan(null);
               setFormData({
@@ -519,6 +557,8 @@ export default function SubscriptionPlans() {
             </button>
           </div>
         )}
+        </>
+      )}
       </div>
 
       {/* Add/Edit Plan Modal */}

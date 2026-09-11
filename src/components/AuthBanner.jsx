@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import TrademarkLogo from "./TrademarkLogo";
 import { Heart, Sparkles, Users, Star, ArrowRight } from "lucide-react";
 
 export default function AuthBanner() {
@@ -83,13 +84,10 @@ export default function AuthBanner() {
       </div>
 
       {/* Bottom Logo */}
-      <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2">
-        <Image
-          src="/admin-login-logo-bottom.svg"
-          alt="BariVivah Logo"
-          width={250}
-          height={80}
-          className="h-16 md:h-20 w-auto object-contain opacity-90"
+      <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2">
+        <TrademarkLogo
+          width={180}
+          className="opacity-95"
         />
       </div>
 

@@ -3,6 +3,18 @@ const nextConfig = {
   outputFileTracingExcludes: {
     '*': ['./api/session']
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
+  },
   webpack: (config, { dev }) => {
     if (dev) {
       config.cache = {

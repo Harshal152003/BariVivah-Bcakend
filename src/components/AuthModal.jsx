@@ -4,6 +4,7 @@ import { ArrowRight, Phone, Shield, RotateCcw, Edit, User, Mail, Lock, UserCheck
 import { useRouter } from 'next/navigation';
 import { useSession } from '@/context/SessionContext';
 import Image from 'next/image';
+import TrademarkLogo from './TrademarkLogo';
 
 export default function AuthModal({ isOpen, onClose }) {
   const router = useRouter();
@@ -12,19 +13,19 @@ export default function AuthModal({ isOpen, onClose }) {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [countryCode, setCountryCode] = useState('+91');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  
+
   // Signup fields state
   const [signupName, setSignupName] = useState('');
   const [signupPhone, setSignupPhone] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [signupGender, setSignupGender] = useState('Male');
-  
+
   // Terms & Conditions States
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [termsModalVisible, setTermsModalVisible] = useState(false);
   const [termsModalType, setTermsModalType] = useState('terms'); // 'terms' or 'privacy'
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
   const [error, setError] = useState('');
@@ -116,7 +117,7 @@ export default function AuthModal({ isOpen, onClose }) {
       const success = await login(cleanedPhone);
       if (success) {
         onClose();
-        router.push('/dashboard');
+        router.push('/download-app?type=login');
       } else {
         setError('Login failed. Please try again.');
       }
@@ -181,7 +182,7 @@ export default function AuthModal({ isOpen, onClose }) {
         // Refresh context to load the new user session
         await refreshUser();
         onClose();
-        router.push('/dashboard');
+        router.push('/download-app?type=registered');
       } else {
         setError(data.message || 'Registration failed');
       }
@@ -209,9 +210,9 @@ export default function AuthModal({ isOpen, onClose }) {
 
       {/* Main Card Container */}
       <div className="relative w-full max-w-md bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-100 overflow-hidden transform transition-all duration-300 scale-100">
-        
+
         {/* Close Button */}
-        <button 
+        <button
           onClick={onClose}
           type="button"
           className="absolute top-5 right-5 text-gray-400 hover:text-[#5C3F43] transition-colors z-30 p-1 hover:bg-gray-100 rounded-full"
@@ -222,12 +223,9 @@ export default function AuthModal({ isOpen, onClose }) {
         {/* Header */}
         <div className="text-center px-6 sm:px-8 pt-8 sm:pt-10 pb-4 sm:pb-6">
           <div className="flex justify-center mb-4">
-            <Image 
-              src="/logo.png" 
-              width={160} 
-              height={48} 
-              className="h-10 sm:h-12 w-auto object-contain" 
-              alt="BariVivah Logo" 
+            <TrademarkLogo
+              width={180}
+              priority
             />
           </div>
           <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1">
@@ -243,22 +241,20 @@ export default function AuthModal({ isOpen, onClose }) {
           <button
             onClick={() => { setActiveTab('login'); setError(''); }}
             type="button"
-            className={`flex-1 pb-3 text-sm font-semibold transition-all border-b-2 ${
-              activeTab === 'login'
+            className={`flex-1 pb-3 text-sm font-semibold transition-all border-b-2 ${activeTab === 'login'
                 ? 'border-primary text-primary'
                 : 'border-transparent text-[#5C3F43] hover:text-[#5C3F43]'
-            }`}
+              }`}
           >
             Login
           </button>
           <button
-            onClick={() => { setActiveTab('signup'); setError(''); }}
+            onClick={() => {
+              onClose();
+              router.push('/login?tab=signup');
+            }}
             type="button"
-            className={`flex-1 pb-3 text-sm font-semibold transition-all border-b-2 ${
-              activeTab === 'signup'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-[#5C3F43] hover:text-[#5C3F43]'
-            }`}
+            className="flex-1 pb-3 text-sm font-semibold transition-all border-b-2 border-transparent text-[#5C3F43] hover:text-primary"
           >
             Register
           </button>
@@ -291,7 +287,7 @@ export default function AuthModal({ isOpen, onClose }) {
                       type="tel"
                       value={phoneNumber}
                       onChange={(e) => setPhoneNumber(e.target.value)}
-                      placeholder="98765 43210"
+                      placeholder="99999 99999"
                       className="flex-1 px-3 py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 text-sm sm:text-base"
                       maxLength={10}
                     />
@@ -539,7 +535,7 @@ export default function AuthModal({ isOpen, onClose }) {
           )}
         </div>
       </div>
-      
+
       {/* Terms & Conditions Modal Overlay */}
       {termsModalVisible && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
@@ -548,7 +544,7 @@ export default function AuthModal({ isOpen, onClose }) {
               <h3 className="font-bold text-lg text-gray-800">
                 {termsModalType === 'terms' ? 'Terms & Conditions' : 'Privacy Policy'}
               </h3>
-              <button 
+              <button
                 onClick={() => setTermsModalVisible(false)}
                 className="p-1 hover:bg-gray-100 rounded-full transition-colors focus:outline-none"
               >
@@ -562,7 +558,7 @@ export default function AuthModal({ isOpen, onClose }) {
                   <p>
                     To register as a member of BariVivah, you must be of legal marriageable age as per the laws of India (currently 21 years for males and 18 years for females) and legally single/divorced/widowed.
                   </p>
-                  
+
                   <h4 className="font-semibold text-gray-900">2. Accuracy of Profile Information</h4>
                   <p>
                     You agree to provide true, accurate, and complete information. Providing fake credentials, educational statuses, or uploading photos of other people will result in permanent account termination.

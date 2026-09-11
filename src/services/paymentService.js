@@ -5,6 +5,7 @@ import User from '@/models/User';
 import Subscription from '@/models/Subscription';
 import PaymentTransaction, { PAYMENT_STATUS } from '@/models/PaymentTransaction';
 import RazorpayWebhookEvent from '@/models/RazorpayWebhookEvent';
+import invoiceService, { getStateCode } from '@/services/invoiceService';
 
 // Centralized error class for payment domain errors
 export class PaymentError extends Error {
@@ -15,6 +16,82 @@ export class PaymentError extends Error {
     this.statusCode = statusCode;
     this.details = details;
   }
+}
+
+/**
+ * Calculates GST Breakdown according to Indian Tax Rules (SAC 998599)
+ * Intra-State (same state): 9% CGST + 9% SGST
+ * Inter-State (different state): 18% IGST
+ */
+export function computeGstBreakdown({ basePlanPrice, userState }) {
+  const gstEnabled = process.env.GST_ENABLED !== 'false';
+  const gstPricingMode = (process.env.GST_PRICING_MODE || 'EXCLUSIVE').toUpperCase();
+  const gstRate = Number(process.env.GST_RATE) || 18;
+  const companyState = (process.env.COMPANY_STATE || 'Maharashtra').trim().toLowerCase();
+  const companyStateCode = process.env.COMPANY_STATE_CODE || '27';
+
+  const customerState = (userState || process.env.COMPANY_STATE || 'Maharashtra').trim();
+  const customerStateCode = getStateCode(customerState);
+  const isSameState = customerState.toLowerCase() === companyState;
+
+  if (!gstEnabled) {
+    const total = basePlanPrice;
+    return {
+      sacCode: '998599',
+      gstRate: 0,
+      isInclusive: false,
+      baseAmount: total,
+      cgst: 0,
+      sgst: 0,
+      igst: 0,
+      totalTax: 0,
+      totalAmount: total,
+      amountInPaise: Math.round(total * 100),
+      billingState: customerState,
+      billingStateCode: customerStateCode,
+    };
+  }
+
+  let baseAmount, cgst, sgst, igst, totalTax, totalAmount;
+
+  if (gstPricingMode === 'INCLUSIVE') {
+    // Reverse calculated from total (Total is fixed at basePlanPrice)
+    totalAmount = basePlanPrice;
+    baseAmount = Math.round((totalAmount / (1 + gstRate / 100)) * 100) / 100;
+    totalTax = Math.round((totalAmount - baseAmount) * 100) / 100;
+  } else {
+    // EXCLUSIVE (Default Option A): 18% added on top
+    baseAmount = basePlanPrice;
+    totalTax = Math.round((baseAmount * (gstRate / 100)) * 100) / 100;
+    totalAmount = Math.round((baseAmount + totalTax) * 100) / 100;
+  }
+
+  if (isSameState) {
+    cgst = Math.round((totalTax / 2) * 100) / 100;
+    sgst = Math.round((totalTax - cgst) * 100) / 100;
+    igst = 0;
+  } else {
+    cgst = 0;
+    sgst = 0;
+    igst = totalTax;
+  }
+
+  const amountInPaise = Math.round(totalAmount * 100);
+
+  return {
+    sacCode: '998599',
+    gstRate,
+    isInclusive: gstPricingMode === 'INCLUSIVE',
+    baseAmount,
+    cgst,
+    sgst,
+    igst,
+    totalTax,
+    totalAmount,
+    amountInPaise,
+    billingState: customerState,
+    billingStateCode: customerStateCode,
+  };
 }
 
 // Valid state machine transitions
@@ -104,7 +181,7 @@ async function withTransaction(fn) {
 class PaymentService {
   /**
    * 1. CREATE ORDER API SERVICE
-   * Server-side calculation of order amount & initiation of local + Razorpay transaction
+   * Server-side calculation of order amount with 18% GST & initiation of local + Razorpay transaction
    */
   async createOrder({ userId, planId }) {
     await connectDB();
@@ -127,19 +204,42 @@ class PaymentService {
       throw new PaymentError('INVALID_PLAN_PRICE', 'Invalid subscription plan price', 400);
     }
 
+    // Auto-detect user state from profile for zero-friction GST calculation
+    const userState = user.state || user.currentCity || user.nativePlace || 'Maharashtra';
+    const gstBreakdown = computeGstBreakdown({ basePlanPrice: plan.price, userState });
+
     const receipt = `rcpt_bv_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
     const transactionId = `bv_tx_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-    const amountInPaise = Math.round(plan.price * 100);
+    const amountInPaise = gstBreakdown.amountInPaise;
 
-    // 1. Create local transaction record in CREATED state
+    // 1. Create local transaction record in CREATED state with complete GST snapshot
     const transaction = await PaymentTransaction.create({
       transactionId,
       userId: user._id,
       planId: plan._id,
-      amount: plan.price,
+      amount: gstBreakdown.totalAmount,
       currency: 'INR',
       receipt,
       status: PAYMENT_STATUS.CREATED,
+      gstBreakdown: {
+        sacCode: gstBreakdown.sacCode,
+        gstRate: gstBreakdown.gstRate,
+        isInclusive: gstBreakdown.isInclusive,
+        baseAmount: gstBreakdown.baseAmount,
+        cgst: gstBreakdown.cgst,
+        sgst: gstBreakdown.sgst,
+        igst: gstBreakdown.igst,
+        totalTax: gstBreakdown.totalTax,
+        totalAmount: gstBreakdown.totalAmount,
+      },
+      billingDetails: {
+        customerName: user.name || user.fullName || 'Valued Member',
+        customerEmail: user.email || '',
+        customerPhone: user.phone || user.mobile || '',
+        billingState: gstBreakdown.billingState,
+        billingStateCode: gstBreakdown.billingStateCode,
+        customerGstin: '',
+      },
       planSnapshot: {
         name: plan.name,
         price: plan.price,
@@ -162,6 +262,10 @@ class PaymentService {
           userId: user._id.toString(),
           planId: plan._id.toString(),
           planName: plan.name,
+          baseAmount: String(gstBreakdown.baseAmount),
+          totalTax: String(gstBreakdown.totalTax),
+          gstRate: `${gstBreakdown.gstRate}%`,
+          placeOfSupply: gstBreakdown.billingState,
         },
       });
     } catch (rzpErr) {
@@ -185,17 +289,24 @@ class PaymentService {
     transaction.status = PAYMENT_STATUS.PENDING;
     await transaction.save();
 
-    console.log(`✅ Order created successfully: TxID [${transactionId}] RzpOrderId [${razorpayOrder.id}]`);
+    console.log(`✅ Order created successfully: TxID [${transactionId}] RzpOrderId [${razorpayOrder.id}] Base [₹${gstBreakdown.baseAmount}] Tax [₹${gstBreakdown.totalTax}] Total [₹${gstBreakdown.totalAmount}]`);
 
     return {
       transactionId: transaction.transactionId,
       razorpayOrderId: razorpayOrder.id,
-      amount: plan.price,
+      amount: gstBreakdown.totalAmount,
+      baseAmount: gstBreakdown.baseAmount,
+      totalTax: gstBreakdown.totalTax,
+      cgst: gstBreakdown.cgst,
+      sgst: gstBreakdown.sgst,
+      igst: gstBreakdown.igst,
+      gstRate: gstBreakdown.gstRate,
       amountInPaise,
       currency: 'INR',
       keyId: process.env.RAZORPAY_KEY_ID,
       planName: plan.name,
       receipt,
+      billingState: gstBreakdown.billingState,
     };
   }
 
@@ -351,7 +462,26 @@ class PaymentService {
           transactionId: existingTx.transactionId,
           status: existingTx.status,
           subscription: user?.subscription || null,
+          invoiceNumber: existingTx.invoiceDetails?.invoiceNumber || null,
+          invoicePdfUrl: `/api/payment/invoice/${existingTx.transactionId}`,
         };
+      }
+    }
+
+    // Generate and attach Tax Invoice Number if not already set
+    if (!lockedTx.invoiceDetails?.invoiceNumber) {
+      try {
+        const capturedCount = await PaymentTransaction.countDocuments({ status: PAYMENT_STATUS.CAPTURED });
+        const invoiceNumber = invoiceService.generateInvoiceNumber(capturedCount || 1);
+        lockedTx.invoiceDetails = {
+          invoiceNumber,
+          invoiceDate: new Date(),
+          invoicePdfUrl: `/api/payment/invoice/${lockedTx.transactionId}`,
+        };
+        await lockedTx.save();
+        console.log(`🧾 Tax Invoice [${invoiceNumber}] generated for TxID [${lockedTx.transactionId}]`);
+      } catch (invErr) {
+        console.warn('⚠️ Non-fatal: Invoice generation error:', invErr.message);
       }
     }
 
@@ -410,6 +540,8 @@ class PaymentService {
         transactionId: lockedTx.transactionId,
         status: lockedTx.status,
         subscription: updatedUser.subscription,
+        invoiceNumber: lockedTx.invoiceDetails?.invoiceNumber || null,
+        invoicePdfUrl: `/api/payment/invoice/${lockedTx.transactionId}`,
       };
     });
   }
@@ -624,6 +756,10 @@ class PaymentService {
               status: updatedTx.status,
               amount: updatedTx.amount,
               currency: updatedTx.currency,
+              gstBreakdown: updatedTx.gstBreakdown,
+              billingDetails: updatedTx.billingDetails,
+              invoiceDetails: updatedTx.invoiceDetails,
+              invoicePdfUrl: updatedTx.status === PAYMENT_STATUS.CAPTURED ? `/api/payment/invoice/${updatedTx.transactionId}` : null,
               planSnapshot: updatedTx.planSnapshot,
               capturedAt: updatedTx.capturedAt,
               subscription: user?.subscription || null,
@@ -642,6 +778,10 @@ class PaymentService {
       status: transaction.status,
       amount: transaction.amount,
       currency: transaction.currency,
+      gstBreakdown: transaction.gstBreakdown,
+      billingDetails: transaction.billingDetails,
+      invoiceDetails: transaction.invoiceDetails,
+      invoicePdfUrl: transaction.status === PAYMENT_STATUS.CAPTURED ? `/api/payment/invoice/${transaction.transactionId}` : null,
       planSnapshot: transaction.planSnapshot,
       createdAt: transaction.createdAt,
       capturedAt: transaction.capturedAt,

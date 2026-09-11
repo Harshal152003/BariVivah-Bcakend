@@ -16,6 +16,7 @@ import {
 import { FaRupeeSign } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import TrademarkLogo from '@/components/TrademarkLogo';
 
 export default function AdminLayout({ children }) {
   const [activeTab, setActiveTab] = useState('');
@@ -28,6 +29,7 @@ export default function AdminLayout({ children }) {
     // { id: 'overview', label: 'Dashboard Overview', icon: BarChart3, route: "/admin-dashboard", permissionKey: "overview" },
     { id: 'user-management', label: 'User Management', icon: Users, route: "/admin-dashboard/user-management", permissionKey: "userManagement" },
     { id: 'emp-management', label: 'Emp Management', icon: Users, route: "/admin-dashboard/emp-management", permissionKey: "empManagement" },
+    { id: 'notifications', label: 'Push & Broadcasts', icon: Bell, route: "/admin-dashboard/notifications", permissionKey: "notifications" },
     // { id: 'form-management', label: 'Form Management', icon: Users, route: "/admin-dashboard/form-builder", permissionKey: "formManagement" },
     { id: 'banners', label: 'Ad Banners', icon: Megaphone, route: "/admin-dashboard/banners", permissionKey: "banners" },
     { id: 'Verification', label: 'Profile Verification', icon: CheckCircle, route: "/admin-dashboard/verifications", permissionKey: "verification" },
@@ -84,11 +86,8 @@ export default function AdminLayout({ children }) {
       <div className="h-screen overflow-hidden bg-white flex flex-col">
         {/* Mobile Header */}
         <div className="lg:hidden flex items-center justify-between p-4 bg-white border-b border-gray-200">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center">
-              <img src="/admin_logo.png" alt="Admin Logo" className="w-full h-full object-contain" />
-            </div>
-            <h2 className="font-bold text-gray-900">Admin Panel</h2>
+          <div className="flex items-center space-x-2">
+            <TrademarkLogo width={140} href="/admin-dashboard" />
           </div>
           <button 
             onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
@@ -103,18 +102,13 @@ export default function AdminLayout({ children }) {
           {isMobileSidebarOpen && (
             <div className="lg:hidden fixed inset-0 z-40 bg-black bg-opacity-50">
               <div className="w-64 bg-white h-full shadow-xl animate-slide-in">
-                <div className="p-6 border-b border-gray-200">
+                <div className="p-5 border-b border-gray-200">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center">
-                        <img src="/admin_logo.png" alt="Admin Logo" className="w-full h-full object-contain" />
-                      </div>
-                      <div>
-                        <h2 className="font-bold text-gray-900">Admin Panel</h2>
-                        <p className="text-xs text-gray-500">
-                          {user.role === 'admin' ? 'Matrimonial Platform' : `Employee: ${user.name}`}
-                        </p>
-                      </div>
+                    <div>
+                      <TrademarkLogo width={150} href="/admin-dashboard" />
+                      <p className="text-[11px] text-gray-500 mt-1 font-medium">
+                        {user.role === 'admin' ? 'Admin Portal' : `Employee: ${user.name}`}
+                      </p>
                     </div>
                     <button 
                       onClick={() => setIsMobileSidebarOpen(false)}
@@ -166,18 +160,11 @@ export default function AdminLayout({ children }) {
 
           {/* Sidebar - Desktop */}
           <div className="hidden lg:flex flex-col w-64 bg-white shadow-xl border-r border-gray-200 h-full">
-            <div className="p-4 pl-7 border-b border-gray-200">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center">
-                  <img src="/admin_logo.png" alt="Admin Logo" className="w-full h-full object-contain" />
-                </div>
-                <div>
-                  <h2 className="font-bold text-gray-900">Admin Panel</h2>
-                  <p className="text-xs text-gray-500">
-                    {user.role === 'admin' ? 'Matrimonial Platform' : `Employee: ${user.name}`}
-                  </p>
-                </div>
-              </div>
+            <div className="p-5 border-b border-gray-200 flex flex-col items-start justify-center">
+              <TrademarkLogo width={160} href="/admin-dashboard" />
+              <p className="text-[11px] text-gray-500 mt-1 font-medium pl-1">
+                {user.role === 'admin' ? 'Admin Portal' : `Employee: ${user.name}`}
+              </p>
             </div>
 
             <div className="p-4 flex-1 overflow-y-auto">

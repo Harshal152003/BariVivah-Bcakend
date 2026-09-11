@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
+import TrademarkLogo from "@/components/TrademarkLogo";
 import { useSession } from "@/context/SessionContext";
 import { ShieldAlert, ArrowRight, CheckCircle, XCircle, Menu, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
@@ -36,7 +37,7 @@ export default function UserLayout({ children }) {
           logout();
           router.replace("/login");
         } else {
-          setShouldRender(true);
+          router.replace("/download-app?type=login");
         }
       }
     }
@@ -144,15 +145,10 @@ export default function UserLayout({ children }) {
           >
             <Menu className="w-5 h-5" />
           </button>
-          <div className="flex items-center space-x-2">
-            {/* <div className="w-8 h-8 bg-gradient-to-br from-rose-500 to-rose-600 rounded-lg flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-white" />
-            </div> */}
-            <span className="font-serif text-xl font-bold text-secondary">
-              Bari<span className="text-primary">Viviah</span>
-            </span>
+          <div className="flex items-center">
+            <TrademarkLogo width={135} href="/dashboard" />
           </div>
-          {/* Spacer for centering logic if needed, or profile icon */}
+          {/* Spacer for centering */}
           <div className="w-9"></div>
         </div>
 

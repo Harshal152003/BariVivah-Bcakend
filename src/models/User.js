@@ -95,6 +95,7 @@ const UserSchema = new mongoose.Schema({
   college: String,
   occupation: String,
   company: String,
+  currentAddress: String,
   permanentAddress: String,
 
   income: { type: String, default: null },
