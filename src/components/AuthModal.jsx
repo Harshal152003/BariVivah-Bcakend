@@ -603,7 +603,15 @@ export default function AuthModal({ isOpen, onClose }) {
                 </>
               )}
             </div>
-            <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+            <div className="p-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+              <a
+                href={termsModalType === 'terms' ? '/terms' : '/privacy'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-primary font-semibold hover:underline flex items-center gap-1"
+              >
+                Open Full {termsModalType === 'terms' ? 'Terms of Service' : 'Privacy Policy'} Page ↗
+              </a>
               <button
                 onClick={() => setTermsModalVisible(false)}
                 className="px-5 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary/95 transition-colors focus:outline-none"

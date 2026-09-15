@@ -1,10 +1,25 @@
-"use client"
+"use client";
 import React from 'react';
+import Link from 'next/link';
 import { Phone, Mail, Share2 } from 'lucide-react';
 import Image from 'next/image';
 import TrademarkLogo from './TrademarkLogo';
 
 const Footer = () => {
+  const companyLinks = [
+    { label: 'About Us', href: '/#about' },
+    { label: 'Success Stories', href: '/#success-stories' },
+    { label: 'Careers', href: '/#contact' },
+    { label: 'Contact Us', href: '/#contact' },
+  ];
+
+  const legalLinks = [
+    { label: 'Privacy Policy', href: '/privacy' },
+    { label: 'Terms of Service', href: '/terms' },
+    { label: 'Help Center', href: '/#contact' },
+    { label: 'Safety Tips', href: '/privacy#data-security' },
+  ];
+
   return (
     <footer className="w-full bg-white border-t-2 border-[#FFEBEF] pt-16 pb-8">
       <div className="w-full max-w-[1200px] mx-auto px-6">
@@ -32,11 +47,11 @@ const Footer = () => {
           <div className="lg:col-span-2 lg:col-start-6">
             <h4 className="text-xl font-bold text-primary mb-6">Company</h4>
             <ul className="space-y-4">
-              {['About Us', 'Success Stories', 'Careers', 'Contact Us'].map((item) => (
-                <li key={item}>
-                  <a href="#" className="text-[#5C3F43] hover:text-primary transition-colors text-[15px]">
-                    {item}
-                  </a>
+              {companyLinks.map((item) => (
+                <li key={item.label}>
+                  <Link href={item.href} className="text-[#5C3F43] hover:text-primary transition-colors text-[15px]">
+                    {item.label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -46,11 +61,11 @@ const Footer = () => {
           <div className="lg:col-span-2 lg:col-start-8">
             <h4 className="text-xl font-bold text-primary mb-6">Legal & Help</h4>
             <ul className="space-y-4">
-              {['Privacy Policy', 'Terms of Service', 'Help Center', 'Safety Tips'].map((item) => (
-                <li key={item}>
-                  <a href="#" className="text-[#5C3F43] hover:text-primary transition-colors text-[15px]">
-                    {item}
-                  </a>
+              {legalLinks.map((item) => (
+                <li key={item.label}>
+                  <Link href={item.href} className="text-[#5C3F43] hover:text-primary transition-colors text-[15px] font-medium">
+                    {item.label}
+                  </Link>
                 </li>
               ))}
             </ul>

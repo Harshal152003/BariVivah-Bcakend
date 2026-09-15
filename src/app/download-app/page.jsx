@@ -284,11 +284,11 @@ function DownloadAppContent() {
         <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p>© {new Date().getFullYear()} BariVivah. All rights reserved.</p>
           <div className="flex items-center space-x-4">
-            <Link href="/" className="hover:text-gray-600 transition-colors">Privacy Policy</Link>
+            <Link href="/privacy" className="hover:text-gray-600 transition-colors">Privacy Policy</Link>
             <span>•</span>
-            <Link href="/" className="hover:text-gray-600 transition-colors">Terms of Service</Link>
+            <Link href="/terms" className="hover:text-gray-600 transition-colors">Terms of Service</Link>
             <span>•</span>
-            <Link href="/" className="hover:text-gray-600 transition-colors">Contact Support</Link>
+            <Link href="/#contact" className="hover:text-gray-600 transition-colors">Contact Support</Link>
           </div>
         </div>
       </footer>
