@@ -16,10 +16,29 @@ const UserSchema = new mongoose.Schema({
     unique: true,
     validate: {
       validator: function (v) {
+        if (!v) return true;
+        if (typeof v === 'string' && v.startsWith('DELETED_')) return true;
         return /^\+91\d{10}$/.test(v); // Validates Indian phone numbers with +91 prefix
       },
       message: props => `${props.value} is not a valid Indian phone number!`
     }
+  },
+
+  // Account Lifecycle & Soft Deletion
+  isDeleted: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
+  status: {
+    type: String,
+    enum: ["Active", "Suspended", "Deleted"],
+    default: "Active",
+    index: true
+  },
+  deletedAt: {
+    type: Date,
+    default: null
   },
 
   // Photos Array
@@ -249,16 +268,28 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-// Auto-generate standardized profileId (BV-XXXXXX) if not explicitly set
-UserSchema.pre('save', function (next) {
-  if (!this.profileId && this._id) {
-    this.profileId = `BV-${this._id.toString().slice(-6).toUpperCase()}`;
+// Auto-generate standardized atomic sequential profileId (BV-100001, BV-100002, ...) if not explicitly set
+UserSchema.pre('save', async function (next) {
+  if (!this.profileId) {
+    try {
+      const { generateNextProfileId } = await import('../services/profileIdService.js');
+      this.profileId = await generateNextProfileId();
+    } catch (err) {
+      console.error('[UserSchema] Error generating atomic profileId in pre-save hook:', err);
+      if (this._id) {
+        this.profileId = `BV-${this._id.toString().slice(-6).toUpperCase()}`;
+      }
+    }
   }
-  next();
+  if (typeof next === 'function') {
+    next();
+  }
 });
 
 // --- HIGH PERFORMANCE DATABASE INDEXES (Scale to 10,000+ Users) ---
-UserSchema.index({ profileId: 1 });
+UserSchema.index({ gender: 1, isDeleted: 1, status: 1, createdAt: -1 });
+UserSchema.index({ gender: 1, isDeleted: 1, status: 1, currentCity: 1 });
+UserSchema.index({ gender: 1, isDeleted: 1, status: 1, caste: 1 });
 UserSchema.index({ gender: 1, isVerified: 1, createdAt: -1 });
 UserSchema.index({ caste: 1, currentCity: 1, isVerified: 1 });
 UserSchema.index({ 'location.latitude': 1, 'location.longitude': 1 });

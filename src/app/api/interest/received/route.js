@@ -51,11 +51,29 @@ export async function GET(req) {
 
     const receiverUser = userMap[userId] || null;
 
-    // Attach sender and receiver details
+    // Attach sender and receiver details with soft-delete safety
     const populatedInterests = interests.map(interest => {
+      const rawSender = userMap[interest.senderId.toString()];
+      let sender;
+      if (!rawSender || rawSender.isDeleted || rawSender.status === 'Deleted') {
+        sender = {
+          _id: interest.senderId,
+          name: 'Member (Profile Closed)',
+          profilePhoto: null,
+          isDeleted: true,
+          status: 'Deleted',
+          education: 'Profile Closed',
+          currentCity: 'Unavailable',
+          caste: 'Bari',
+          message: 'This member is no longer on BariVivah.'
+        };
+      } else {
+        sender = rawSender;
+      }
+
       return {
         ...(interest._doc || interest),
-        sender: userMap[interest.senderId.toString()] || null,
+        sender,
         receiver: receiverUser
       };
     });

@@ -24,8 +24,9 @@ function drawRoundedRectangle(page, { x, y, width, height, radius = 12, color, b
 
 // Helper: Wrap text into lines fitting specified maximum width
 function wrapText(text, font, fontSize, maxW) {
-  if (text === null || text === undefined || text === '') return ['Not specified'];
-  const words = text.toString().split(' ');
+  if (text === null || text === undefined || text === '') return [];
+  const words = text.toString().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return [];
   const lines = [];
   let currentLine = '';
 
@@ -43,7 +44,7 @@ function wrapText(text, font, fontSize, maxW) {
   if (currentLine) {
     lines.push(currentLine);
   }
-  return lines.length > 0 ? lines : ['Not specified'];
+  return lines;
 }
 
 export async function POST(request) {
@@ -244,14 +245,40 @@ export async function POST(request) {
       });
     }
 
-    // B) BOTTOM SOFT PINK BIO CARD (Auto-fits to bio length)
-    const rawBio = sanitizeText(bio);
-    const quoteText = `“${rawBio}”`;
-    const bioLines = wrapText(quoteText, regularFont, 9, leftColW - 32);
+    // B) BOTTOM SOFT PINK BIO CARD (Auto-fits dynamically to name & bio length)
+    const cleanName = sanitizeText(fullName);
+    let nameFontSize = 14.5;
+    let nameLineH = 17.5;
+    if (cleanName.length > 26) {
+      nameFontSize = 12.5;
+      nameLineH = 15.5;
+    } else if (cleanName.length <= 14) {
+      nameFontSize = 15.5;
+      nameLineH = 19;
+    }
 
-    const nameSectionH = 16 + 10 + 2.5 + 14;
-    const bioTextH = bioLines.length * 13.5;
-    const bioCardH = Math.max(85, nameSectionH + bioTextH + 26);
+    const nameLines = wrapText(cleanName, boldFont, nameFontSize, leftColW - 32);
+    const safeNameLines = nameLines.length > 0 ? nameLines : ['Candidate Member'];
+
+    const rawBio = sanitizeText(bio);
+    const quoteText = rawBio ? `“${rawBio}”` : '';
+    const bioFontSize = 9;
+    const bioLineH = 13;
+    let bioLines = quoteText ? wrapText(quoteText, regularFont, bioFontSize, leftColW - 32) : [];
+    if (bioLines.length > 7) {
+      bioLines = bioLines.slice(0, 6);
+      bioLines.push('...');
+    }
+
+    const padTop = 18;
+    const padBottom = 16;
+    const gapUnderName = 8;
+    const accentH = 2.5;
+    const gapUnderAccent = 12;
+    const nameBlockH = safeNameLines.length * nameLineH;
+    const bioBlockH = bioLines.length * bioLineH;
+
+    const bioCardH = Math.max(90, padTop + nameBlockH + gapUnderName + accentH + gapUnderAccent + bioBlockH + padBottom);
     const bioCardY = photoCardY - 14 - bioCardH;
 
     drawRoundedRectangle(page, {
@@ -263,40 +290,43 @@ export async function POST(request) {
       color: softPink,
     });
 
-    let bioCurY = bioCardY + bioCardH - 24;
+    let bioCurY = bioCardY + bioCardH - padTop;
 
-    // Candidate Name
-    const cleanName = sanitizeText(fullName);
-    page.drawText(cleanName, {
-      x: leftMargin + 16,
-      y: bioCurY,
-      size: 16,
-      font: boldFont,
-      color: darkTitle,
-      maxWidth: leftColW - 32,
+    // 1. Draw Candidate Name (supports multi-line without overlap)
+    safeNameLines.forEach((line) => {
+      page.drawText(line, {
+        x: leftMargin + 16,
+        y: bioCurY - (nameFontSize - 2),
+        size: nameFontSize,
+        font: boldFont,
+        color: darkTitle,
+      });
+      bioCurY -= nameLineH;
     });
-    bioCurY -= 10;
 
-    // Accent line under Name (Matching screenshot)
+    bioCurY -= gapUnderName;
+
+    // 2. Draw Accent line under Name (Always placed below the full name)
     page.drawRectangle({
       x: leftMargin + 16,
       y: bioCurY,
       width: 28,
-      height: 2.5,
+      height: accentH,
       color: coralPink,
     });
-    bioCurY -= 16;
 
-    // About Me Quote Text
+    bioCurY -= gapUnderAccent;
+
+    // 3. Draw About Me Quote Text (Placed cleanly below the accent line)
     bioLines.forEach((line) => {
       page.drawText(line, {
         x: leftMargin + 16,
-        y: bioCurY,
-        size: 9,
+        y: bioCurY - (bioFontSize - 2),
+        size: bioFontSize,
         font: regularFont,
         color: bodyColor,
       });
-      bioCurY -= 13.5;
+      bioCurY -= bioLineH;
     });
 
     // ==========================================
@@ -335,7 +365,8 @@ export async function POST(request) {
       // Render all key-value rows
       fields.forEach(([label, value]) => {
         const valClean = sanitizeText(value || 'Not specified');
-        const valLines = wrapText(valClean, boldFont, 9.5, maxValueW);
+        const wrapped = wrapText(valClean, boldFont, 9.5, maxValueW);
+        const valLines = wrapped.length > 0 ? wrapped : ['Not specified'];
 
         // Label
         page.drawText(label, {

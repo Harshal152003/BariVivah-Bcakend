@@ -24,7 +24,7 @@ export async function POST(req) {
       );
     }
 
-    // Check if users exist
+    // Check if users exist and are active
     const senderExists = await User.findById(senderId);
     const receiverExists = await User.findById(receiverId);
 
@@ -32,6 +32,13 @@ export async function POST(req) {
       return NextResponse.json(
         { message: "Either sender or receiver does not exist" },
         { status: 404, headers: corsHeaders }
+      );
+    }
+
+    if (receiverExists.isDeleted || receiverExists.status === 'Deleted') {
+      return NextResponse.json(
+        { message: "This member's profile is closed and no longer accepting interest requests." },
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -177,12 +184,30 @@ export async function GET(req) {
 
     const senderUser = userMap[userId] || null;
 
-    // Attach sender and receiver details
+    // Attach sender and receiver details with soft-delete safety
     const populatedInterests = interests.map(interest => {
+      const rawReceiver = userMap[interest.receiverId.toString()];
+      let receiver;
+      if (!rawReceiver || rawReceiver.isDeleted || rawReceiver.status === 'Deleted') {
+        receiver = {
+          _id: interest.receiverId,
+          name: 'Member (Profile Closed)',
+          profilePhoto: null,
+          isDeleted: true,
+          status: 'Deleted',
+          education: 'Profile Closed',
+          currentCity: 'Unavailable',
+          caste: 'Bari',
+          message: 'This member is no longer on BariVivah.'
+        };
+      } else {
+        receiver = rawReceiver;
+      }
+
       return {
         ...(interest._doc || interest),
         sender: senderUser,
-        receiver: userMap[interest.receiverId.toString()] || null
+        receiver
       };
     });
 

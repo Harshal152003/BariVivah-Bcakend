@@ -30,3 +30,21 @@ export function verifyToken(token) {
     return null;
   }
 }
+
+export function createRegistrationToken(phone) {
+  return jwt.sign({ phone, phoneVerified: true, purpose: 'registration' }, JWT_SECRET, {
+    expiresIn: '15m',
+  });
+}
+
+export function verifyRegistrationToken(token) {
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (decoded && decoded.purpose === 'registration') {
+      return decoded;
+    }
+    return null;
+  } catch (err) {
+    return null;
+  }
+}

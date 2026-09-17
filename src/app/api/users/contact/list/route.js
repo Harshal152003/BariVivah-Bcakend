@@ -43,13 +43,31 @@ export async function GET(request) {
       })
       .sort({ createdAt: -1 });
 
-    const contactList = unlocks
-      .filter(record => record.unlockedUserId !== null)
-      .map(record => ({
+    const contactList = unlocks.map(record => {
+      const target = record.unlockedUserId;
+      if (!target || target.isDeleted || target.status === 'Deleted' || (typeof target.phone === 'string' && target.phone.startsWith('DELETED_'))) {
+        return {
+          unlockId: record._id,
+          unlockedAt: record.unlockedAt || record.createdAt,
+          user: {
+            _id: target?._id || record.unlockedUserId,
+            name: 'Member (Profile Closed)',
+            phone: 'Unavailable (Profile Closed)',
+            profilePhoto: null,
+            isDeleted: true,
+            status: 'Deleted',
+            education: 'Profile Closed',
+            currentCity: 'Unavailable',
+            caste: 'Bari'
+          }
+        };
+      }
+      return {
         unlockId: record._id,
         unlockedAt: record.unlockedAt || record.createdAt,
-        user: record.unlockedUserId
-      }));
+        user: target
+      };
+    });
 
     const currentUser = await User.findById(userId).select('subscription');
     const isSubscribed = currentUser?.subscription?.isSubscribed && new Date() < new Date(currentUser?.subscription?.expiresAt);

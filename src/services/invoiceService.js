@@ -49,10 +49,18 @@ export function getStateCode(stateName) {
   return GST_STATE_CODES[cleaned] || '27';
 }
 
-// Convert numbers into Indian Rupees in words
-function numberToWordsINR(amount) {
-  const rounded = Math.round(amount);
-  if (rounded === 0) return 'Zero Rupees Only';
+// Convert numbers into Indian Rupees and Paise in words (with full decimal support)
+export function numberToWordsINR(amount) {
+  if (typeof amount !== 'number' || isNaN(amount)) {
+    amount = parseFloat(amount) || 0;
+  }
+
+  const numFixed = Math.abs(amount).toFixed(2);
+  const [rupeePartStr, paisePartStr] = numFixed.split('.');
+  const rupeeNum = parseInt(rupeePartStr, 10);
+  const paiseNum = parseInt(paisePartStr, 10);
+
+  if (rupeeNum === 0 && paiseNum === 0) return 'INR Zero Rupees Only';
 
   const singleDigits = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
   const twoDigits = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
@@ -62,7 +70,7 @@ function numberToWordsINR(amount) {
     if (num === 0) return '';
     if (num < 10) return singleDigits[num];
     if (num < 20) return twoDigits[num - 10];
-    return tensMultiple[Math.floor(num / 10)] + (num % 10 !== 0 ? ' ' + singleDigits[num % 10] : '');
+    return (tensMultiple[Math.floor(num / 10)] + (num % 10 !== 0 ? ' ' + singleDigits[num % 10] : '')).trim();
   }
 
   function convertThreeDigits(num) {
@@ -74,20 +82,39 @@ function numberToWordsINR(amount) {
     return res;
   }
 
-  let crore = Math.floor(rounded / 10000000);
-  let remainder = rounded % 10000000;
-  let lakh = Math.floor(remainder / 100000);
-  remainder %= 100000;
-  let thousand = Math.floor(remainder / 1000);
-  let hundreds = remainder % 1000;
+  function convertRupees(num) {
+    if (num === 0) return '';
+    let crore = Math.floor(num / 10000000);
+    let remainder = num % 10000000;
+    let lakh = Math.floor(remainder / 100000);
+    remainder %= 100000;
+    let thousand = Math.floor(remainder / 1000);
+    let hundreds = remainder % 1000;
 
-  let words = '';
-  if (crore > 0) words += convertThreeDigits(crore) + ' Crore ';
-  if (lakh > 0) words += convertThreeDigits(lakh) + ' Lakh ';
-  if (thousand > 0) words += convertThreeDigits(thousand) + ' Thousand ';
-  if (hundreds > 0) words += convertThreeDigits(hundreds);
+    let words = '';
+    if (crore > 0) words += (crore < 100 ? convertTwoDigits(crore) : convertThreeDigits(crore)) + ' Crore ';
+    if (lakh > 0) words += convertTwoDigits(lakh) + ' Lakh ';
+    if (thousand > 0) words += convertTwoDigits(thousand) + ' Thousand ';
+    if (hundreds > 0) words += convertThreeDigits(hundreds);
+    return words.trim();
+  }
 
-  return 'INR ' + words.trim() + ' Only';
+  const rupeeWords = convertRupees(rupeeNum);
+  const paiseWords = convertTwoDigits(paiseNum);
+
+  let result = 'INR ';
+  if (rupeeWords) {
+    result += rupeeWords + (rupeeNum === 1 ? ' Rupee' : ' Rupees');
+  }
+  if (paiseWords) {
+    if (rupeeWords) {
+      result += ' and ' + paiseWords + ' Paise';
+    } else {
+      result += paiseWords + ' Paise';
+    }
+  }
+
+  return result.trim() + ' Only';
 }
 
 class InvoiceService {
@@ -191,7 +218,7 @@ class InvoiceService {
       color: lightGray,
     });
 
-    page.drawText('INVOICE BILL', {
+    page.drawText('TAX INVOICE', {
       x: margin + 14,
       y: cursorY - 30,
       size: 18,
@@ -355,7 +382,7 @@ class InvoiceService {
 
     cursorY -= 130;
 
-    // 3. SERVICE LINE ITEM TABLE (No SAC Code Column)
+    // 3. SERVICE LINE ITEM TABLE (With SAC Code Column)
     const tableW = width - (2 * margin);
     const headerH = 24;
 
@@ -370,11 +397,12 @@ class InvoiceService {
     });
 
     // Header Titles
-    page.drawText('S.No', { x: margin + 10, y: cursorY - 16, size: 8.5, font: boldFont, color: darkText });
-    page.drawText('Service Description', { x: margin + 45, y: cursorY - 16, size: 8.5, font: boldFont, color: darkText });
-    page.drawText('Taxable Value', { x: margin + 310, y: cursorY - 16, size: 8.5, font: boldFont, color: darkText });
-    page.drawText('GST Rate', { x: margin + 395, y: cursorY - 16, size: 8.5, font: boldFont, color: darkText });
-    page.drawText('Total (INR)', { x: width - margin - 75, y: cursorY - 16, size: 8.5, font: boldFont, color: darkText });
+    page.drawText('S.No', { x: margin + 8, y: cursorY - 16, size: 8.5, font: boldFont, color: darkText });
+    page.drawText('Service Description', { x: margin + 36, y: cursorY - 16, size: 8.5, font: boldFont, color: darkText });
+    page.drawText('SAC Code', { x: margin + 205, y: cursorY - 16, size: 8.5, font: boldFont, color: darkText });
+    page.drawText('Taxable Value', { x: margin + 275, y: cursorY - 16, size: 8.5, font: boldFont, color: darkText });
+    page.drawText('GST Rate', { x: margin + 355, y: cursorY - 16, size: 8.5, font: boldFont, color: darkText });
+    page.drawText('Total (INR)', { x: width - margin - 72, y: cursorY - 16, size: 8.5, font: boldFont, color: darkText });
 
     cursorY -= headerH;
 
@@ -391,12 +419,13 @@ class InvoiceService {
 
     const planName = transaction.planSnapshot?.name || 'BariVivah Premium Membership Plan';
 
-    page.drawText('1', { x: margin + 14, y: cursorY - 20, size: 9, font: regularFont, color: darkText });
-    page.drawText(planName, { x: margin + 45, y: cursorY - 18, size: 9, font: boldFont, color: darkText });
-    page.drawText('Online Matrimonial & Matchmaking Services', { x: margin + 45, y: cursorY - 32, size: 7.5, font: regularFont, color: grayText });
-    page.drawText(`INR ${baseAmount.toFixed(2)}`, { x: margin + 310, y: cursorY - 24, size: 9, font: regularFont, color: darkText });
-    page.drawText('18% GST', { x: margin + 395, y: cursorY - 24, size: 9, font: regularFont, color: darkText });
-    page.drawText(`INR ${totalAmount.toFixed(2)}`, { x: width - margin - 75, y: cursorY - 24, size: 9.5, font: boldFont, color: darkText });
+    page.drawText('1', { x: margin + 12, y: cursorY - 20, size: 9, font: regularFont, color: darkText });
+    page.drawText(planName, { x: margin + 36, y: cursorY - 18, size: 8.5, font: boldFont, color: darkText });
+    page.drawText('Online Matrimonial & Matchmaking Services', { x: margin + 36, y: cursorY - 32, size: 7.2, font: regularFont, color: grayText });
+    page.drawText(String(sacCode), { x: margin + 205, y: cursorY - 24, size: 8.5, font: regularFont, color: darkText });
+    page.drawText(`INR ${baseAmount.toFixed(2)}`, { x: margin + 275, y: cursorY - 24, size: 8.5, font: regularFont, color: darkText });
+    page.drawText('18% GST', { x: margin + 355, y: cursorY - 24, size: 8.5, font: regularFont, color: darkText });
+    page.drawText(`INR ${totalAmount.toFixed(2)}`, { x: width - margin - 72, y: cursorY - 24, size: 9, font: boldFont, color: darkText });
 
     cursorY -= rowH + 15;
 

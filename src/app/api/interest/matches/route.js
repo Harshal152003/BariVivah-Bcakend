@@ -73,12 +73,30 @@ export async function GET(req) {
       userMap[u._id.toString()] = u;
     });
 
-    // Attach the user details to each match
+    // Attach the user details to each match with soft-delete safety
     const populatedMatches = uniqueMatches.map(match => {
       const otherUserId = match.senderId.toString() === userId ? match.receiverId.toString() : match.senderId.toString();
+      const rawUser = userMap[otherUserId];
+      let matchedUser;
+      if (!rawUser || rawUser.isDeleted || rawUser.status === 'Deleted') {
+        matchedUser = {
+          _id: otherUserId,
+          name: 'Member (Profile Closed)',
+          profilePhoto: null,
+          isDeleted: true,
+          status: 'Deleted',
+          education: 'Profile Closed',
+          currentCity: 'Unavailable',
+          caste: 'Bari',
+          message: 'This member is no longer on BariVivah.'
+        };
+      } else {
+        matchedUser = rawUser;
+      }
+
       return {
         ...(match._doc || match),
-        matchedUser: userMap[otherUserId] || null
+        matchedUser
       };
     });
 

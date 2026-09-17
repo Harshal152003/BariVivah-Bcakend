@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 import DeletedAccount from '@/models/DeletedAccount';
+import Interest from '@/models/Interest';
 import { verifyToken } from '@/lib/auth';
 import otpStore from "@/lib/otpStore";
 
@@ -60,10 +61,18 @@ export async function POST(request) {
 
     // Verify OTP against otpStore
     const fullPhoneNumber = user.phone.startsWith('+91') ? user.phone : `+91${user.phone}`;
-    const storedOTP = otpStore.get(fullPhoneNumber);
+    const rawPhoneNumber = user.phone.replace(/^\+91/, '');
+    const storedOTP = otpStore.get(fullPhoneNumber) || otpStore.get(rawPhoneNumber);
 
-    // Support dev environment fallback code '123456'
-    if (otp.toString() !== '123456' && storedOTP !== otp.toString()) {
+    // Support explicit store review / demo test accounts
+    const configuredTestPhones = (process.env.STORE_REVIEW_TEST_PHONE || '+919999999999,+919876543210')
+      .split(',')
+      .map(p => p.trim());
+    const testOtp = process.env.STORE_REVIEW_TEST_OTP || '123456';
+    const isTestAccount = (configuredTestPhones.includes(fullPhoneNumber) || configuredTestPhones.includes(rawPhoneNumber)) && otp.toString() === testOtp;
+    const isMatchingStoredOtp = storedOTP && storedOTP === otp.toString();
+
+    if (!isTestAccount && !isMatchingStoredOtp) {
       return NextResponse.json(
         { message: 'Invalid or expired OTP' },
         { status: 400, headers: corsHeaders }
@@ -90,14 +99,40 @@ export async function POST(request) {
       deletedAt: new Date(),
     });
 
-    // Permanently delete user from DB
-    await User.findByIdAndDelete(decoded.userId);
+    // Soft-delete user document: release phone/email unique indexes, scrub credentials
+    const timestamp = Date.now();
+    const originalPhone = user.phone;
+    const originalEmail = user.email;
+
+    user.isDeleted = true;
+    user.status = 'Deleted';
+    user.deletedAt = new Date();
+    user.phone = `DELETED_${timestamp}_${originalPhone}`;
+    if (originalEmail) {
+      user.email = `DELETED_${timestamp}_${originalEmail}`;
+    }
+    user.password = null;
+    user.profilePhoto = null;
+    user.photos = [];
+    user.verificationSelfieUrl = null;
+    user.verificationDocUrl = null;
+    await user.save();
+
+    // Automatically cancel all active pending interest requests involving this user
+    await Interest.updateMany(
+      {
+        $or: [{ senderId: user._id }, { receiverId: user._id }],
+        status: 'pending'
+      },
+      { status: 'cancel' }
+    );
 
     // Clean up OTP store
     otpStore.delete(fullPhoneNumber);
+    otpStore.delete(rawPhoneNumber);
 
     return NextResponse.json(
-      { success: true, message: 'Account permanently deleted and archived' },
+      { success: true, message: 'Account permanently deactivated and archived' },
       { headers: corsHeaders }
     );
   } catch (error) {

@@ -71,67 +71,25 @@ export async function POST(request) {
     const hashedPassword = hashPassword(password);
 
     // Check duplicate phone
-    const existingPhoneUser = await User.findOne({ phone: fullPhone });
+    const existingPhoneUser = await User.findOne({
+      phone: { $in: [fullPhone, cleanPhone] }
+    });
+
     if (existingPhoneUser) {
-      // If user exists but is a blank template created by verify-otp (no name & password), we populate it
-      if (!existingPhoneUser.name && !existingPhoneUser.password) {
-        existingPhoneUser.name = name;
-        existingPhoneUser.email = email ? email.toLowerCase().trim() : null;
-        existingPhoneUser.password = hashedPassword;
-        existingPhoneUser.gender = gender;
-        existingPhoneUser.createdFor = body.createdFor || 'Self';
-        existingPhoneUser.dob = body.dob ? new Date(body.dob) : null;
-        existingPhoneUser.state = body.state || null;
-        existingPhoneUser.currentCity = body.currentCity || null;
-        existingPhoneUser.caste = body.caste || 'Bari';
-        existingPhoneUser.religion = body.religion || 'Hindu';
-        existingPhoneUser.expectedCaste = 'Bari';
-        existingPhoneUser.maritalStatus = body.maritalStatus || null;
-        existingPhoneUser.divorceDate = body.divorceDate ? new Date(body.divorceDate) : null;
-        existingPhoneUser.height = body.height || null;
-        existingPhoneUser.diet = body.diet || null;
-        existingPhoneUser.education = body.education || null;
-        existingPhoneUser.income = body.income || null;
-        existingPhoneUser.workSector = body.workSector || null;
-        existingPhoneUser.occupation = body.occupation || null;
-        existingPhoneUser.profilePhoto = body.profilePhoto || null;
-        existingPhoneUser.lastLoginAt = new Date();
-
-        await existingPhoneUser.save();
-
-        const token = createToken(existingPhoneUser._id);
-        const userData = {
-          id: existingPhoneUser._id,
-          phone: existingPhoneUser.phone,
-          name: existingPhoneUser.name,
-          email: existingPhoneUser.email,
-          isVerified: existingPhoneUser.isVerified,
-          phoneIsVerified: existingPhoneUser.phoneIsVerified,
-          subscription: existingPhoneUser.subscription || null,
-          profilePhoto: existingPhoneUser.profilePhoto,
-          gender: existingPhoneUser.gender,
-          currentCity: existingPhoneUser.currentCity,
-          profileCompletion: existingPhoneUser.profileCompletion,
-        };
-
-        const response = new NextResponse(
-          JSON.stringify({
-            success: true,
-            message: "Registration successful",
-            user: userData,
-            token,
-          }),
-          { headers }
+      // If it's a real completed user with name or password, reject as duplicate
+      if (existingPhoneUser.name || existingPhoneUser.password) {
+        return new NextResponse(
+          JSON.stringify({ success: false, message: "Mobile number already registered" }),
+          { status: 400, headers }
         );
-
-        setTokenCookie(response, token);
-        return response;
       }
 
-      return new NextResponse(
-        JSON.stringify({ success: false, message: "Mobile number already registered" }),
-        { status: 400, headers }
-      );
+      // If it was a legacy blank ghost record created by older verify-otp versions, clean it up
+      await User.deleteMany({
+        phone: { $in: [fullPhone, cleanPhone] },
+        name: { $in: [null, undefined, ""] },
+        password: { $in: [null, undefined, ""] }
+      });
     }
 
     // Check duplicate email (if provided)
@@ -145,9 +103,9 @@ export async function POST(request) {
       }
     }
 
-    // Create User
+    // Create User atomically in single step
     const user = new User({
-      name,
+      name: name.trim(),
       phone: fullPhone,
       email: email ? email.toLowerCase().trim() : null,
       password: hashedPassword,
@@ -162,7 +120,7 @@ export async function POST(request) {
       caste: body.caste || 'Bari',
       religion: body.religion || 'Hindu',
       expectedCaste: 'Bari',
-      maritalStatus: body.maritalStatus || null,
+      maritalStatus: body.maritalStatus || 'Unmarried',
       divorceDate: body.divorceDate ? new Date(body.divorceDate) : null,
       height: body.height || null,
       diet: body.diet || null,
@@ -179,6 +137,8 @@ export async function POST(request) {
     const token = createToken(user._id);
     const userData = {
       id: user._id,
+      _id: user._id,
+      profileId: user.profileId,
       phone: user.phone,
       name: user.name,
       email: user.email,

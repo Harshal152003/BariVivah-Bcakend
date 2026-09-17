@@ -61,7 +61,7 @@ export async function GET(request) {
         }
 
         // Text Search (Partial Match & Profile ID Lookup)
-        const isProfileIdSearch = q && (/^BV-?/i.test(q.trim()) || /^[0-9a-fA-F]{6}$/.test(q.trim()));
+        const isProfileIdSearch = q && (/^BV-?/i.test(q.trim()) || /^[0-9a-fA-F]{6}$/.test(q.trim()) || /^\d{5,8}$/.test(q.trim()));
 
         if (q) {
             const cleanQ = q.trim();
@@ -165,8 +165,9 @@ export async function GET(request) {
         // Optional: Filter only verified users or similar if needed? 
         // Requirement said "Do NOT return users already blocked or rejected".
         // Schema has `verificationStatus`. Let's assume we want 'Verified' or at least not 'Rejected'.
-        // Adding basics:
         query.verificationStatus = { $ne: 'Rejected' };
+        query.isDeleted = { $ne: true };
+        query.status = { $ne: 'Deleted' };
 
 
         // 4. Execute Query with Pagination

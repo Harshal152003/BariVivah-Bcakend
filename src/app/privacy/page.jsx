@@ -34,8 +34,8 @@ import {
 } from "lucide-react";
 
 export default function PrivacyPolicyPage() {
-  const lastUpdated = "August 16, 2026";
-  const effectiveDate = "August 16, 2026";
+  const lastUpdated = "September 15, 2026";
+  const effectiveDate = "September 15, 2026";
 
   const [activeSection, setActiveSection] = useState("preamble");
   const [searchQuery, setSearchQuery] = useState("");
@@ -129,9 +129,8 @@ export default function PrivacyPolicyPage() {
               <span>Contents</span>
               <ChevronDown
                 size={12}
-                className={`transition-transform duration-200 ${
-                  mobileTocOpen ? "rotate-180" : ""
-                }`}
+                className={`transition-transform duration-200 ${mobileTocOpen ? "rotate-180" : ""
+                  }`}
               />
             </button>
 
@@ -156,11 +155,10 @@ export default function PrivacyPolicyPage() {
                 key={item.id}
                 href={`#${item.id}`}
                 onClick={() => setMobileTocOpen(false)}
-                className={`block px-3 py-2 rounded text-xs font-medium transition-colors ${
-                  activeSection === item.id
-                    ? "bg-rose-50 text-primary font-bold"
-                    : "text-slate-600 hover:bg-slate-50"
-                }`}
+                className={`block px-3 py-2 rounded text-xs font-medium transition-colors ${activeSection === item.id
+                  ? "bg-rose-50 text-primary font-bold"
+                  : "text-slate-600 hover:bg-slate-50"
+                  }`}
               >
                 {item.title}
               </a>
@@ -171,7 +169,7 @@ export default function PrivacyPolicyPage() {
 
       {/* Main Document Viewport */}
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
-        
+
         {/* Document Header (Editorial Style) */}
         <header className="mb-12 pb-8 border-b border-slate-200/80">
           <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -202,18 +200,18 @@ export default function PrivacyPolicyPage() {
               <span><strong>Effective Date:</strong> {effectiveDate}</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span><strong>Data Fiduciary:</strong> Bari Vivah Matrimony (Pune, India)</span>
+              <span><strong>Data Fiduciary:</strong> Barivivah Matrimony (Pune, India)</span>
             </div>
           </div>
         </header>
 
         {/* 2-Column Split Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          
+
           {/* Sticky Left Navigation (Desktop) */}
           <aside className="hidden lg:block lg:col-span-4 sticky top-36 space-y-6 print:hidden">
             <div className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-xs space-y-4">
-              
+
               {/* Search Filter */}
               <div>
                 <label htmlFor="toc-search-privacy" className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
@@ -249,11 +247,10 @@ export default function PrivacyPolicyPage() {
                     <a
                       key={item.id}
                       href={`#${item.id}`}
-                      className={`group flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium transition-all ${
-                        isActive
-                          ? "bg-rose-50 text-primary font-bold"
-                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                      }`}
+                      className={`group flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium transition-all ${isActive
+                        ? "bg-rose-50 text-primary font-bold"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                        }`}
                     >
                       <span className="truncate">{item.title}</span>
                       {isActive && (
@@ -301,7 +298,7 @@ export default function PrivacyPolicyPage() {
 
           {/* Right Column: Detailed Editorial Sections */}
           <div className="lg:col-span-8 space-y-12">
-            
+
             {/* 0. Preamble & Commitment */}
             <section id="preamble" className="scroll-mt-36 space-y-4">
               <div className="flex items-center justify-between border-b border-slate-200 pb-2">
@@ -393,7 +390,7 @@ export default function PrivacyPolicyPage() {
                     </tr>
                     <tr>
                       <td className="py-2.5 px-4 font-semibold text-slate-900">Verification Proofs</td>
-                      <td className="py-2.5 px-4 text-xs">Govt-issued ID (Aadhaar, PAN, Passport) & Live Pose Selfie Photo</td>
+                      <td className="py-2.5 px-4 text-xs">Govt-issued ID (Optional) & Live Pose Selfie Photo</td>
                       <td className="py-2.5 px-4 text-slate-600 text-xs">Granting "Verified" Trust Badges</td>
                     </tr>
                     <tr>

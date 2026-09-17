@@ -147,25 +147,22 @@ export async function POST(req) {
 
     // If an email is available, deliver the OTP via Resend
     if (recipientEmail) {
-      console.log("Sending OTP email...");
+      console.log(`[send-otp] Sending OTP email to ${recipientEmail}...`);
       try {
         await emailService.sendOTPEmail(recipientEmail, otp, 5);
-        console.log("Email delivered successfully.");
+        console.log("[send-otp] Email delivered successfully.");
       } catch (emailError) {
-        console.error("Resend API Error:", emailError);
-        // Rollback/Clean up OTP store mapping to avoid inconsistent state on delivery failure
-        clearTimeout(deleteTimeout);
-        otpStore.delete(fullPhoneNumber);
-        return NextResponse.json(
-          { success: false, message: "Failed to deliver verification email", error: emailError.message },
-          { status: 500 }
-        );
+        console.warn("[send-otp] Resend email delivery failed (falling back to SMS):", emailError.message);
       }
     } else {
       console.log(`[send-otp] No email address associated/provided for +91${phoneNumber}. Skipping email OTP delivery.`);
     }
 
-    return NextResponse.json({ success: true, message: "OTP sent successfully", otp });
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[send-otp] OTP for ${fullPhoneNumber}: ${otp}`);
+    }
+
+    return NextResponse.json({ success: true, message: "OTP sent successfully" });
   } catch (error) {
     return NextResponse.json(
       { success: false, message: "Error sending OTP", error: error.message },

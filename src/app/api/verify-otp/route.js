@@ -2,13 +2,13 @@ import otpStore from "../../../lib/otpStore";
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
-import { createToken, setTokenCookie } from "@/lib/auth";
+import { createToken, setTokenCookie, createRegistrationToken } from "@/lib/auth";
 
 // Define CORS headers
 const corsHeaders = {
   'Access-Control-Allow-Origin': 'http://localhost:8081', // Or your specific origin
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   'Access-Control-Allow-Credentials': true,
 };
 
@@ -25,10 +25,18 @@ export async function POST(req) {
     }
 
     const fullPhoneNumber = `+91${phoneNumber}`;
-    const storedOTP = otpStore.get(fullPhoneNumber);
+    const storedOTP = otpStore.get(fullPhoneNumber) || otpStore.get(phoneNumber);
+
+    // Support dedicated test accounts configured for App Store / Play Store review and testing
+    const configuredTestPhones = (process.env.STORE_REVIEW_TEST_PHONE || '+919999999999,+919876543210')
+      .split(',')
+      .map(p => p.trim());
+    const testOtp = process.env.STORE_REVIEW_TEST_OTP || '123456';
+    const isTestAccount = (configuredTestPhones.includes(fullPhoneNumber) || configuredTestPhones.includes(phoneNumber)) && otp.toString() === testOtp;
+    const isMatchingStoredOtp = storedOTP && storedOTP === otp.toString();
 
     // OTP verification
-    if (otp.toString() !== '123456' && storedOTP !== otp.toString()) {
+    if (!isTestAccount && !isMatchingStoredOtp) {
       if (!storedOTP) {
         return new NextResponse(
           JSON.stringify({ success: false, error: "OTP expired or not sent" }),
@@ -41,81 +49,77 @@ export async function POST(req) {
       );
     }
 
+    // Immediately consume OTP to prevent replay attacks
+    if (!isTestAccount) {
+      otpStore.delete(fullPhoneNumber);
+      otpStore.delete(phoneNumber);
+    }
+
     await dbConnect();
 
-    // Find or create user
-    // Ensure phoneNumber is a string to match DB type
     const rawPhone = String(phoneNumber).trim();
     const fullPhone = String(fullPhoneNumber).trim();
 
     // Check for both formats: with and without +91
-    const users = await User.find({
+    const matchingUsers = await User.find({
       phone: { $in: [fullPhone, rawPhone] }
-    }).sort({ createdAt: 1 }); // Oldest first (likely the original)
+    }).sort({ createdAt: 1 });
 
-    let user;
-    const isNewUser = users.length === 0;
+    // Filter out any legacy ghost accounts (no name and no password)
+    const validUsers = matchingUsers.filter(u => u.name || u.password);
 
-    if (users.length === 0) {
-      // Create new user
-      user = new User({
-        phone: fullPhone,
-        isVerified: false,
-        phoneIsVerified: true,
-        lastLoginAt: new Date(),
-        // Assign default name "Static User" only if completely new? 
-        // Current logic did this implicitly by not setting name, so schema default or empty.
-        // Wait, the prompt showed "Static User" name. Let's see if we should set it.
-        // Schema doesn't have default "Static User". It might be set elsewhere or manually by user previously.
-        // Let's stick to minimal defaults.
-      });
-      await user.save();
-    } else {
-      // User(s) found
-      if (users.length > 1) {
-        // We have duplicates (e.g., one with +91, one without)
-        // We keep the oldest one (index 0 because of sort) as the "main" user
-        const mainUser = users[0];
-        const duplicateUser = users[1];
-
-        console.log(`[Merge] Merging duplicate user ${duplicateUser._id} into ${mainUser._id}`);
-
-        // If the main user has the wrong phone format (no +91), update it
-        if (mainUser.phone !== fullPhoneNumber) {
-          mainUser.phone = fullPhoneNumber;
-        }
-
-        // Merge logic: Ensure we don't lose data from duplicate if main is empty?
-        // For now, prompt implies main is the "good" one. 
-        // We will just delete the duplicate to avoid confusion.
-        // Ideally we might copy some fields, but let's keep it safe: just delete the accidental new one.
-        await User.findByIdAndDelete(duplicateUser._id);
-
-        user = mainUser;
-      } else {
-        // Single user found
-        user = users[0];
-        // Ensure phone is normalized to +91 if found by legacy number
-        if (user.phone !== fullPhoneNumber) {
-          user.phone = fullPhoneNumber;
-        }
+    if (validUsers.length === 0) {
+      // Clean up any legacy blank ghost records for this phone number if they exist
+      if (matchingUsers.length > 0) {
+        await User.deleteMany({
+          phone: { $in: [fullPhone, rawPhone] },
+          name: { $in: [null, undefined, ""] },
+          password: { $in: [null, undefined, ""] }
+        });
       }
 
-      // Update login stats
-      user.lastLoginAt = new Date();
-      user.phoneIsVerified = true;
-      // Don't reset isVerified to false if they are already verified!
-      // The original code had: if (!user.isVerified) user.isVerified = false; 
-      // This seems redundant or specific logic. I'll keep it as is if it was intended to reset REJECTED status?
-      // Original: if (!user.isVerified) user.isVerified = false;
-      // This means if it's false, set it to false? No op. 
-      // Maybe it meant "if verificationStatus is Rejected, reset to Unverified"?
-      // Let's leave it alone or just ensure it's not unintentionally resetting 'true'.
-      // If user.isVerified is true, we leave it true. 
-      await user.save();
+      // Do NOT create an empty document in MongoDB.
+      // Issue a signed registration token valid for 15 minutes.
+      const registrationToken = createRegistrationToken(fullPhone);
+
+      return new NextResponse(
+        JSON.stringify({
+          success: true,
+          message: "Phone number verified successfully",
+          isNewUser: true,
+          registrationToken,
+          phoneVerificationToken: registrationToken,
+          user: {
+            phone: fullPhone,
+            phoneIsVerified: true
+          }
+        }),
+        { headers: corsHeaders }
+      );
     }
 
-    otpStore.delete(fullPhoneNumber);
+    // Existing completed user found
+    let user;
+    if (validUsers.length > 1) {
+      const mainUser = validUsers[0];
+      const duplicateUser = validUsers[1];
+      console.log(`[Merge] Merging duplicate user ${duplicateUser._id} into ${mainUser._id}`);
+
+      if (mainUser.phone !== fullPhoneNumber) {
+        mainUser.phone = fullPhoneNumber;
+      }
+      await User.findByIdAndDelete(duplicateUser._id);
+      user = mainUser;
+    } else {
+      user = validUsers[0];
+      if (user.phone !== fullPhoneNumber) {
+        user.phone = fullPhoneNumber;
+      }
+    }
+
+    user.lastLoginAt = new Date();
+    user.phoneIsVerified = true;
+    await user.save();
 
     // Create session token
     const token = createToken(user._id);
@@ -124,7 +128,7 @@ export async function POST(req) {
         success: true,
         message: "OTP verified successfully",
         userId: user._id,
-        isNewUser,
+        isNewUser: false,
         user: {
           phone: user.phone,
           isVerified: user.isVerified,
@@ -136,7 +140,6 @@ export async function POST(req) {
 
     // Set HTTP-only cookie
     setTokenCookie(response, token);
-
     return response;
 
   } catch (error) {
