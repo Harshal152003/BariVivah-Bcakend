@@ -3,6 +3,7 @@ import connectDB from "@/lib/dbConnect";
 import Interest from "@/models/Interest";
 import User from "@/models/User";
 import Notification from "@/models/Notification";
+import { sendPushNotification } from "@/lib/pushDispatcher";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': 'http://localhost:8081', // Must be explicit, not *
@@ -39,16 +40,31 @@ export async function PATCH(req) {
       const receiver = await User.findById(interest.receiverId);
 
       if (sender && receiver) {
+        const receiverPhotoUrl = receiver.photos?.find(p => p.isPrimary)?.url || receiver.photos?.[0]?.url || receiver.profilePhoto || null;
+
         await Notification.create({
           title: "Request Accepted!",
-          message: `${receiver.name || 'A BariVivah member'} accepted your connection request! You can now view each other's details.`,
+          message: `${receiver.name || 'A BariVivah member'} accepted your connection request! You are now matched.`,
           type: "INTEREST",
           priority: "HIGH",
           recipientType: "SPECIFIC",
           recipientUser: interest.senderId,
+          senderUser: interest.receiverId,
+          senderPhoto: receiverPhotoUrl,
+          senderGender: receiver.gender || 'Other',
           actionUrl: "/(dashboard)/(tabs)/matches",
           createdBy: "SYSTEM",
         });
+
+        // Push notification for accepted connection
+        sendPushNotification({
+          recipientUserIds: interest.senderId,
+          title: "Request Accepted! 💍",
+          body: `${receiver.name || 'A member'} accepted your connection request!`,
+          data: { url: '/(dashboard)/(tabs)/matches', tab: 'matches' },
+          channelId: 'matrimony_matches',
+          category: 'matchAlerts',
+        }).catch((e) => console.warn('Push dispatch error on accept:', e));
       }
     } catch (notifErr) {
       console.warn("Accepted notification error:", notifErr);

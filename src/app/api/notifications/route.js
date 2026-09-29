@@ -89,9 +89,45 @@ export async function GET(request) {
     };
 
     const rawNotifications = await Notification.find(query)
+      .populate('senderUser', 'name gender photos profilePhoto')
       .sort({ createdAt: -1 })
       .limit(60)
       .lean();
+
+    // Collect names for notifications that lack senderPhoto / senderUser for backward compatibility
+    const missingSenderNames = [];
+    rawNotifications.forEach((notif) => {
+      if (notif.type === 'INTEREST' && !notif.senderPhoto && (!notif.senderUser || !notif.senderUser.photos)) {
+        const msg = notif.message || '';
+        const match1 = msg.match(/^(.+?)\s+(?:has\s+sent|sent)\s+you/i);
+        const match2 = msg.match(/You and\s+(.+?)\s+both/i);
+        const match3 = msg.match(/^(.+?)\s+accepted\s+your/i);
+        const extracted = (match1 && match1[1]) || (match2 && match2[1]) || (match3 && match3[1]);
+        if (extracted && extracted !== 'A BariVivah member' && extracted !== 'A member') {
+          missingSenderNames.push(extracted.trim());
+        }
+      }
+    });
+
+    // Bulk find users by name if any missing
+    const userByNameMap = {};
+    if (missingSenderNames.length > 0) {
+      try {
+        const foundUsers = await User.find({
+          name: { $in: missingSenderNames.map((n) => new RegExp('^' + n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$', 'i')) },
+        })
+          .select('name gender photos profilePhoto')
+          .lean();
+
+        foundUsers.forEach((u) => {
+          if (u.name) {
+            userByNameMap[u.name.toLowerCase()] = u;
+          }
+        });
+      } catch (e) {
+        console.warn('Fallback sender user resolution error:', e);
+      }
+    }
 
     const userIdStr = userId.toString();
 
@@ -110,6 +146,40 @@ export async function GET(request) {
         unreadCount++;
       }
 
+      // Extract resolved photo & gender
+      let resolvedPhoto = notif.senderPhoto || null;
+      let resolvedGender = notif.senderGender || null;
+
+      if (!resolvedPhoto && notif.senderUser && typeof notif.senderUser === 'object') {
+        resolvedPhoto =
+          notif.senderUser.photos?.find((p) => p.isPrimary)?.url ||
+          notif.senderUser.photos?.[0]?.url ||
+          notif.senderUser.profilePhoto ||
+          null;
+        if (!resolvedGender) {
+          resolvedGender = notif.senderUser.gender || null;
+        }
+      }
+
+      if (!resolvedPhoto && notif.type === 'INTEREST') {
+        const msg = notif.message || '';
+        const match1 = msg.match(/^(.+?)\s+(?:has\s+sent|sent)\s+you/i);
+        const match2 = msg.match(/You and\s+(.+?)\s+both/i);
+        const match3 = msg.match(/^(.+?)\s+accepted\s+your/i);
+        const extracted = (match1 && match1[1]) || (match2 && match2[1]) || (match3 && match3[1]);
+        if (extracted && userByNameMap[extracted.toLowerCase()]) {
+          const fallbackUser = userByNameMap[extracted.toLowerCase()];
+          resolvedPhoto =
+            fallbackUser.photos?.find((p) => p.isPrimary)?.url ||
+            fallbackUser.photos?.[0]?.url ||
+            fallbackUser.profilePhoto ||
+            null;
+          if (!resolvedGender) {
+            resolvedGender = fallbackUser.gender || null;
+          }
+        }
+      }
+
       return {
         _id: notif._id,
         id: notif._id,
@@ -118,6 +188,9 @@ export async function GET(request) {
         type: notif.type,
         priority: notif.priority,
         actionUrl: notif.actionUrl,
+        senderPhoto: resolvedPhoto,
+        senderGender: resolvedGender,
+        senderUser: notif.senderUser?._id || notif.senderUser || null,
         isRead,
         createdAt: notif.createdAt,
         createdBy: notif.createdBy,

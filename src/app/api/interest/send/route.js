@@ -3,6 +3,7 @@ import connectDB from "@/lib/dbConnect";
 import Interest from "@/models/Interest";
 import User from "@/models/User";
 import Notification from "@/models/Notification";
+import { sendPushNotification } from "@/lib/pushDispatcher";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': 'http://localhost:8081', // Must be explicit, not *
@@ -59,6 +60,10 @@ export async function POST(req) {
         reverseInterest.status = 'accepted';
         await reverseInterest.save();
 
+        // Extract candidate profile photos
+        const senderPhotoUrl = senderExists.photos?.find(p => p.isPrimary)?.url || senderExists.photos?.[0]?.url || senderExists.profilePhoto || null;
+        const receiverPhotoUrl = receiverExists.photos?.find(p => p.isPrimary)?.url || receiverExists.photos?.[0]?.url || receiverExists.profilePhoto || null;
+
         // Create match notifications for both users
         try {
           await Notification.create([
@@ -69,6 +74,9 @@ export async function POST(req) {
               priority: "HIGH",
               recipientType: "SPECIFIC",
               recipientUser: receiverId,
+              senderUser: senderId,
+              senderPhoto: senderPhotoUrl,
+              senderGender: senderExists.gender || 'Other',
               actionUrl: "/(dashboard)/(tabs)/matches",
               createdBy: "SYSTEM",
             },
@@ -79,10 +87,23 @@ export async function POST(req) {
               priority: "HIGH",
               recipientType: "SPECIFIC",
               recipientUser: senderId,
+              senderUser: receiverId,
+              senderPhoto: receiverPhotoUrl,
+              senderGender: receiverExists.gender || 'Other',
               actionUrl: "/(dashboard)/(tabs)/matches",
               createdBy: "SYSTEM",
             },
           ]);
+
+          // Push notifications to both users for instant match
+          sendPushNotification({
+            recipientUserIds: [receiverId, senderId],
+            title: "It's a Match! 💍",
+            body: `You and ${senderExists.name || 'a member'} matched with each other!`,
+            data: { url: '/(dashboard)/(tabs)/matches', tab: 'matches' },
+            channelId: 'matrimony_matches',
+            category: 'matchAlerts',
+          }).catch((e) => console.warn('Push dispatch error on match:', e));
         } catch (notifErr) {
           console.warn("Match notification creation failed:", notifErr);
         }
@@ -109,6 +130,9 @@ export async function POST(req) {
     const interest = new Interest({ senderId, receiverId, status: 'pending' });
     await interest.save();
 
+    // Extract sender photo
+    const senderPhotoUrl = senderExists.photos?.find(p => p.isPrimary)?.url || senderExists.photos?.[0]?.url || senderExists.profilePhoto || null;
+
     // Create incoming request notification for receiver
     try {
       await Notification.create({
@@ -118,9 +142,22 @@ export async function POST(req) {
         priority: "HIGH",
         recipientType: "SPECIFIC",
         recipientUser: receiverId,
+        senderUser: senderId,
+        senderPhoto: senderPhotoUrl,
+        senderGender: senderExists.gender || 'Other',
         actionUrl: "/(dashboard)/(tabs)/matches",
         createdBy: "SYSTEM",
       });
+
+      // Push notification for incoming request
+      sendPushNotification({
+        recipientUserIds: receiverId,
+        title: "New Connection Request 💌",
+        body: `${senderExists.name || 'A member'} sent you a connection request!`,
+        data: { url: '/(dashboard)/(tabs)/matches', tab: 'received' },
+        channelId: 'matrimony_requests',
+        category: 'requestAlerts',
+      }).catch((e) => console.warn('Push dispatch error on request:', e));
     } catch (notifErr) {
       console.warn("Incoming interest notification creation failed:", notifErr);
     }

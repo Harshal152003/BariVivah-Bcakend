@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import dbConnect from '@/lib/dbConnect';
 import Notification from '@/models/Notification';
 import User from '@/models/User';
+import { sendPushNotification } from '@/lib/pushDispatcher';
 
 export const dynamic = 'force-dynamic';
 
@@ -138,6 +139,47 @@ export async function POST(request) {
     const populated = await Notification.findById(newNotification._id)
       .populate('recipientUser', 'name profileId phone gender email profilePhoto')
       .lean();
+
+    // Asynchronously dispatch push notifications based on recipientType
+    (async () => {
+      try {
+        let targetUserIds = [];
+
+        if (recipientType === 'SPECIFIC' && recipientUser) {
+          targetUserIds = [recipientUser];
+        } else if (recipientType === 'ALL') {
+          const allUsers = await User.find({ isDeleted: { $ne: true } }).select('_id').lean();
+          targetUserIds = allUsers.map((u) => u._id);
+        } else if (recipientType === 'GROUP') {
+          let filter = { isDeleted: { $ne: true } };
+          if (targetGroup === 'MALE') filter.gender = 'Male';
+          if (targetGroup === 'FEMALE') filter.gender = 'Female';
+          if (targetGroup === 'VERIFIED') filter.$or = [{ isVerified: true }, { verificationStatus: 'Verified' }];
+          if (targetGroup === 'UNVERIFIED') filter.$and = [{ isVerified: { $ne: true } }, { verificationStatus: { $ne: 'Verified' } }];
+          if (targetGroup === 'PREMIUM_USERS') filter['subscription.isSubscribed'] = true;
+          if (targetGroup === 'FREE_USERS') filter.$or = [{ 'subscription.isSubscribed': false }, { subscription: { $exists: false } }];
+
+          const groupUsers = await User.find(filter).select('_id').lean();
+          targetUserIds = groupUsers.map((u) => u._id);
+        }
+
+        if (targetUserIds.length > 0) {
+          await sendPushNotification({
+            recipientUserIds: targetUserIds,
+            title: title.trim(),
+            body: message.trim(),
+            data: {
+              url: actionUrl || null,
+              notificationId: newNotification._id.toString(),
+            },
+            channelId: 'matrimony_announcements',
+            category: 'adminAnnouncements',
+          });
+        }
+      } catch (pushErr) {
+        console.warn('[AdminNotifications] Push broadcast error:', pushErr);
+      }
+    })();
 
     return NextResponse.json({
       success: true,

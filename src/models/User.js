@@ -261,6 +261,22 @@ const UserSchema = new mongoose.Schema({
   lastLoginAt: Date,
 
 
+  // Push Notifications (Multi-device token support)
+  pushTokens: [
+    {
+      token: { type: String, required: true },
+      platform: { type: String, enum: ["android", "ios", "web"], default: "android" },
+      deviceId: { type: String },
+      updatedAt: { type: Date, default: Date.now }
+    }
+  ],
+  notificationPreferences: {
+    matchAlerts: { type: Boolean, default: true },
+    requestAlerts: { type: Boolean, default: true },
+    adminAnnouncements: { type: Boolean, default: true },
+    emailAlerts: { type: Boolean, default: true }
+  },
+
   //form fillup option for user 
   profileSetup: {
     willAdminFill: Boolean,  // true if admin should fill, false if user will fill

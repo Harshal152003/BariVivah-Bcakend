@@ -149,8 +149,8 @@ export async function POST(request) {
     const mamaContact = u.mamaContact || u.maternalContact || 'Not specified';
     const nativePlaceStr = u.nativePlace || u.nativeCity || u.nativeDistrict || u.parentResidenceCity || 'Not specified';
 
-    const bio = u.aboutMe || u.bio || u.profileSummary || u.about || u.description ||
-      'I am looking for a partner who shares similar values, is understanding, supportive, and respects family traditions.';
+    const userIntroRaw = (u.aboutMe || u.bio || u.profileSummary || u.about || u.description || '').toString().trim();
+    const hasCustomIntro = userIntroRaw.length > 0;
 
     // ==========================================
     // 1. CLEAN OUTER PAGE BORDER (Matching Screenshot)
@@ -260,11 +260,27 @@ export async function POST(request) {
     const nameLines = wrapText(cleanName, boldFont, nameFontSize, leftColW - 32);
     const safeNameLines = nameLines.length > 0 ? nameLines : ['Candidate Member'];
 
-    const rawBio = sanitizeText(bio);
-    const quoteText = rawBio ? `“${rawBio}”` : '';
+    // Bio Intro: user text or muted placeholder
+    const sanitizedBio = sanitizeText(userIntroRaw);
+    const placeholderColor = rgb(0.58, 0.63, 0.70); // Low-opacity / muted placeholder color
+    
+    let quoteText = '';
+    let bioFont = regularFont;
+    let bioTextColor = bodyColor;
+
+    if (hasCustomIntro && sanitizedBio) {
+      quoteText = `"${sanitizedBio}"`;
+      bioFont = regularFont;
+      bioTextColor = bodyColor;
+    } else {
+      quoteText = 'Please set your introduction in About Me field';
+      bioFont = italicFont;
+      bioTextColor = placeholderColor;
+    }
+
     const bioFontSize = 9;
     const bioLineH = 13;
-    let bioLines = quoteText ? wrapText(quoteText, regularFont, bioFontSize, leftColW - 32) : [];
+    let bioLines = wrapText(quoteText, bioFont, bioFontSize, leftColW - 38);
     if (bioLines.length > 7) {
       bioLines = bioLines.slice(0, 6);
       bioLines.push('...');
@@ -281,6 +297,7 @@ export async function POST(request) {
     const bioCardH = Math.max(90, padTop + nameBlockH + gapUnderName + accentH + gapUnderAccent + bioBlockH + padBottom);
     const bioCardY = photoCardY - 14 - bioCardH;
 
+    // Draw Quote / Speech-Bubble container
     drawRoundedRectangle(page, {
       x: leftMargin,
       y: bioCardY,
@@ -288,7 +305,30 @@ export async function POST(request) {
       height: bioCardH,
       radius: 18,
       color: softPink,
+      borderColor: pageBorderColor,
+      borderWidth: 0.5,
     });
+
+    // Speech-bubble upward notch pointing to the photo
+    const tailCenterX = leftMargin + 32;
+    const tailTopY = photoCardY - 8;
+    const tailBaseY = photoCardY - 14;
+    page.drawLine({ start: { x: tailCenterX - 6, y: tailBaseY }, end: { x: tailCenterX, y: tailTopY }, thickness: 1.5, color: softPink });
+    page.drawLine({ start: { x: tailCenterX + 6, y: tailBaseY }, end: { x: tailCenterX, y: tailTopY }, thickness: 1.5, color: softPink });
+    page.drawRectangle({ x: tailCenterX - 5, y: tailBaseY - 2, width: 10, height: 4, color: softPink });
+
+    // Decorative Quote Marks ( " " ) in top-right of the container
+    const quoteMarkX = leftMargin + leftColW - 28;
+    const quoteMarkY = bioCardY + bioCardH - 20;
+    const quoteColor = rgb(0.96, 0.70, 0.75); // Elegant soft rose accent
+    
+    // Left quotation glyph
+    page.drawCircle({ x: quoteMarkX, y: quoteMarkY, size: 3.2, color: quoteColor });
+    page.drawLine({ start: { x: quoteMarkX + 1.2, y: quoteMarkY }, end: { x: quoteMarkX - 2.2, y: quoteMarkY - 4.5 }, thickness: 1.8, color: quoteColor });
+    
+    // Right quotation glyph
+    page.drawCircle({ x: quoteMarkX + 7.5, y: quoteMarkY, size: 3.2, color: quoteColor });
+    page.drawLine({ start: { x: quoteMarkX + 8.7, y: quoteMarkY }, end: { x: quoteMarkX + 5.3, y: quoteMarkY - 4.5 }, thickness: 1.8, color: quoteColor });
 
     let bioCurY = bioCardY + bioCardH - padTop;
 
@@ -317,14 +357,26 @@ export async function POST(request) {
 
     bioCurY -= gapUnderAccent;
 
-    // 3. Draw About Me Quote Text (Placed cleanly below the accent line)
+    // Vertical quotation accent bar on the left of intro
+    if (bioLines.length > 0) {
+      const quoteBarTop = bioCurY + 2;
+      const quoteBarBottom = bioCurY - (bioLines.length * bioLineH) + 4;
+      page.drawLine({
+        start: { x: leftMargin + 14, y: quoteBarTop },
+        end: { x: leftMargin + 14, y: quoteBarBottom },
+        thickness: 2,
+        color: coralPink,
+      });
+    }
+
+    // 3. Draw About Me Quote or Muted Placeholder Text (Indented beside vertical quote bar)
     bioLines.forEach((line) => {
       page.drawText(line, {
-        x: leftMargin + 16,
+        x: leftMargin + 22,
         y: bioCurY - (bioFontSize - 2),
         size: bioFontSize,
-        font: regularFont,
-        color: bodyColor,
+        font: bioFont,
+        color: bioTextColor,
       });
       bioCurY -= bioLineH;
     });
@@ -351,16 +403,16 @@ export async function POST(request) {
         color: darkTitle,
       });
 
-      // Accent underline under title
+      // Accent underline under title (Placed safely below descenders like 'g', 'p', 'y')
       page.drawRectangle({
         x: rightColX,
-        y: rightCurY - 5,
+        y: rightCurY - 7.5,
         width: 28,
-        height: 2.5,
+        height: 2.2,
         color: coralPink,
       });
 
-      rightCurY -= 20;
+      rightCurY -= 22;
 
       // Render all key-value rows
       fields.forEach(([label, value]) => {
@@ -473,7 +525,7 @@ export async function POST(request) {
       color: linkBlue,
     });
 
-    // Bottom Right Branding: BariVivah Trademark Logo / Text
+    // Bottom Right Branding: BariVivah Trademark Logo (matching TrademarkLogo component with TM mark)
     let logoDrawn = false;
     try {
       const publicDir = path.join(process.cwd(), 'public');
@@ -482,25 +534,46 @@ export async function POST(request) {
         const logoBytes = fs.readFileSync(logoPath);
         const logoImg = await pdfDoc.embedPng(logoBytes);
         const scaled = logoImg.scaleToFit(85, 24);
+        const logoX = width - outerMargin - scaled.width - 24;
+        const logoY = footerY - 4;
+
         page.drawImage(logoImg, {
-          x: width - outerMargin - scaled.width - 16,
-          y: footerY - 4,
+          x: logoX,
+          y: logoY,
           width: scaled.width,
           height: scaled.height,
         });
+
+        // Exact Trademark (TM) Superscript aligned with the brand logo (matching TrademarkLogo component)
+        page.drawText('TM', {
+          x: logoX + scaled.width + 1.5,
+          y: logoY + (scaled.height * 0.52),
+          size: 5,
+          font: boldFont,
+          color: rgb(0.28, 0.33, 0.41), // #475569 matching TrademarkLogo
+        });
+
         logoDrawn = true;
       }
     } catch (e) {}
 
     if (!logoDrawn) {
-      const brandStr = 'barivivah.in';
+      const brandStr = 'BariVivah';
       const brandW = boldFont.widthOfTextAtSize(brandStr, 11);
+      const brandX = width - outerMargin - brandW - 24;
       page.drawText(brandStr, {
-        x: width - outerMargin - brandW - 16,
+        x: brandX,
         y: footerY,
         size: 11,
         font: boldFont,
         color: coralPink,
+      });
+      page.drawText('TM', {
+        x: brandX + brandW + 2,
+        y: footerY + 5,
+        size: 5,
+        font: boldFont,
+        color: rgb(0.28, 0.33, 0.41),
       });
     }
 

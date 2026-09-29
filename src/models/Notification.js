@@ -40,6 +40,19 @@ const NotificationSchema = new mongoose.Schema(
       ref: "User",
       default: null,
     },
+    senderUser: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    senderPhoto: {
+      type: String,
+      default: null,
+    },
+    senderGender: {
+      type: String,
+      default: null,
+    },
     targetGroup: {
       type: String,
       enum: [
